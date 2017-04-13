@@ -22,6 +22,20 @@ Momo.getCanvasWidth()
 Momo.getCanvasHeight()
 ```
 
+## Images
+
+These methods are used to load and draw images.
+
+```js
+Momo.loadImage(file_name)
+Momo.drawImage(image, x, y)
+Momo.getImageWidth(image)
+Momo.getImageHeight(image)
+Momo.drawScaledImage(image, x, y, scale_width, scale_height)
+Momo.drawPartialImage(image, start_x, start_y, width, height, x, y)
+Momo.drawRotatedImage(image, center_x, center_y, draw_x, draw_y, angle)
+```
+
 ## Primitives
 
 These methods are used to draw various shapes.

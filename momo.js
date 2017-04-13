@@ -90,11 +90,11 @@ var Momo = new class {
     var number_of_resources = 0;
     var number_of_resources_loaded = 0;
 
-    for (var i = 0; i < this.resources.length; ++i) {
+    for (var i = 0; i < window.Momo.resources.length; ++i) {
 
       ++number_of_resources;
 
-      if (this.resources[i].ready) {
+      if (window.Momo.resources[i].ready) {
 
         ++number_of_resources_loaded;
       }
@@ -103,7 +103,7 @@ var Momo = new class {
     if (number_of_resources_loaded < number_of_resources) {
 
       // Some resources have not completed downloading yet.
-      window.setTimeout(resourcesLoaded, 100, procedure);
+      window.setTimeout(window.Momo.resourcesLoaded, 100, procedure);
     }
     else {
 
@@ -146,6 +146,96 @@ var Momo = new class {
 
     // Call the specified function when the window loads.
     window.addEventListener("load", function_name);
+  }
+
+  loadImage(file_name) {
+
+    var element = new Image();
+
+    element.src = file_name;
+
+    var sub_canvas = document.createElement("canvas");
+    var sub_canvas_context = sub_canvas.getContext("2d");
+
+    var image = {
+
+      canvas: sub_canvas,
+
+      context: sub_canvas_context,
+
+      width: -1,
+
+      height: -1,
+
+      ready: false,
+
+      type: "image"
+    };
+
+    this.resources.push(image);
+
+    element.onload = function() {
+
+      image.canvas.width = element.width;
+      image.canvas.height = element.height;
+
+      image.context.drawImage(element, 0, 0);
+
+      image.width = element.width;
+      image.height = element.height;
+
+      image.ready = true;
+    }
+
+    return image;
+  }
+
+  getImageWidth(image) {
+
+    return image.width;
+  }
+
+  getImageHeight(image) {
+
+    return image.height;
+  }
+
+  drawImage(image, x, y) {
+
+    this.canvas.context.drawImage(image.canvas, x, y);
+  }
+
+  drawScaledImage(image, x, y, scale_width, scale_height) {
+
+    this.canvas.context.save();
+
+    this.canvas.context.translate(x, y);
+    this.canvas.context.scale(scale_width, scale_height);
+
+    this.drawImage(image, 0, 0);
+
+    this.canvas.context.restore();
+  }
+
+  drawPartialImage(image, start_x, start_y, width, height, x, y) {
+
+    this.canvas.context.save();
+
+    this.canvas.context.drawImage(image.canvas, start_x, start_y, width, height, x, y, width, height);
+
+    this.canvas.context.restore();
+  }
+
+  drawRotatedImage(image, center_x, center_y, draw_x, draw_y, angle) {
+
+    this.canvas.context.save();
+
+    this.canvas.context.translate(draw_x + center_x, draw_y + center_y);
+    this.canvas.context.rotate(angle);
+
+    this.drawImage(image, -center_x, -center_y);
+
+    this.canvas.context.restore();
   }
 
   drawArc(center_x, center_y, radius, start_angle, end_angle, color, line_width) {
