@@ -1,6 +1,6 @@
-# Kinoko
+# Momo
 
-Kinoko is a minimal game library written in JavaScript.
+Momo is a minimal game library written in JavaScript.
 
 
 ## Colors
@@ -8,7 +8,7 @@ Kinoko is a minimal game library written in JavaScript.
 These methods are used to create integer RGBA color values.
 
 ```js
-Kinoko.makeColor(r, g, b, a)
+Momo.makeColor(r, g, b, a)
 ```
 
 ## Canvas
@@ -16,10 +16,10 @@ Kinoko.makeColor(r, g, b, a)
 These methods are used to interact with the canvas.
 
 ```js
-Kinoko.setCanvas(canvas_id, canvas_width, canvas_height)
-Kinoko.clearCanvas(color)
-Kinoko.getCanvasWidth()
-Kinoko.getCanvasHeight()
+Momo.setCanvas(canvas_id, canvas_width, canvas_height)
+Momo.clearCanvas(color)
+Momo.getCanvasWidth()
+Momo.getCanvasHeight()
 ```
 
 ## Primitives
@@ -27,15 +27,15 @@ Kinoko.getCanvasHeight()
 These methods are used to draw various shapes.
 
 ```js
-Kinoko.drawArc(center_x, center_y, radius, start_angle, end_angle, color, line_width)
-Kinoko.drawLine(begin_x, begin_y, end_x, end_y, color, line_width)
-Kinoko.drawCircle(center_x, center_y, radius, color, line_width)
-Kinoko.drawTriangle(x1, y1, x2, y2, x3, y3, color, line_width)
-Kinoko.drawRectangle(begin_x, begin_y, end_x, end_y, color, line_width)
-Kinoko.drawFilledArc(center_x, center_y, radius, start_angle, end_angle, color)
-Kinoko.drawFilledCircle(center_x, center_y, radius, color)
-Kinoko.drawFilledTriangle(x1, y1, x2, y2, x3, y3, color)
-Kinoko.drawFilledRectangle(begin_x, begin_y, end_x, end_y, color)
+Momo.drawArc(center_x, center_y, radius, start_angle, end_angle, color, line_width)
+Momo.drawLine(begin_x, begin_y, end_x, end_y, color, line_width)
+Momo.drawCircle(center_x, center_y, radius, color, line_width)
+Momo.drawTriangle(x1, y1, x2, y2, x3, y3, color, line_width)
+Momo.drawRectangle(begin_x, begin_y, end_x, end_y, color, line_width)
+Momo.drawFilledArc(center_x, center_y, radius, start_angle, end_angle, color)
+Momo.drawFilledCircle(center_x, center_y, radius, color)
+Momo.drawFilledTriangle(x1, y1, x2, y2, x3, y3, color)
+Momo.drawFilledRectangle(begin_x, begin_y, end_x, end_y, color)
 ```
 
 ## Miscellaneous
@@ -43,10 +43,10 @@ Kinoko.drawFilledRectangle(begin_x, begin_y, end_x, end_y, color)
 These methods sport miscellaneous purposes.
 
 ```js
-Kinoko.initialize()
-Kinoko.setFrameRate(frame_rate)
-Kinoko.getFrameRate()
-Kinoko.resourcesLoaded(procedure)
-Kinoko.createLoop(procedure)
-Kinoko.loadFunction(function_name)
+Momo.initialize()
+Momo.setFrameRate(frame_rate)
+Momo.getFrameRate()
+Momo.resourcesLoaded(procedure)
+Momo.createLoop(procedure)
+Momo.loadFunction(function_name)
 ```

@@ -1,4 +1,4 @@
-var Kinoko = new class {
+var Momo = new class {
 
   constructor() {
 
