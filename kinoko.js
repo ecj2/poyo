@@ -130,14 +130,14 @@ var Kinoko = new class {
     return {r: r, g: g, b: b, a: a};
   }
 
-  setStrokeFillStyle(color, width = 0) {
+  setStrokeFillStyle(color, line_width = 0) {
 
     var r = color.r;
     var g = color.g;
     var b = color.b;
     var a = color.a / 255.0;
 
-    this.canvas.context.lineWidth = width;
+    this.canvas.context.lineWidth = line_width;
     this.canvas.context.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
     this.canvas.context.strokeStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
   }
@@ -146,5 +146,98 @@ var Kinoko = new class {
 
     // Call the specified function when the window loads.
     window.addEventListener("load", function_name);
+  }
+
+  drawArc(center_x, center_y, radius, start_angle, end_angle, color, line_width) {
+
+    this.setStrokeFillStyle(color, line_width);
+
+    this.canvas.context.beginPath();
+    this.canvas.context.arc(center_x, center_y, radius, start_angle, end_angle);
+    this.canvas.context.closePath();
+    this.canvas.context.stroke();
+  }
+
+  drawLine(begin_x, begin_y, end_x, end_y, color, line_width) {
+
+    this.setStrokeFillStyle(color, line_width);
+
+    this.canvas.context.beginPath();
+    this.canvas.context.moveTo(begin_x, begin_y);
+    this.canvas.context.lineTo(end_x, end_y);
+    this.canvas.context.closePath();
+    this.canvas.context.stroke();
+  }
+
+  drawCircle(center_x, center_y, radius, color, line_width) {
+
+    this.setStrokeFillStyle(color, line_width);
+
+    this.canvas.context.beginPath();
+    this.canvas.context.arc(center_x, center_y, radius, 0, 2 * Math.PI);
+    this.canvas.context.closePath();
+    this.canvas.context.stroke();
+  }
+
+  drawFilledCircle(center_x, center_y, radius, color) {
+
+    this.setStrokeFillStyle(color);
+
+    this.canvas.context.beginPath();
+    this.canvas.context.arc(center_x, center_y, radius, 0, 2 * Math.PI);
+    this.canvas.context.closePath();
+    this.canvas.context.fill();
+  }
+
+  drawRectangle(begin_x, begin_y, end_x, end_y, color, line_width) {
+
+    this.setStrokeFillStyle(color, line_width);
+
+    this.canvas.context.beginPath();
+    this.canvas.context.strokeRect(begin_x, begin_y, end_x - begin_x, end_y - begin_y);
+    this.canvas.context.closePath();
+  }
+
+  drawFilledArc(center_x, center_y, radius, start_angle, end_angle, color) {
+
+    this.setStrokeFillStyle(color);
+
+    this.canvas.context.beginPath();
+    this.canvas.context.arc(center_x, center_y, radius, start_angle, end_angle);
+    this.canvas.context.closePath();
+    this.canvas.context.fill();
+  }
+
+  drawFilledRectangle(begin_x, begin_y, end_x, end_y, color) {
+
+    this.setStrokeFillStyle(color);
+
+    this.canvas.context.beginPath();
+    this.canvas.context.fillRect(begin_x, begin_y, end_x - begin_x, end_y - begin_y);
+    this.canvas.context.closePath();
+  }
+
+  drawTriangle(x1, y1, x2, y2, x3, y3, color, line_width) {
+
+    this.setStrokeFillStyle(color, line_width);
+
+    this.canvas.context.beginPath();
+    this.canvas.context.moveTo(x1, y1);
+    this.canvas.context.lineTo(x2, y2);
+    this.canvas.context.lineTo(x3, y3);
+    this.canvas.context.closePath();
+    this.canvas.context.stroke();
+  }
+
+  drawFilledTriangle(x1, y1, x2, y2, x3, y3, color) {
+
+    this.setStrokeFillStyle(color);
+
+    this.canvas.context.beginPath();
+    this.canvas.context.moveTo(x1, y1);
+    this.canvas.context.lineTo(x2, y2);
+    this.canvas.context.lineTo(x3, y3);
+    this.canvas.context.closePath();
+    this.canvas.context.fill();
   }
 }
