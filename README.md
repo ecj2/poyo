@@ -2,6 +2,18 @@
 
 Momo is a minimal game library written in JavaScript.
 
+## Fonts
+
+These methods and members are used to load fonts and draw text.
+
+```js
+Momo.TEXT_ALIGN_LEFT
+Momo.TEXT_ALIGN_RIGHT
+Momo.TEXT_ALIGN_CENTER
+Momo.loadFont(file_name)
+Momo.drawText(font, color, size, x, y, alignment, text)
+Momo.drawOutlinedText(font, color, size, line_width, x, y, alignment, text)
+```
 
 ## Colors
 

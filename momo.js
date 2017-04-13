@@ -10,6 +10,11 @@ var Momo = new class {
 
     // This dictates how often the canvas will be updated.
     this.frame_rate = 0;
+
+    // These are used for setting the alignment of drawn text.
+    this.TEXT_ALIGN_LEFT = 0;
+    this.TEXT_ALIGN_RIGHT = 1;
+    this.TEXT_ALIGN_CENTER = 2;
   }
 
   initialize() {
@@ -146,6 +151,90 @@ var Momo = new class {
 
     // Call the specified function when the window loads.
     window.addEventListener("load", function_name);
+  }
+
+  loadFont(file_name) {
+
+    var element = document.createElement("style");
+
+    var font_name = "font_" + Math.random().toString(16).slice(2);
+
+    element.id = font_name;
+
+    document.head.appendChild(element);
+
+    "@font-face {font-family: a; src: url('');}"
+
+    element.textContent = "@font-face {font-family: " + font_name + "; src: url(\"" + file_name + "\");}";
+
+    return {
+
+      element: element,
+
+      file: file_name,
+
+      name: font_name,
+
+      type: "font"
+    }
+  }
+
+  drawText(font, color, size, x, y, alignment, text) {
+
+    this.setStrokeFillStyle(color, 0);
+
+    switch (alignment) {
+
+      case this.TEXT_ALIGN_LEFT:
+
+        this.canvas.context.textAlign = "left";
+      break;
+
+      case this.TEXT_ALIGN_CENTER:
+
+        this.canvas.context.textAlign = "center";
+      break;
+
+      case this.TEXT_ALIGN_RIGHT:
+
+        this.canvas.context.textAlign = "right";
+      break;
+    }
+
+    this.canvas.context.textBaseline = "top";
+
+    this.canvas.context.font = size + "px " + font.name;
+
+    this.canvas.context.fillText(text, x, y);
+  }
+
+  drawOutlinedText(font, color, size, line_width, x, y, alignment, text) {
+
+    this.setStrokeFillStyle(color, line_width);
+
+    switch (alignment) {
+
+      case this.TEXT_ALIGN_LEFT:
+
+        this.canvas.context.textAlign = "left";
+      break;
+
+      case this.TEXT_ALIGN_CENTER:
+
+        this.canvas.context.textAlign = "center";
+      break;
+
+      case this.TEXT_ALIGN_RIGHT:
+
+        this.canvas.context.textAlign = "right";
+      break;
+    }
+
+    this.canvas.context.textBaseline = "top";
+
+    this.canvas.context.font = size + "px " + font.name;
+
+    this.canvas.context.strokeText(text, x, y);
   }
 
   loadImage(file_name) {
