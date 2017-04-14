@@ -2,19 +2,24 @@ var Momo = new class {
 
   constructor() {
 
-    // Everything will be drawn on this canvas.
+    // Everything is drawn on this canvas.
     this.canvas = undefined;
 
-    // Resources will be queued here.
+    // Resources are be queued here.
     this.resources = [];
 
-    // This dictates how often the canvas will be updated.
+    // This dictates how often the canvas should be updated.
     this.frame_rate = 0;
 
-    // These are used for setting the alignment of drawn text.
+    // These dictate how text should be aligned when drawn.
     this.TEXT_ALIGN_LEFT = 0;
     this.TEXT_ALIGN_RIGHT = 1;
     this.TEXT_ALIGN_CENTER = 2;
+
+    // These store which keys are pressed and released.
+    this.key = [];
+    this.pressed = [];
+    this.released = [];
   }
 
   initialize() {
@@ -27,7 +32,51 @@ var Momo = new class {
       return false;
     }
 
+    // Listen for keyboard events.
+    document.addEventListener("keyup", this.manageKeyboard);
+    document.addEventListener("keydown", this.manageKeyboard);
+
     return true;
+  }
+
+  manageKeyboard(event) {
+
+    switch (event.type) {
+
+      case "keyup":
+
+        window.Momo.key[event.which] = false;
+
+        window.Momo.released[event.which] = true;
+      break;
+
+      case "keydown":
+
+        if (!window.Momo.key[event.which]) {
+
+          window.Momo.pressed[event.which] = true;
+        }
+
+        window.Momo.key[event.which] = true;
+      break;
+    }
+
+    event.preventDefault();
+  }
+
+  keyDown(key_code) {
+
+    return this.key[key_code];
+  }
+
+  keyPressed(key_code) {
+
+    return this.pressed[key_code];
+  }
+
+  keyReleased(key_code) {
+
+    return this.released[key_code];
   }
 
   setCanvas(canvas_id, canvas_width, canvas_height) {
@@ -124,6 +173,13 @@ var Momo = new class {
       function() {
 
         procedure();
+
+        for (var i = 0; i < window.Momo.key.length; ++i) {
+
+          // Clear key arrays so each keyboard event fires only once.
+          window.Momo.pressed[i] = false;
+          window.Momo.released[i] = false;
+        }
       },
 
       1000 / this.frame_rate

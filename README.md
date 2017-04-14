@@ -48,6 +48,16 @@ Momo.drawPartialImage(image, start_x, start_y, width, height, x, y)
 Momo.drawRotatedImage(image, center_x, center_y, draw_x, draw_y, angle)
 ```
 
+## Keyboard
+
+These methods are used to detect keyboard events.
+
+```js
+Momo.keyDown(key_code)
+Momo.keyPressed(key_code)
+Momo.keyReleased(key_code)
+```
+
 ## Primitives
 
 These methods are used to draw various shapes.
