@@ -159,13 +159,16 @@ var Momo = new class {
 
     var font_name = "font_" + Math.random().toString(16).slice(2);
 
-    element.id = font_name;
+    element.textContent = `
+
+      @font-face {
+
+        font-family: ` + font_name + `;
+        src: url("` + file_name + `");
+      }
+    `;
 
     document.head.appendChild(element);
-
-    "@font-face {font-family: a; src: url('');}"
-
-    element.textContent = "@font-face {font-family: " + font_name + "; src: url(\"" + file_name + "\");}";
 
     return {
 
@@ -201,11 +204,9 @@ var Momo = new class {
       break;
     }
 
-    this.canvas.context.textBaseline = "top";
-
     this.canvas.context.font = size + "px " + font.name;
 
-    this.canvas.context.fillText(text, x, y);
+    this.canvas.context.fillText(text, x, y + size);
   }
 
   drawOutlinedText(font, color, size, line_width, x, y, alignment, text) {
