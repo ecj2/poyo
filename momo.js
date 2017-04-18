@@ -9,7 +9,7 @@ var Momo = new class {
     this.resources = [];
 
     // This dictates how often the canvas should be updated.
-    this.frame_rate = 0;
+    this.frame_rate = undefined;
 
     // These dictate how text should be aligned when drawn.
     this.TEXT_ALIGN_LEFT = 0;
@@ -35,6 +35,9 @@ var Momo = new class {
     this.key = [];
     this.pressed = [];
     this.released = [];
+
+    // The time in which the library was initialized is stored here.
+    this.time_initialized = undefined;
   }
 
   initialize() {
@@ -58,7 +61,16 @@ var Momo = new class {
     document.addEventListener("keyup", this.manageKeyboard);
     document.addEventListener("keydown", this.manageKeyboard);
 
+    // Set the time in which the library was initialized.
+    this.time_initialized = (new Date()).getTime();
+
     return true;
+  }
+
+  getTime() {
+
+    // Get the number of seconds elapsed since the library was initialized.
+    return (((new Date()).getTime() - this.time_initialized) / 1000).toFixed(6);
   }
 
   manageMouse(event) {
