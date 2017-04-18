@@ -1,6 +1,6 @@
 # Momo
 
-Momo is a minimal game library written in JavaScript.
+Momo is a minimal 2D game library written in JavaScript.
 
 ## Fonts
 
@@ -13,6 +13,23 @@ Momo.TEXT_ALIGN_CENTER
 Momo.loadFont(file_name)
 Momo.drawText(font, color, size, x, y, alignment, text)
 Momo.drawOutlinedText(font, color, size, line_width, x, y, alignment, text)
+```
+
+## Mouse
+
+These methods and members are used to interface with the mouse.
+
+```js
+Momo.MOUSE_BUTTON_LEFT
+Momo.MOUSE_BUTTON_RIGHT
+Momo.MOUSE_BUTTON_MIDDLE
+Momo.getMouseX()
+Momo.getMouseY()
+Momo.getMouseZ()
+Momo.hideMouseCursor()
+Momo.showMouseCursor()
+Momo.isMouseButtonPressed(button)
+Momo.isMouseButtonReleased(button)
 ```
 
 ## Colors

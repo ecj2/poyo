@@ -16,6 +16,21 @@ var Momo = new class {
     this.TEXT_ALIGN_RIGHT = 1;
     this.TEXT_ALIGN_CENTER = 2;
 
+    // These store information pertaining to mouse axes.
+    this.mouse_x = 0;
+    this.mouse_y = 0;
+    this.mouse_z = 0;
+
+    // These store information pertaining to mouse buttons.
+    this.mouse_button = [];
+    this.mouse_button_pressed = [];
+    this.mouse_button_released = [];
+
+    // These define mouse buttons.
+    this.MOUSE_BUTTON_LEFT = 0;
+    this.MOUSE_BUTTON_RIGHT = 2;
+    this.MOUSE_BUTTON_MIDDLE = 1;
+
     // These store which keys are pressed and released.
     this.key = [];
     this.pressed = [];
@@ -32,11 +47,88 @@ var Momo = new class {
       return false;
     }
 
+    // Listen for mouse events.
+    document.addEventListener("wheel", this.manageMouse);
+    document.addEventListener("mouseup", this.manageMouse);
+    document.addEventListener("mousedown", this.manageMouse);
+    document.addEventListener("mousemove", this.manageMouse);
+    document.addEventListener("contextmenu", this.manageMouse);
+
     // Listen for keyboard events.
     document.addEventListener("keyup", this.manageKeyboard);
     document.addEventListener("keydown", this.manageKeyboard);
 
     return true;
+  }
+
+  manageMouse(event) {
+
+    switch (event.type) {
+
+      case "wheel":
+
+        window.Momo.mouse_z = event.deltaY;
+      break;
+
+      case "mouseup":
+
+        window.Momo.mouse_button[event.button] = false;
+        window.Momo.mouse_button_released[event.button] = true;
+      break;
+
+      case "mousedown":
+
+        if (!window.Momo.mouse_button[event.button]) {
+
+          window.Momo.mouse_button_pressed[event.button] = true;
+        }
+
+        window.Momo.mouse_button[event.button] = true;
+      break;
+
+      case "mousemove":
+
+        window.Momo.mouse_x = event.offsetX;
+        window.Momo.mouse_y = event.offsetY;
+      break;
+    }
+
+    event.preventDefault();
+  }
+
+  isMouseButtonPressed(button) {
+
+    return this.mouse_button_pressed[button];
+  }
+
+  isMouseButtonReleased(button) {
+
+    return this.mouse_button_released[button];
+  }
+
+  getMouseX() {
+
+    return this.mouse_x;
+  }
+
+  getMouseY() {
+
+    return this.mouse_y;
+  }
+
+  getMouseZ() {
+
+    return this.mouse_z;
+  }
+
+  hideMouseCursor() {
+
+    this.canvas.canvas.style.cursor = "none";
+  }
+
+  showMouseCursor() {
+
+    this.canvas.canvas.style.cursor = "auto";
   }
 
   manageKeyboard(event) {
@@ -46,7 +138,6 @@ var Momo = new class {
       case "keyup":
 
         window.Momo.key[event.which] = false;
-
         window.Momo.released[event.which] = true;
       break;
 
@@ -173,6 +264,17 @@ var Momo = new class {
       function() {
 
         procedure();
+
+        // Reset mouse wheel position.
+        window.Momo.mouse_z = 0;
+
+        for (var i = 0; i < window.Momo.mouse_button.length; ++i) {
+
+          // Clear mouse button arrays so each mouse button event fires only once.
+          window.Momo.mouse_button[i] = false;
+          window.Momo.mouse_button_pressed[i] = false;
+          window.Momo.mouse_button_released[i] = false;
+        }
 
         for (var i = 0; i < window.Momo.key.length; ++i) {
 
