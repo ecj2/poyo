@@ -33,8 +33,8 @@ var Momo = new class {
 
     // These store which keys are pressed and released.
     this.key = [];
-    this.pressed = [];
-    this.released = [];
+    this.key_pressed = [];
+    this.key_released = [];
 
     // The time in which the library was initialized is stored here.
     this.time_initialized = undefined;
@@ -42,7 +42,7 @@ var Momo = new class {
 
   initialize() {
 
-    var canvas = document.createElement("canvas");
+    let canvas = document.createElement("canvas");
 
     if (!!!(canvas && canvas.getContext("2d"))) {
 
@@ -51,15 +51,15 @@ var Momo = new class {
     }
 
     // Listen for mouse events.
-    document.addEventListener("wheel", this.manageMouse);
-    document.addEventListener("mouseup", this.manageMouse);
-    document.addEventListener("mousedown", this.manageMouse);
-    document.addEventListener("mousemove", this.manageMouse);
-    document.addEventListener("contextmenu", this.manageMouse);
+    document.addEventListener("wheel", this.manageMouseEvents.bind(this));
+    document.addEventListener("mouseup", this.manageMouseEvents.bind(this));
+    document.addEventListener("mousedown", this.manageMouseEvents.bind(this));
+    document.addEventListener("mousemove", this.manageMouseEvents.bind(this));
+    document.addEventListener("contextmenu", this.manageMouseEvents.bind(this));
 
     // Listen for keyboard events.
-    document.addEventListener("keyup", this.manageKeyboard);
-    document.addEventListener("keydown", this.manageKeyboard);
+    document.addEventListener("keyup", this.manageKeyboardEvents.bind(this));
+    document.addEventListener("keydown", this.manageKeyboardEvents.bind(this));
 
     // Set the time in which the library was initialized.
     this.time_initialized = (new Date()).getTime();
@@ -73,35 +73,35 @@ var Momo = new class {
     return (((new Date()).getTime() - this.time_initialized) / 1000).toFixed(6);
   }
 
-  manageMouse(event) {
+  manageMouseEvents(event) {
 
     switch (event.type) {
 
       case "wheel":
 
-        window.Momo.mouse_z = event.deltaY;
+        this.mouse_z = event.deltaY;
       break;
 
       case "mouseup":
 
-        window.Momo.mouse_button[event.button] = false;
-        window.Momo.mouse_button_released[event.button] = true;
+        this.mouse_button[event.button] = false;
+        this.mouse_button_released[event.button] = true;
       break;
 
       case "mousedown":
 
-        if (!window.Momo.mouse_button[event.button]) {
+        if (!this.mouse_button[event.button]) {
 
-          window.Momo.mouse_button_pressed[event.button] = true;
+          this.mouse_button_pressed[event.button] = true;
         }
 
-        window.Momo.mouse_button[event.button] = true;
+        this.mouse_button[event.button] = true;
       break;
 
       case "mousemove":
 
-        window.Momo.mouse_x = event.offsetX;
-        window.Momo.mouse_y = event.offsetY;
+        this.mouse_x = event.offsetX;
+        this.mouse_y = event.offsetY;
       break;
     }
 
@@ -143,49 +143,44 @@ var Momo = new class {
     this.canvas.canvas.style.cursor = "auto";
   }
 
-  manageKeyboard(event) {
+  manageKeyboardEvents(event) {
 
     switch (event.type) {
 
       case "keyup":
 
-        window.Momo.key[event.which] = false;
-        window.Momo.released[event.which] = true;
+        this.key[event.which] = false;
+        this.key_released[event.which] = true;
       break;
 
       case "keydown":
 
-        if (!window.Momo.key[event.which]) {
+        if (!this.key[event.which]) {
 
-          window.Momo.pressed[event.which] = true;
+          this.key_pressed[event.which] = true;
         }
 
-        window.Momo.key[event.which] = true;
+        this.key[event.which] = true;
       break;
     }
 
     event.preventDefault();
   }
 
-  keyDown(key_code) {
+  isKeyPressed(key_code) {
 
-    return this.key[key_code];
+    return this.key_pressed[key_code];
   }
 
-  keyPressed(key_code) {
+  isKeyReleased(key_code) {
 
-    return this.pressed[key_code];
-  }
-
-  keyReleased(key_code) {
-
-    return this.released[key_code];
+    return this.key_released[key_code];
   }
 
   setCanvas(canvas_id, canvas_width, canvas_height) {
 
     // Get the specified canvas element.
-    var canvas = document.getElementById(canvas_id);
+    let canvas = document.getElementById(canvas_id);
 
     if (!!!canvas) {
 
@@ -216,7 +211,7 @@ var Momo = new class {
 
   clearCanvas(color) {
 
-    this.setStrokeFillStyle(color);
+    this.setStrokeAndFillStyle(color);
 
     this.canvas.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.canvas.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -244,14 +239,14 @@ var Momo = new class {
 
   resourcesLoaded(procedure) {
 
-    var number_of_resources = 0;
-    var number_of_resources_loaded = 0;
+    let number_of_resources = 0;
+    let number_of_resources_loaded = 0;
 
-    for (var i = 0; i < window.Momo.resources.length; ++i) {
+    for (let i = 0; i < this.resources.length; ++i) {
 
       ++number_of_resources;
 
-      if (window.Momo.resources[i].ready) {
+      if (this.resources[i].ready) {
 
         ++number_of_resources_loaded;
       }
@@ -260,7 +255,7 @@ var Momo = new class {
     if (number_of_resources_loaded < number_of_resources) {
 
       // Some resources have not completed downloading yet.
-      window.setTimeout(window.Momo.resourcesLoaded, 100, procedure);
+      window.setTimeout(this.resourcesLoaded.bind(this), 100, procedure);
     }
     else {
 
@@ -278,23 +273,23 @@ var Momo = new class {
         procedure();
 
         // Reset mouse wheel position.
-        window.Momo.mouse_z = 0;
+        this.mouse_z = 0;
 
-        for (var i = 0; i < window.Momo.mouse_button.length; ++i) {
+        for (let i = 0; i < this.mouse_button.length; ++i) {
 
           // Clear mouse button arrays so each mouse button event fires only once.
-          window.Momo.mouse_button[i] = false;
-          window.Momo.mouse_button_pressed[i] = false;
-          window.Momo.mouse_button_released[i] = false;
+          this.mouse_button[i] = false;
+          this.mouse_button_pressed[i] = false;
+          this.mouse_button_released[i] = false;
         }
 
-        for (var i = 0; i < window.Momo.key.length; ++i) {
+        for (let i = 0; i < this.key.length; ++i) {
 
           // Clear key arrays so each keyboard event fires only once.
-          window.Momo.pressed[i] = false;
-          window.Momo.released[i] = false;
+          this.key_pressed[i] = false;
+          this.key_released[i] = false;
         }
-      },
+      }.bind(this),
 
       1000 / this.frame_rate
     );
@@ -305,12 +300,12 @@ var Momo = new class {
     return {r: r, g: g, b: b, a: a};
   }
 
-  setStrokeFillStyle(color, line_width = 0) {
+  setStrokeAndFillStyle(color, line_width = 0) {
 
-    var r = color.r;
-    var g = color.g;
-    var b = color.b;
-    var a = color.a / 255.0;
+    let r = color.r;
+    let g = color.g;
+    let b = color.b;
+    let a = color.a / 255.0;
 
     this.canvas.context.lineWidth = line_width;
     this.canvas.context.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
@@ -325,9 +320,9 @@ var Momo = new class {
 
   loadFont(file_name) {
 
-    var element = document.createElement("style");
+    let element = document.createElement("style");
 
-    var font_name = "font_" + Math.random().toString(16).slice(2);
+    let font_name = "font_" + Math.random().toString(16).slice(2);
 
     element.textContent = `
 
@@ -354,7 +349,7 @@ var Momo = new class {
 
   drawText(font, color, size, x, y, alignment, text) {
 
-    this.setStrokeFillStyle(color, 0);
+    this.setStrokeAndFillStyle(color, 0);
 
     switch (alignment) {
 
@@ -381,7 +376,7 @@ var Momo = new class {
 
   drawOutlinedText(font, color, size, line_width, x, y, alignment, text) {
 
-    this.setStrokeFillStyle(color, line_width);
+    this.setStrokeAndFillStyle(color, line_width);
 
     switch (alignment) {
 
@@ -410,14 +405,14 @@ var Momo = new class {
 
   loadImage(file_name) {
 
-    var element = new Image();
+    let element = new Image();
 
     element.src = file_name;
 
-    var sub_canvas = document.createElement("canvas");
-    var sub_canvas_context = sub_canvas.getContext("2d");
+    let sub_canvas = document.createElement("canvas");
+    let sub_canvas_context = sub_canvas.getContext("2d");
 
-    var image = {
+    let image = {
 
       canvas: sub_canvas,
 
@@ -498,19 +493,9 @@ var Momo = new class {
     this.canvas.context.restore();
   }
 
-  drawArc(center_x, center_y, radius, start_angle, end_angle, color, line_width) {
-
-    this.setStrokeFillStyle(color, line_width);
-
-    this.canvas.context.beginPath();
-    this.canvas.context.arc(center_x, center_y, radius, start_angle, end_angle);
-    this.canvas.context.closePath();
-    this.canvas.context.stroke();
-  }
-
   drawLine(begin_x, begin_y, end_x, end_y, color, line_width) {
 
-    this.setStrokeFillStyle(color, line_width);
+    this.setStrokeAndFillStyle(color, line_width);
 
     this.canvas.context.beginPath();
     this.canvas.context.moveTo(begin_x, begin_y);
@@ -519,9 +504,29 @@ var Momo = new class {
     this.canvas.context.stroke();
   }
 
+  drawArc(center_x, center_y, radius, start_angle, end_angle, color, line_width) {
+
+    this.setStrokeAndFillStyle(color, line_width);
+
+    this.canvas.context.beginPath();
+    this.canvas.context.arc(center_x, center_y, radius, start_angle, end_angle);
+    this.canvas.context.closePath();
+    this.canvas.context.stroke();
+  }
+
+  drawFilledArc(center_x, center_y, radius, start_angle, end_angle, color) {
+
+    this.setStrokeAndFillStyle(color);
+
+    this.canvas.context.beginPath();
+    this.canvas.context.arc(center_x, center_y, radius, start_angle, end_angle);
+    this.canvas.context.closePath();
+    this.canvas.context.fill();
+  }
+
   drawCircle(center_x, center_y, radius, color, line_width) {
 
-    this.setStrokeFillStyle(color, line_width);
+    this.setStrokeAndFillStyle(color, line_width);
 
     this.canvas.context.beginPath();
     this.canvas.context.arc(center_x, center_y, radius, 0, 2 * Math.PI);
@@ -531,7 +536,7 @@ var Momo = new class {
 
   drawFilledCircle(center_x, center_y, radius, color) {
 
-    this.setStrokeFillStyle(color);
+    this.setStrokeAndFillStyle(color);
 
     this.canvas.context.beginPath();
     this.canvas.context.arc(center_x, center_y, radius, 0, 2 * Math.PI);
@@ -541,26 +546,16 @@ var Momo = new class {
 
   drawRectangle(begin_x, begin_y, end_x, end_y, color, line_width) {
 
-    this.setStrokeFillStyle(color, line_width);
+    this.setStrokeAndFillStyle(color, line_width);
 
     this.canvas.context.beginPath();
     this.canvas.context.strokeRect(begin_x, begin_y, end_x - begin_x, end_y - begin_y);
     this.canvas.context.closePath();
   }
 
-  drawFilledArc(center_x, center_y, radius, start_angle, end_angle, color) {
-
-    this.setStrokeFillStyle(color);
-
-    this.canvas.context.beginPath();
-    this.canvas.context.arc(center_x, center_y, radius, start_angle, end_angle);
-    this.canvas.context.closePath();
-    this.canvas.context.fill();
-  }
-
   drawFilledRectangle(begin_x, begin_y, end_x, end_y, color) {
 
-    this.setStrokeFillStyle(color);
+    this.setStrokeAndFillStyle(color);
 
     this.canvas.context.beginPath();
     this.canvas.context.fillRect(begin_x, begin_y, end_x - begin_x, end_y - begin_y);
@@ -569,7 +564,7 @@ var Momo = new class {
 
   drawTriangle(x1, y1, x2, y2, x3, y3, color, line_width) {
 
-    this.setStrokeFillStyle(color, line_width);
+    this.setStrokeAndFillStyle(color, line_width);
 
     this.canvas.context.beginPath();
     this.canvas.context.moveTo(x1, y1);
@@ -581,7 +576,7 @@ var Momo = new class {
 
   drawFilledTriangle(x1, y1, x2, y2, x3, y3, color) {
 
-    this.setStrokeFillStyle(color);
+    this.setStrokeAndFillStyle(color);
 
     this.canvas.context.beginPath();
     this.canvas.context.moveTo(x1, y1);

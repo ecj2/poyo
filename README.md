@@ -70,9 +70,8 @@ Momo.drawRotatedImage(image, center_x, center_y, draw_x, draw_y, angle)
 These methods are used to detect keyboard events.
 
 ```js
-Momo.keyDown(key_code)
-Momo.keyPressed(key_code)
-Momo.keyReleased(key_code)
+Momo.isKeyPressed(key_code)
+Momo.isKeyReleased(key_code)
 ```
 
 ## Primitives
@@ -96,6 +95,7 @@ Momo.drawFilledRectangle(begin_x, begin_y, end_x, end_y, color)
 These methods sport miscellaneous purposes.
 
 ```js
+Momo.getTime()
 Momo.initialize()
 Momo.setFrameRate(frame_rate)
 Momo.getFrameRate()
