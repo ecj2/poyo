@@ -5,7 +5,7 @@ var Momo = new class {
     // Everything is drawn on this canvas.
     this.canvas = undefined;
 
-    // Resources are be queued here.
+    // Resources are queued here.
     this.resources = [];
 
     // This dictates how often the canvas should be updated.
@@ -347,60 +347,38 @@ var Momo = new class {
     }
   }
 
-  drawText(font, color, size, x, y, alignment, text) {
+  drawText(font, color, size, x, y, alignment, text, outline_color = undefined, outline_width = 0) {
+
+    switch (alignment) {
+
+      case this.TEXT_ALIGN_LEFT:
+
+        this.canvas.context.textAlign = "left";
+      break;
+
+      case this.TEXT_ALIGN_CENTER:
+
+        this.canvas.context.textAlign = "center";
+      break;
+
+      case this.TEXT_ALIGN_RIGHT:
+
+        this.canvas.context.textAlign = "right";
+      break;
+    }
+
+    this.canvas.context.font = size + "px " + font.name;
 
     this.setStrokeAndFillStyle(color, 0);
 
-    switch (alignment) {
-
-      case this.TEXT_ALIGN_LEFT:
-
-        this.canvas.context.textAlign = "left";
-      break;
-
-      case this.TEXT_ALIGN_CENTER:
-
-        this.canvas.context.textAlign = "center";
-      break;
-
-      case this.TEXT_ALIGN_RIGHT:
-
-        this.canvas.context.textAlign = "right";
-      break;
-    }
-
-    this.canvas.context.font = size + "px " + font.name;
-
     this.canvas.context.fillText(text, x, y + size);
-  }
 
-  drawOutlinedText(font, color, size, line_width, x, y, alignment, text) {
+    if (outline_color != undefined && outline_width > 0) {
 
-    this.setStrokeAndFillStyle(color, line_width);
+      this.setStrokeAndFillStyle(outline_color, outline_width);
 
-    switch (alignment) {
-
-      case this.TEXT_ALIGN_LEFT:
-
-        this.canvas.context.textAlign = "left";
-      break;
-
-      case this.TEXT_ALIGN_CENTER:
-
-        this.canvas.context.textAlign = "center";
-      break;
-
-      case this.TEXT_ALIGN_RIGHT:
-
-        this.canvas.context.textAlign = "right";
-      break;
+      this.canvas.context.strokeText(text, x, y + size);
     }
-
-    this.canvas.context.textBaseline = "top";
-
-    this.canvas.context.font = size + "px " + font.name;
-
-    this.canvas.context.strokeText(text, x, y);
   }
 
   loadImage(file_name) {

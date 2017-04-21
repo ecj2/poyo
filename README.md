@@ -11,8 +11,7 @@ Momo.TEXT_ALIGN_LEFT
 Momo.TEXT_ALIGN_RIGHT
 Momo.TEXT_ALIGN_CENTER
 Momo.loadFont(file_name)
-Momo.drawText(font, color, size, x, y, alignment, text)
-Momo.drawOutlinedText(font, color, size, line_width, x, y, alignment, text)
+Momo.drawText(font, color, size, x, y, alignment, text, outline_color, outline_width)
 ```
 
 ## Mouse
