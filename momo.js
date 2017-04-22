@@ -347,7 +347,7 @@ var Momo = new class {
     }
   }
 
-  drawText(font, color, size, x, y, alignment, text, outline_color = undefined, outline_width = 0) {
+  drawText(font, fill_color, size, x, y, alignment, text, outline_color = undefined, outline_width = 0) {
 
     switch (alignment) {
 
@@ -369,7 +369,7 @@ var Momo = new class {
 
     this.canvas.context.font = size + "px " + font.name;
 
-    this.setStrokeAndFillStyle(color, 0);
+    this.setStrokeAndFillStyle(fill_color);
 
     this.canvas.context.fillText(text, x, y + size);
 
@@ -471,9 +471,9 @@ var Momo = new class {
     this.canvas.context.restore();
   }
 
-  drawLine(begin_x, begin_y, end_x, end_y, color, line_width) {
+  drawLine(begin_x, begin_y, end_x, end_y, outline_color, outline_width) {
 
-    this.setStrokeAndFillStyle(color, line_width);
+    this.setStrokeAndFillStyle(outline_color, outline_width);
 
     this.canvas.context.beginPath();
     this.canvas.context.moveTo(begin_x, begin_y);
@@ -482,79 +482,60 @@ var Momo = new class {
     this.canvas.context.stroke();
   }
 
-  drawArc(center_x, center_y, radius, start_angle, end_angle, color, line_width) {
+  drawArc(center_x, center_y, radius, start_angle, end_angle, fill_color, outline_color = undefined, outline_width = 0) {
 
-    this.setStrokeAndFillStyle(color, line_width);
-
-    this.canvas.context.beginPath();
-    this.canvas.context.arc(center_x, center_y, radius, start_angle, end_angle);
-    this.canvas.context.closePath();
-    this.canvas.context.stroke();
-  }
-
-  drawFilledArc(center_x, center_y, radius, start_angle, end_angle, color) {
-
-    this.setStrokeAndFillStyle(color);
+    this.setStrokeAndFillStyle(fill_color);
 
     this.canvas.context.beginPath();
     this.canvas.context.arc(center_x, center_y, radius, start_angle, end_angle);
     this.canvas.context.closePath();
     this.canvas.context.fill();
+
+    if (outline_color != undefined && outline_width > 0) {
+
+      this.setStrokeAndFillStyle(outline_color, outline_width);
+
+      this.canvas.context.stroke();
+    }
   }
 
-  drawCircle(center_x, center_y, radius, color, line_width) {
+  drawCircle(center_x, center_y, radius, fill_color, outline_color = undefined, outline_width = 0) {
 
-    this.setStrokeAndFillStyle(color, line_width);
-
-    this.canvas.context.beginPath();
-    this.canvas.context.arc(center_x, center_y, radius, 0, 2 * Math.PI);
-    this.canvas.context.closePath();
-    this.canvas.context.stroke();
-  }
-
-  drawFilledCircle(center_x, center_y, radius, color) {
-
-    this.setStrokeAndFillStyle(color);
+    this.setStrokeAndFillStyle(fill_color);
 
     this.canvas.context.beginPath();
     this.canvas.context.arc(center_x, center_y, radius, 0, 2 * Math.PI);
     this.canvas.context.closePath();
     this.canvas.context.fill();
+
+    if (outline_color != undefined && outline_width > 0) {
+
+      this.setStrokeAndFillStyle(outline_color, outline_width);
+
+      this.canvas.context.stroke();
+    }
   }
 
-  drawRectangle(begin_x, begin_y, end_x, end_y, color, line_width) {
+  drawRectangle(begin_x, begin_y, end_x, end_y, fill_color, outline_color = undefined, outline_width = 0) {
 
-    this.setStrokeAndFillStyle(color, line_width);
+    this.setStrokeAndFillStyle(fill_color);
 
     this.canvas.context.beginPath();
-    this.canvas.context.strokeRect(begin_x, begin_y, end_x - begin_x, end_y - begin_y);
+    this.canvas.context.rect(begin_x, begin_y, end_x - begin_x, end_y - begin_y);
     this.canvas.context.closePath();
+    this.canvas.context.fill();
+
+    if (outline_color != undefined && outline_width > 0) {
+
+      this.setStrokeAndFillStyle(outline_color, outline_width);
+
+      this.canvas.context.stroke();
+    }
   }
 
-  drawFilledRectangle(begin_x, begin_y, end_x, end_y, color) {
+  drawTriangle(x1, y1, x2, y2, x3, y3, fill_color, outline_color = undefined, outline_width = 0) {
 
-    this.setStrokeAndFillStyle(color);
-
-    this.canvas.context.beginPath();
-    this.canvas.context.fillRect(begin_x, begin_y, end_x - begin_x, end_y - begin_y);
-    this.canvas.context.closePath();
-  }
-
-  drawTriangle(x1, y1, x2, y2, x3, y3, color, line_width) {
-
-    this.setStrokeAndFillStyle(color, line_width);
-
-    this.canvas.context.beginPath();
-    this.canvas.context.moveTo(x1, y1);
-    this.canvas.context.lineTo(x2, y2);
-    this.canvas.context.lineTo(x3, y3);
-    this.canvas.context.closePath();
-    this.canvas.context.stroke();
-  }
-
-  drawFilledTriangle(x1, y1, x2, y2, x3, y3, color) {
-
-    this.setStrokeAndFillStyle(color);
+    this.setStrokeAndFillStyle(fill_color);
 
     this.canvas.context.beginPath();
     this.canvas.context.moveTo(x1, y1);
@@ -562,5 +543,12 @@ var Momo = new class {
     this.canvas.context.lineTo(x3, y3);
     this.canvas.context.closePath();
     this.canvas.context.fill();
+
+    if (outline_color != undefined && outline_width > 0) {
+
+      this.setStrokeAndFillStyle(outline_color, outline_width);
+
+      this.canvas.context.stroke();
+    }
   }
 }

@@ -78,15 +78,11 @@ Momo.isKeyReleased(key_code)
 These methods are used to draw various shapes.
 
 ```js
-Momo.drawArc(center_x, center_y, radius, start_angle, end_angle, color, line_width)
-Momo.drawLine(begin_x, begin_y, end_x, end_y, color, line_width)
-Momo.drawCircle(center_x, center_y, radius, color, line_width)
-Momo.drawTriangle(x1, y1, x2, y2, x3, y3, color, line_width)
-Momo.drawRectangle(begin_x, begin_y, end_x, end_y, color, line_width)
-Momo.drawFilledArc(center_x, center_y, radius, start_angle, end_angle, color)
-Momo.drawFilledCircle(center_x, center_y, radius, color)
-Momo.drawFilledTriangle(x1, y1, x2, y2, x3, y3, color)
-Momo.drawFilledRectangle(begin_x, begin_y, end_x, end_y, color)
+Momo.drawArc(center_x, center_y, radius, start_angle, end_angle, fill_color, outline_color, outline_width)
+Momo.drawLine(begin_x, begin_y, end_x, end_y, outline_color, outline_width)
+Momo.drawCircle(center_x, center_y, radius, fill_color, outline_color, outline_width)
+Momo.drawTriangle(x1, y1, x2, y2, x3, y3, fill_color, outline_color, outline_width)
+Momo.drawRectangle(begin_x, begin_y, end_x, end_y, fill_color, outline_color, outline_width)
 ```
 
 ## Miscellaneous
