@@ -150,13 +150,6 @@ var Momo = new class {
       return false;
     }
 
-    // Listen for mouse events.
-    document.addEventListener("wheel", this.manageMouseEvents.bind(this));
-    document.addEventListener("mouseup", this.manageMouseEvents.bind(this));
-    document.addEventListener("mousedown", this.manageMouseEvents.bind(this));
-    document.addEventListener("mousemove", this.manageMouseEvents.bind(this));
-    document.addEventListener("contextmenu", this.manageMouseEvents.bind(this));
-
     // Listen for keyboard events.
     document.addEventListener("keyup", this.manageKeyboardEvents.bind(this));
     document.addEventListener("keydown", this.manageKeyboardEvents.bind(this));
@@ -287,6 +280,13 @@ var Momo = new class {
       // The specified canvas element does not exist.
       return false;
     }
+
+    // Listen for mouse events.
+    canvas.addEventListener("wheel", this.manageMouseEvents.bind(this));
+    canvas.addEventListener("mouseup", this.manageMouseEvents.bind(this));
+    canvas.addEventListener("mousedown", this.manageMouseEvents.bind(this));
+    canvas.addEventListener("mousemove", this.manageMouseEvents.bind(this));
+    canvas.addEventListener("contextmenu", this.manageMouseEvents.bind(this));
 
     // Set the dimensions of the canvas.
     canvas.width = canvas_width;
