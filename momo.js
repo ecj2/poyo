@@ -260,6 +260,16 @@ var Momo = new class {
     event.preventDefault();
   }
 
+  isKeyUp(key_code) {
+
+    return !this.key[key_code];
+  }
+
+  isKeyDown(key_code) {
+
+    return this.key[key_code];
+  }
+
   isKeyPressed(key_code) {
 
     return this.key_pressed[key_code];
