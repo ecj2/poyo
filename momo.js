@@ -201,6 +201,16 @@ var Momo = new class {
     event.preventDefault();
   }
 
+  isMouseButtonUp(button) {
+
+    return !this.mouse_button[button];
+  }
+
+  isMouseButtonDown(button) {
+
+    return this.mouse_button[button];
+  }
+
   isMouseButtonPressed(button) {
 
     return this.mouse_button_pressed[button];
@@ -388,7 +398,6 @@ var Momo = new class {
         for (let i = 0; i < this.mouse_button.length; ++i) {
 
           // Clear mouse button arrays so each mouse button event fires only once.
-          this.mouse_button[i] = false;
           this.mouse_button_pressed[i] = false;
           this.mouse_button_released[i] = false;
         }
