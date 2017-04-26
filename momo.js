@@ -366,6 +366,17 @@ var Momo = new class {
 
       ++number_of_resources;
 
+      if (this.resources[i].type == "sound") {
+
+        // Check if sound files have completed loading.
+
+        if (this.resources[i].element.readyState >= this.resources[i].element.HAVE_FUTURE_DATA) {
+
+          // The sound files have loaded enough to begin being played.
+          this.resources[i].ready = true;
+        }
+      }
+
       if (this.resources[i].ready) {
 
         ++number_of_resources_loaded;
@@ -498,6 +509,72 @@ var Momo = new class {
 
       this.canvas.context.strokeText(text, x, y + size);
     }
+  }
+
+  loadSound(file_name) {
+
+    let element = document.createElement("audio");
+
+    if (!!!element.canPlayType("audio/" + file_name.split(".").pop())) {
+
+      // The browser can not play this audio format.
+      return false;
+    }
+
+    element.src = file_name;
+
+    let sound = {
+
+      element: element,
+
+      file: file_name,
+
+      volume: 1.0,
+
+      ready: false,
+
+      type: "sound"
+    };
+
+    this.resources.push(sound);
+
+    element.onloadeddata = function() {
+
+      if (!sound.ready) {
+
+        sound.ready = true;
+      }
+    };
+
+    return sound;
+  }
+
+  playSound(sound, volume, speed, loop) {
+
+    sound.volume = volume;
+
+    sound.element.loop = loop;
+    sound.element.volume = volume;
+    sound.element.playbackRate = speed;
+
+    sound.element.play();
+  }
+
+  stopSound(sound) {
+
+    sound.element.pause();
+
+    sound.element.currentTime = 0;
+  }
+
+  pauseSound(sound) {
+
+    sound.element.pause();
+  }
+
+  resumeSound(sound) {
+
+    sound.element.play();
   }
 
   loadImage(file_name) {
