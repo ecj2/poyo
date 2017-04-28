@@ -155,7 +155,7 @@ var Momo = new class {
     document.addEventListener("keydown", this.manageKeyboardEvents.bind(this));
 
     // Set the time in which the library was initialized.
-    this.time_initialized = (new Date()).getTime();
+    this.time_initialized = Date.now();
 
     return true;
   }
@@ -163,7 +163,7 @@ var Momo = new class {
   getTime() {
 
     // Get the number of seconds elapsed since the library was initialized.
-    return (((new Date()).getTime() - this.time_initialized) / 1000).toFixed(6);
+    return ((Date.now() - this.time_initialized) / 1000).toFixed(6);
   }
 
   manageMouseEvents(event) {
