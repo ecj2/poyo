@@ -678,6 +678,11 @@ var Momo = new class {
     this.canvas.context.stroke();
   }
 
+  drawPixel(x, y, color) {
+
+    this.drawRectangle(x, y, x + 1, y + 1, color);
+  }
+
   drawArc(center_x, center_y, radius, start_angle, end_angle, fill_color, outline_color = undefined, outline_width = 0) {
 
     this.setStrokeAndFillStyle(fill_color);
