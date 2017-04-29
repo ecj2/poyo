@@ -667,6 +667,54 @@ var Momo = new class {
     this.canvas.context.restore();
   }
 
+  drawPolygon(points, fill_color, outline_color = undefined, outline_width = 0, join = false) {
+
+    this.setStrokeAndFillStyle(fill_color);
+
+    let x = [];
+    let y = [];
+
+    for (let i = 0; i < points.length; ++i) {
+
+      if (i % 2) {
+
+        y.push(points[i]);
+      }
+      else {
+
+        x.push(points[i]);
+      }
+    }
+
+    this.canvas.context.beginPath();
+
+    for (let i = 0; i < x.length; ++i) {
+
+      if (i == 0) {
+
+        this.canvas.context.moveTo(x[i], y[i]);
+
+        continue;
+      }
+
+      this.canvas.context.lineTo(x[i], y[i]);
+    }
+
+    if (join) {
+
+      this.canvas.context.closePath();
+    }
+
+    this.canvas.context.fill();
+
+    if (outline_color != undefined && outline_width > 0) {
+
+      this.setStrokeAndFillStyle(outline_color, outline_width);
+
+      this.canvas.context.stroke();
+    }
+  }
+
   drawLine(begin_x, begin_y, end_x, end_y, outline_color, outline_width) {
 
     this.setStrokeAndFillStyle(outline_color, outline_width);
