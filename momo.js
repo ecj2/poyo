@@ -792,6 +792,26 @@ var Momo = new class {
     this.drawFilledArc(center_x, center_y, radius, 0, 2 * Math.PI, color);
   }
 
+  drawEllipse(center_x, center_y, radius_x, radius_y, color, thickness) {
+
+    this.setStrokeAndFillStyle(color, thickness);
+
+    this.canvas.context.beginPath();
+    this.canvas.context.ellipse(center_x, center_y, radius_x, radius_y, 0, 0, 2 * Math.PI);
+    this.canvas.context.closePath();
+    this.canvas.context.stroke();
+  }
+
+  drawFilledEllipse(center_x, center_y, radius_x, radius_y, color) {
+
+    this.setStrokeAndFillStyle(color);
+
+    this.canvas.context.beginPath();
+    this.canvas.context.ellipse(center_x, center_y, radius_x, radius_y, 0, 0, 2 * Math.PI);
+    this.canvas.context.closePath();
+    this.canvas.context.fill();
+  }
+
   drawRectangle(begin_x, begin_y, end_x, end_y, color, thickness) {
 
     this.setStrokeAndFillStyle(color, thickness);
