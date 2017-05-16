@@ -465,7 +465,7 @@ var Momo = new class {
 
     document.head.appendChild(element);
 
-    return {
+    let font = {
 
       element: element,
 
@@ -474,7 +474,12 @@ var Momo = new class {
       name: font_name,
 
       type: "font"
-    }
+    };
+
+    // Pre-load font.
+    this.drawText(font, this.makeColor(0, 0, 0, 0), 0, 0, 0, this.TEXT_ALIGN_LEFT, "");
+
+    return font;
   }
 
   drawText(font, fill_color, size, x, y, alignment, text, outline_color = undefined, outline_width = 0) {
