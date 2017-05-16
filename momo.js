@@ -246,6 +246,11 @@ var Momo = new class {
     this.canvas.canvas.style.cursor = "auto";
   }
 
+  isMouseCursorHidden() {
+
+    return (this.canvas.canvas.style.cursor == "none" ? true : false);
+  }
+
   manageKeyboardEvents(event) {
 
     switch (event.type) {
