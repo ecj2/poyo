@@ -447,7 +447,7 @@ var Momo = new class {
     this.canvas.context.strokeStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
   }
 
-  loadFunction(function_name) {
+  setEntryPoint(function_name) {
 
     // Call the specified function when the window loads.
     window.addEventListener("load", function_name);
