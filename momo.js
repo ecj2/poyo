@@ -561,6 +561,11 @@ var Momo = new class {
 
   playSound(sound, volume, speed, loop) {
 
+    if (!loop) {
+
+      this.stopSound(sound);
+    }
+
     sound.volume = volume;
 
     sound.element.loop = loop;
