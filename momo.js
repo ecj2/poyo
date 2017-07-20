@@ -592,6 +592,16 @@ var Momo = new class {
     sound.element.play();
   }
 
+  isSoundPaused(sound) {
+
+    return sound.element.paused;
+  }
+
+  isSoundPlaying(sound) {
+
+    return !sound.element.paused;
+  }
+
   loadImage(file_name) {
 
     let element = new Image();
