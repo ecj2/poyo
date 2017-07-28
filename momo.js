@@ -45,10 +45,6 @@ var Momo = new class {
       return false;
     }
 
-    // Listen for keyboard events.
-    document.addEventListener("keyup", this.manageKeyboardEvents.bind(this));
-    document.addEventListener("keydown", this.manageKeyboardEvents.bind(this));
-
     // Set the time in which the library was initialized.
     this.time_initialized = Date.now();
 
@@ -177,136 +173,238 @@ var Momo = new class {
     this.key_pressed = [];
     this.key_released = [];
 
-    // These define keyboard key codes.
-    this.KEY_BACKSPACE = 8;
-    this.KEY_TAB = 9;
-    this.KEY_ENTER = 13;
-    this.KEY_SHIFT = 16;
-    this.KEY_CTRL = 17;
-    this.KEY_ALT = 18;
-    this.KEY_PAUSEBREAK = 19;
-    this.KEY_CAPSLOCK = 20;
-    this.KEY_ESCAPE = 27;
-    this.KEY_SPACE = 32;
-    this.KEY_PAGEUP = 33;
-    this.KEY_PAGEDOWN = 34;
-    this.KEY_END = 35;
-    this.KEY_HOME = 36;
-    this.KEY_LEFT = 37;
-    this.KEY_UP = 38;
-    this.KEY_RIGHT = 39;
-    this.KEY_DOWN = 40;
-    this.KEY_INSERT = 45;
-    this.KEY_DELETE = 46;
-    this.KEY_0 = 48;
-    this.KEY_1 = 49;
-    this.KEY_2 = 50;
-    this.KEY_3 = 51;
-    this.KEY_4 = 52;
-    this.KEY_5 = 53;
-    this.KEY_6 = 54;
-    this.KEY_7 = 55;
-    this.KEY_8 = 56;
-    this.KEY_9 = 57;
-    this.KEY_A = 65;
-    this.KEY_B = 66;
-    this.KEY_C = 67;
-    this.KEY_D = 68;
-    this.KEY_E = 69;
-    this.KEY_F = 70;
-    this.KEY_G = 71;
-    this.KEY_H = 72;
-    this.KEY_I = 73;
-    this.KEY_J = 74;
-    this.KEY_K = 75;
-    this.KEY_L = 76;
-    this.KEY_M = 77;
-    this.KEY_N = 78;
-    this.KEY_O = 79;
-    this.KEY_P = 80;
-    this.KEY_Q = 81;
-    this.KEY_R = 82;
-    this.KEY_S = 83;
-    this.KEY_T = 84;
-    this.KEY_U = 85;
-    this.KEY_V = 86;
-    this.KEY_W = 87;
-    this.KEY_X = 88;
-    this.KEY_Y = 89;
-    this.KEY_Z = 90;
-    this.KEY_LMETA = 91;
-    this.KEY_RMETA = 92;
-    this.KEY_SELECT = 93;
-    this.KEY_PAD_0 = 96;
-    this.KEY_PAD_1 = 97;
-    this.KEY_PAD_2 = 98;
-    this.KEY_PAD_3 = 99;
-    this.KEY_PAD_4 = 100;
-    this.KEY_PAD_5 = 101;
-    this.KEY_PAD_6 = 102;
-    this.KEY_PAD_7 = 103;
-    this.KEY_PAD_8 = 104;
-    this.KEY_PAD_9 = 105;
-    this.KEY_MULTIPLY = 106;
-    this.KEY_ADD = 107;
-    this.KEY_SUBTRACT = 109;
-    this.KEY_DIVIDE = 111;
-    this.KEY_F1 = 112;
-    this.KEY_F2 = 113;
-    this.KEY_F3 = 114;
-    this.KEY_F4 = 115;
-    this.KEY_F5 = 116;
-    this.KEY_F6 = 117;
-    this.KEY_F7 = 118;
-    this.KEY_F8 = 119;
-    this.KEY_F9 = 120;
-    this.KEY_F10 = 121;
-    this.KEY_F11 = 122;
-    this.KEY_F12 = 123;
-    this.KEY_NUMLOCK = 144;
-    this.KEY_SCROLLLOCK = 145;
-    this.KEY_SEMICOLON = 186;
-    this.KEY_EQUALS = 187;
-    this.KEY_COMMA = 188;
-    this.KEY_DASH = 189;
-    this.KEY_PERIOD = 190;
-    this.KEY_FORWARDSLASH = 191;
-    this.KEY_TILDE = 192;
-    this.KEY_OPENBRACE = 219;
-    this.KEY_BACKSLASH = 220;
-    this.KEY_CLOSEBRACE = 221;
-    this.KEY_QUOTE = 222;
+    // Define key codes.
+    this.key_codes = {
+
+      "backspace": 8,
+
+      "tab": 9,
+
+      "enter": 13,
+
+      "shift": 16,
+
+      "ctrl": 17,
+
+      "alt": 18,
+
+      "pausebreak": 19,
+
+      "capslock": 20,
+
+      "escape": 27,
+
+      "space": 32,
+
+      "pageup": 33,
+
+      "pagedown": 34,
+
+      "end": 35,
+
+      "home": 36,
+
+      "left": 37,
+
+      "up": 38,
+
+      "right": 39,
+
+      "down": 40,
+
+      "insert": 45,
+
+      "delete": 46,
+
+      "0": 48,
+
+      "1": 49,
+
+      "2": 50,
+
+      "3": 51,
+
+      "4": 52,
+
+      "5": 53,
+
+      "6": 54,
+
+      "7": 55,
+
+      "8": 56,
+
+      "9": 57,
+
+      "a": 65,
+
+      "b": 66,
+
+      "c": 67,
+
+      "d": 68,
+
+      "e": 69,
+
+      "f": 70,
+
+      "g": 71,
+
+      "h": 72,
+
+      "i": 73,
+
+      "j": 74,
+
+      "k": 75,
+
+      "l": 76,
+
+      "m": 77,
+
+      "n": 78,
+
+      "o": 79,
+
+      "p": 80,
+
+      "q": 81,
+
+      "r": 82,
+
+      "s": 83,
+
+      "t": 84,
+
+      "u": 85,
+
+      "v": 86,
+
+      "w": 87,
+
+      "x": 88,
+
+      "y": 89,
+
+      "z": 90,
+
+      "lmeta": 91,
+
+      "rmeta": 92,
+
+      "select": 93,
+
+      "pad_0": 96,
+
+      "pad_1": 97,
+
+      "pad_2": 98,
+
+      "pad_3": 99,
+
+      "pad_4": 100,
+
+      "pad_5": 101,
+
+      "pad_6": 102,
+
+      "pad_7": 103,
+
+      "pad_8": 104,
+
+      "pad_9": 105,
+
+      "multiply": 106,
+
+      "add": 107,
+
+      "subtract": 109,
+
+      "divide": 111,
+
+      "f1": 112,
+
+      "f2": 113,
+
+      "f3": 114,
+
+      "f4": 115,
+
+      "f5": 116,
+
+      "f6": 117,
+
+      "f7": 118,
+
+      "f8": 119,
+
+      "f9": 120,
+
+      "f10": 121,
+
+      "f11": 122,
+
+      "f12": 123,
+
+      "numlock": 144,
+
+      "scrolllock": 145,
+
+      "semicolon": 186,
+
+      "equals": 187,
+
+      "comma": 188,
+
+      "dash": 189,
+
+      "period": 190,
+
+      "forwardslash": 191,
+
+      "tilde": 192,
+
+      "openbrace": 219,
+
+      "backslash": 220,
+
+      "closebrace": 221,
+
+      "quote": 222
+    };
+
+    this.keyboard_method = this.manageKeyboardEvents.bind(this);
 
     // Listen for keyboard events.
-    document.addEventListener("keyup", this.manageKeyboardEvents.bind(this));
-    document.addEventListener("keydown", this.manageKeyboardEvents.bind(this));
+    document.addEventListener("keyup", this.keyboard_method);
+    document.addEventListener("keydown", this.keyboard_method);
   }
 
   uninstallKeyboard() {
 
     // Stop listening for keyboard events.
-    document.removeEventListener("keyup", this.manageKeyboardEvents.bind(this));
-    document.removeEventListener("keydown", this.manageKeyboardEvents.bind(this));
+    document.removeEventListener("keyup", this.keyboard_method);
+    document.removeEventListener("keydown", this.keyboard_method);
   }
 
   isKeyUp(key_code) {
 
-    return !this.key[key_code];
+    return !this.key[this.key_codes["" + key_code]];
   }
 
   isKeyDown(key_code) {
 
-    return this.key[key_code];
+    return this.key[this.key_codes["" + key_code]];
   }
 
   isKeyPressed(key_code) {
 
-    return this.key_pressed[key_code];
+    return this.key_pressed[this.key_codes["" + key_code]];
   }
 
   isKeyReleased(key_code) {
 
-    return this.key_released[key_code];
+    return this.key_released[this.key_codes["" + key_code]];
   }
 
   setCanvas(canvas_id, canvas_width, canvas_height) {
