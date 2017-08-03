@@ -1,4 +1,4 @@
-var Momo = new class {
+let Momo = new class {
 
   constructor() {
 
@@ -10,6 +10,16 @@ var Momo = new class {
 
     // This dictates how often the canvas should be updated.
     this.frame_rate = undefined;
+
+    // These store which keys are pressed and released.
+    this.key = [];
+    this.key_pressed = [];
+    this.key_released = [];
+
+    // Define key codes.
+    this.key_codes = {};
+
+    this.keyboard_method = undefined;
 
     // These dictate how text should be aligned when drawn.
     this.TEXT_ALIGN_LEFT = 0;
@@ -139,7 +149,7 @@ var Momo = new class {
 
   isMouseCursorHidden() {
 
-    return (this.canvas.canvas.style.cursor == "none" ? true : false);
+    return (this.canvas.canvas.style.cursor === "none" ? true : false);
   }
 
   manageKeyboardEvents(event) {
@@ -167,11 +177,6 @@ var Momo = new class {
   }
 
   installKeyboard() {
-
-    // These store which keys are pressed and released.
-    this.key = [];
-    this.key_pressed = [];
-    this.key_released = [];
 
     // Define key codes.
     this.key_codes = {
@@ -479,11 +484,13 @@ var Momo = new class {
     let number_of_resources = 0;
     let number_of_resources_loaded = 0;
 
-    for (let i = 0; i < this.resources.length; ++i) {
+    let i = 0;
+
+    for (i; i < this.resources.length; ++i) {
 
       ++number_of_resources;
 
-      if (this.resources[i].type == "sound") {
+      if (this.resources[i].type === "sound") {
 
         // Check if sound files have completed loading.
 
@@ -523,14 +530,18 @@ var Momo = new class {
         // Reset mouse wheel position.
         this.mouse_z = 0;
 
-        for (let i = 0; i < this.mouse_button.length; ++i) {
+        let i = 0;
+
+        for (i; i < this.mouse_button.length; ++i) {
 
           // Clear mouse button arrays so each mouse button event fires only once.
           this.mouse_button_pressed[i] = false;
           this.mouse_button_released[i] = false;
         }
 
-        for (let i = 0; i < this.key.length; ++i) {
+        i = 0;
+
+        for (i; i < this.key.length; ++i) {
 
           // Clear key arrays so each keyboard event fires only once.
           this.key_pressed[i] = false;
@@ -593,7 +604,7 @@ var Momo = new class {
       type: "font"
     };
 
-    // Pre-load font.
+    // Pre-load the font.
     this.drawText(font, this.makeColor(0, 0, 0, 0), 0, 0, 0, this.TEXT_ALIGN_LEFT, "");
 
     return font;
@@ -673,7 +684,7 @@ var Momo = new class {
 
   playSound(sound, volume, speed, loop) {
 
-    if (!loop & this.isSoundPlaying(sound)) {
+    if (!loop && this.isSoundPlaying(sound)) {
 
       sound.element.load();
     }
@@ -751,7 +762,7 @@ var Momo = new class {
       image.height = element.height;
 
       image.ready = true;
-    }
+    };
 
     return image;
   }
@@ -811,7 +822,9 @@ var Momo = new class {
     let x = [];
     let y = [];
 
-    for (let i = 0; i < points.length; ++i) {
+    let i = 0;
+
+    for (i; i < points.length; ++i) {
 
       if (i % 2) {
 
@@ -825,9 +838,11 @@ var Momo = new class {
 
     this.canvas.context.beginPath();
 
-    for (let i = 0; i < x.length; ++i) {
+    i = 0;
 
-      if (i == 0) {
+    for (i; i < x.length; ++i) {
+
+      if (i === 0) {
 
         this.canvas.context.moveTo(x[i], y[i]);
 
@@ -852,7 +867,9 @@ var Momo = new class {
     let x = [];
     let y = [];
 
-    for (let i = 0; i < points.length; ++i) {
+    let i = 0;
+
+    for (i; i < points.length; ++i) {
 
       if (i % 2) {
 
@@ -866,9 +883,11 @@ var Momo = new class {
 
     this.canvas.context.beginPath();
 
-    for (let i = 0; i < x.length; ++i) {
+    i = 0;
 
-      if (i == 0) {
+    for (i; i < x.length; ++i) {
+
+      if (i === 0) {
 
         this.canvas.context.moveTo(x[i], y[i]);
 
@@ -992,4 +1011,4 @@ var Momo = new class {
     this.canvas.context.closePath();
     this.canvas.context.fill();
   }
-}
+};
