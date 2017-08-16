@@ -21,11 +21,6 @@ let Momo = new class {
 
     this.keyboard_method = undefined;
 
-    // These dictate how text should be aligned when drawn.
-    this.TEXT_ALIGN_LEFT = 0;
-    this.TEXT_ALIGN_RIGHT = 1;
-    this.TEXT_ALIGN_CENTER = 2;
-
     this.mouse_method = undefined;
 
     // These store information pertaining to mouse axes.
@@ -626,30 +621,14 @@ let Momo = new class {
     };
 
     // Pre-load the font.
-    this.drawText(font, this.makeColor(0, 0, 0, 0), 0, 0, 0, this.TEXT_ALIGN_LEFT, "");
+    this.drawText(font, this.makeColor(0, 0, 0, 0), 0, 0, 0, "left", "");
 
     return font;
   }
 
   drawText(font, fill_color, size, x, y, alignment, text, outline_color = undefined, outline_width = 0) {
 
-    switch (alignment) {
-
-      case this.TEXT_ALIGN_LEFT:
-
-        this.canvas.context.textAlign = "left";
-      break;
-
-      case this.TEXT_ALIGN_CENTER:
-
-        this.canvas.context.textAlign = "center";
-      break;
-
-      case this.TEXT_ALIGN_RIGHT:
-
-        this.canvas.context.textAlign = "right";
-      break;
-    }
+    this.canvas.context.textAlign = alignment;
 
     this.canvas.context.font = size + "px " + font.name;
 
