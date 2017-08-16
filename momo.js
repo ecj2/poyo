@@ -26,6 +26,8 @@ let Momo = new class {
     this.TEXT_ALIGN_RIGHT = 1;
     this.TEXT_ALIGN_CENTER = 2;
 
+    this.mouse_method = undefined;
+
     // These store information pertaining to mouse axes.
     this.mouse_x = 0;
     this.mouse_y = 0;
@@ -36,10 +38,7 @@ let Momo = new class {
     this.mouse_button_pressed = [];
     this.mouse_button_released = [];
 
-    // These define mouse buttons.
-    this.MOUSE_BUTTON_LEFT = 0;
-    this.MOUSE_BUTTON_RIGHT = 2;
-    this.MOUSE_BUTTON_MIDDLE = 1;
+    this.mouse_buttons = {};
 
     // The time in which the library was initialized is stored here.
     this.time_initialized = undefined;
@@ -102,24 +101,56 @@ let Momo = new class {
     event.preventDefault();
   }
 
+  installMouse() {
+
+    // Define mouse buttons.
+    this.mouse_buttons = {
+
+      "left": 0,
+
+      "middle": 1,
+
+      "right": 2
+    };
+
+    this.mouse_method = this.manageMouseEvents.bind(this);
+
+    // Listen for mouse events.
+    this.canvas.canvas.addEventListener("wheel", this.mouse_method);
+    this.canvas.canvas.addEventListener("mouseup", this.mouse_method);
+    this.canvas.canvas.addEventListener("mousedown", this.mouse_method);
+    this.canvas.canvas.addEventListener("mousemove", this.mouse_method);
+    this.canvas.canvas.addEventListener("contextmenu", this.mouse_method);
+  }
+
+  uninstallMouse() {
+
+    // Stop listening for mouse events.
+    this.canvas.canvas.removeEventListener("wheel", this.mouse_method);
+    this.canvas.canvas.removeEventListener("mouseup", this.mouse_method);
+    this.canvas.canvas.removeEventListener("mousedown", this.mouse_method);
+    this.canvas.canvas.removeEventListener("mousemove", this.mouse_method);
+    this.canvas.canvas.removeEventListener("contextmenu", this.mouse_method);
+  }
+
   isMouseButtonUp(button) {
 
-    return !this.mouse_button[button];
+    return !this.mouse_button[this.mouse_buttons[button]];
   }
 
   isMouseButtonDown(button) {
 
-    return this.mouse_button[button];
+    return this.mouse_button[this.mouse_buttons[button]];
   }
 
   isMouseButtonPressed(button) {
 
-    return this.mouse_button_pressed[button];
+    return this.mouse_button_pressed[this.mouse_buttons[button]];
   }
 
   isMouseButtonReleased(button) {
 
-    return this.mouse_button_released[button];
+    return this.mouse_button_released[this.mouse_buttons[button]];
   }
 
   getMouseX() {
@@ -423,13 +454,6 @@ let Momo = new class {
       return false;
     }
 
-    // Listen for mouse events.
-    canvas.addEventListener("wheel", this.manageMouseEvents.bind(this));
-    canvas.addEventListener("mouseup", this.manageMouseEvents.bind(this));
-    canvas.addEventListener("mousedown", this.manageMouseEvents.bind(this));
-    canvas.addEventListener("mousemove", this.manageMouseEvents.bind(this));
-    canvas.addEventListener("contextmenu", this.manageMouseEvents.bind(this));
-
     // Set the dimensions of the canvas.
     canvas.width = canvas_width;
     canvas.height = canvas_height;
@@ -526,9 +550,6 @@ let Momo = new class {
       function() {
 
         procedure();
-
-        // Reset mouse wheel position.
-        this.mouse_z = 0;
 
         let i = 0;
 
