@@ -470,6 +470,16 @@ let Momo = new class {
     return true;
   }
 
+  getCanvas() {
+
+    return this.canvas.canvas;
+  }
+
+  getCanvasContext() {
+
+    return this.canvas.context;
+  }
+
   clearCanvas(color) {
 
     this.setStrokeAndFillStyle(color);
