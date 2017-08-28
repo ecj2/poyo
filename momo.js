@@ -519,13 +519,13 @@ let Momo = new class {
 
       ++number_of_resources;
 
-      if (this.resources[i].type === "sound") {
+      if (this.resources[i].type === "sample") {
 
-        // Check if sound files have completed loading.
+        // Check if samples have finished loading.
 
         if (this.resources[i].element.readyState >= this.resources[i].element.HAVE_FUTURE_DATA) {
 
-          // The sound files have loaded enough to begin being played.
+          // The samples have loaded enough to begin being played.
           this.resources[i].ready = true;
         }
       }
@@ -654,7 +654,7 @@ let Momo = new class {
     }
   }
 
-  loadSound(file_name) {
+  loadSample(file_name) {
 
     let element = document.createElement("audio");
 
@@ -666,7 +666,7 @@ let Momo = new class {
 
     element.src = file_name;
 
-    let sound = {
+    let sample = {
 
       element: element,
 
@@ -676,66 +676,66 @@ let Momo = new class {
 
       ready: false,
 
-      type: "sound"
+      type: "sample"
     };
 
-    this.resources.push(sound);
+    this.resources.push(sample);
 
     element.onloadeddata = function() {
 
-      if (!sound.ready) {
+      if (!sample.ready) {
 
-        sound.ready = true;
+        sample.ready = true;
       }
     };
 
-    return sound;
+    return sample;
   }
 
-  playSound(sound, volume, speed, loop) {
+  playSample(sample, volume, speed, loop) {
 
-    if (!loop && this.isSoundPlaying(sound)) {
+    if (!loop && this.isSamplePlaying(sample)) {
 
-      sound.element.load();
+      sample.element.load();
     }
 
-    sound.volume = volume;
+    sample.volume = volume;
 
-    sound.element.loop = loop;
-    sound.element.volume = volume;
-    sound.element.playbackRate = speed;
+    sample.element.loop = loop;
+    sample.element.volume = volume;
+    sample.element.playbackRate = speed;
 
-    sound.element.play();
+    sample.element.play();
   }
 
-  stopSound(sound) {
+  stopSample(sample) {
 
-    sound.element.pause();
+    sample.element.pause();
 
-    sound.element.currentTime = 0;
+    sample.element.currentTime = 0;
   }
 
-  pauseSound(sound) {
+  pauseSample(sample) {
 
-    sound.element.pause();
+    sample.element.pause();
   }
 
-  resumeSound(sound) {
+  resumeSample(sample) {
 
-    sound.element.play();
+    sample.element.play();
   }
 
-  isSoundPaused(sound) {
+  isSamplePaused(sample) {
 
-    return sound.element.paused;
+    return sample.element.paused;
   }
 
-  isSoundPlaying(sound) {
+  isSamplePlaying(sample) {
 
-    return !sound.element.paused;
+    return !sample.element.paused;
   }
 
-  loadImage(file_name) {
+  loadBitmap(file_name) {
 
     let element = new Image();
 
@@ -744,7 +744,7 @@ let Momo = new class {
     let sub_canvas = document.createElement("canvas");
     let sub_canvas_context = sub_canvas.getContext("2d");
 
-    let image = {
+    let bitmap = {
 
       canvas: sub_canvas,
 
@@ -756,71 +756,71 @@ let Momo = new class {
 
       ready: false,
 
-      type: "image"
+      type: "bitmap"
     };
 
-    this.resources.push(image);
+    this.resources.push(bitmap);
 
     element.onload = function() {
 
-      image.canvas.width = element.width;
-      image.canvas.height = element.height;
+      bitmap.canvas.width = element.width;
+      bitmap.canvas.height = element.height;
 
-      image.context.drawImage(element, 0, 0);
+      bitmap.context.drawImage(element, 0, 0);
 
-      image.width = element.width;
-      image.height = element.height;
+      bitmap.width = element.width;
+      bitmap.height = element.height;
 
-      image.ready = true;
+      bitmap.ready = true;
     };
 
-    return image;
+    return bitmap;
   }
 
-  getImageWidth(image) {
+  getBitmapWidth(bitmap) {
 
-    return image.width;
+    return bitmap.width;
   }
 
-  getImageHeight(image) {
+  getBitmapHeight(bitmap) {
 
-    return image.height;
+    return bitmap.height;
   }
 
-  drawImage(image, x, y) {
+  drawBitmap(bitmap, x, y) {
 
-    this.canvas.context.drawImage(image.canvas, x, y);
+    this.canvas.context.drawImage(bitmap.canvas, x, y);
   }
 
-  drawScaledImage(image, x, y, scale_width, scale_height) {
+  drawScaledBitmap(bitmap, x, y, scale_width, scale_height) {
 
     this.canvas.context.save();
 
     this.canvas.context.translate(x, y);
     this.canvas.context.scale(scale_width, scale_height);
 
-    this.drawImage(image, 0, 0);
+    this.drawBitmap(bitmap, 0, 0);
 
     this.canvas.context.restore();
   }
 
-  drawPartialImage(image, start_x, start_y, width, height, x, y) {
+  drawClippedBitmap(bitmap, start_x, start_y, width, height, x, y) {
 
     this.canvas.context.save();
 
-    this.canvas.context.drawImage(image.canvas, start_x, start_y, width, height, x, y, width, height);
+    this.canvas.context.drawImage(bitmap.canvas, start_x, start_y, width, height, x, y, width, height);
 
     this.canvas.context.restore();
   }
 
-  drawRotatedImage(image, center_x, center_y, draw_x, draw_y, angle) {
+  drawRotatedBitmap(bitmap, center_x, center_y, draw_x, draw_y, angle) {
 
     this.canvas.context.save();
 
     this.canvas.context.translate(draw_x + center_x, draw_y + center_y);
     this.canvas.context.rotate(angle);
 
-    this.drawImage(image, -center_x, -center_y);
+    this.drawBitmap(bitmap, -center_x, -center_y);
 
     this.canvas.context.restore();
   }
