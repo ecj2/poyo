@@ -1008,25 +1008,11 @@ let Momo = new class {
 
   drawTriangle(x_1, y_1, x_2, y_2, x_3, y_3, color, thickness) {
 
-    this.setStrokeAndFillStyle(color, thickness);
-
-    this.canvas.context.beginPath();
-    this.canvas.context.moveTo(x_1, y_1);
-    this.canvas.context.lineTo(x_2, y_2);
-    this.canvas.context.lineTo(x_3, y_3);
-    this.canvas.context.closePath();
-    this.canvas.context.stroke();
+    this.drawPolygon([x_1, y_1, x_2, y_2, x_3, y_3], color, thickness, true);
   }
 
   drawFilledTriangle(x_1, y_1, x_2, y_2, x_3, y_3, color) {
 
-    this.setStrokeAndFillStyle(color);
-
-    this.canvas.context.beginPath();
-    this.canvas.context.moveTo(x_1, y_1);
-    this.canvas.context.lineTo(x_2, y_2);
-    this.canvas.context.lineTo(x_3, y_3);
-    this.canvas.context.closePath();
-    this.canvas.context.fill();
+    this.drawFilledPolygon([x_1, y_1, x_2, y_2, x_3, y_3], color);
   }
 };
