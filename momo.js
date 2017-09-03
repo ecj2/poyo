@@ -792,14 +792,22 @@ let Momo = new class {
     this.canvas.context.drawImage(bitmap.canvas, x, y);
   }
 
-  drawScaledBitmap(bitmap, x, y, scale_width, scale_height) {
+  drawScaledBitmap(bitmap, origin_x, origin_y, scale_width, scale_height, x, y) {
+
+    // Keep origin_x within the bitmap's horizontal boundaries.
+    origin_x = (origin_x < 0 ? 0 : origin_x);
+    origin_x = (origin_x > bitmap.width ? bitmap.width : origin_x);
+
+    // Keep origin_y within the bitmap's vertical boundaries.
+    origin_y = (origin_y < 0 ? 0 : origin_y);
+    origin_y = (origin_y > bitmap.height ? bitmap.height : origin_y);
 
     this.canvas.context.save();
 
     this.canvas.context.translate(x, y);
     this.canvas.context.scale(scale_width, scale_height);
 
-    this.drawBitmap(bitmap, 0, 0);
+    this.drawBitmap(bitmap, -origin_x, -origin_y);
 
     this.canvas.context.restore();
   }
