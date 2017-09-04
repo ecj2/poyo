@@ -833,7 +833,7 @@ let Momo = new class {
     this.canvas.context.restore();
   }
 
-  drawPolygon(points, color, thickness, join) {
+  drawPolyline(points, color, thickness) {
 
     this.setStrokeAndFillStyle(color, thickness);
 
@@ -870,10 +870,47 @@ let Momo = new class {
       this.canvas.context.lineTo(x[i], y[i]);
     }
 
-    if (join) {
+    this.canvas.context.stroke();
+  }
 
-      this.canvas.context.closePath();
+  drawPolygon(points, color, thickness) {
+
+    this.setStrokeAndFillStyle(color, thickness);
+
+    let x = [];
+    let y = [];
+
+    let i = 0;
+
+    for (i; i < points.length; ++i) {
+
+      if (i % 2) {
+
+        y.push(points[i]);
+      }
+      else {
+
+        x.push(points[i]);
+      }
     }
+
+    this.canvas.context.beginPath();
+
+    i = 0;
+
+    for (i; i < x.length; ++i) {
+
+      if (i === 0) {
+
+        this.canvas.context.moveTo(x[i], y[i]);
+
+        continue;
+      }
+
+      this.canvas.context.lineTo(x[i], y[i]);
+    }
+
+    this.canvas.context.closePath();
 
     this.canvas.context.stroke();
   }
@@ -1008,7 +1045,7 @@ let Momo = new class {
 
   drawTriangle(x_1, y_1, x_2, y_2, x_3, y_3, color, thickness) {
 
-    this.drawPolygon([x_1, y_1, x_2, y_2, x_3, y_3], color, thickness, true);
+    this.drawPolygon([x_1, y_1, x_2, y_2, x_3, y_3], color, thickness);
   }
 
   drawFilledTriangle(x_1, y_1, x_2, y_2, x_3, y_3, color) {
