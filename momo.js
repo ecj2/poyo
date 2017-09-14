@@ -438,10 +438,10 @@ let Momo = new class {
     return this.key_released[this.key_codes["" + key_code]];
   }
 
-  setCanvas(canvas_id, canvas_width, canvas_height) {
+  setCanvas(canvas_identifier, canvas_width, canvas_height) {
 
     // Get the specified canvas element.
-    let canvas = document.getElementById(canvas_id);
+    let canvas = document.getElementById(canvas_identifier);
 
     if (!!!canvas) {
 
