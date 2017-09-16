@@ -812,6 +812,40 @@ let Momo = new class {
     this.canvas.context.restore();
   }
 
+  drawTintedBitmap(bitmap, tint, x, y) {
+
+    // Create an off-screen canvas.
+    let canvas = document.createElement("canvas");
+
+    // Match the off-screen canvas' dimensions to that of the bitmap's.
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+
+    let context = canvas.getContext("2d");
+
+    // Draw the bitmap on the off-screen canvas.
+    context.drawImage(bitmap.canvas, 0, 0);
+
+    context.globalCompositeOperation = "multiply";
+
+    context.lineWidth = 0;
+    context.fillStyle = "rgba(" + tint.r + ", " + tint.g + ", " + tint.b + ", " + tint.a / 255 + ")";
+
+    // Cover the off-screen canvas with a rectangle acting as a tinted overlay.
+    context.beginPath();
+    context.rect(0, 0, bitmap.width, bitmap.height);
+    context.closePath();
+    context.fill();
+
+    context.globalCompositeOperation = "destination-atop";
+
+    // Compensate for transparent pixels in the bitmap.
+    context.drawImage(bitmap.canvas, 0, 0);
+
+    // Draw the off-screen canvas on the main canvas.
+    this.canvas.context.drawImage(canvas, x, y);
+  }
+
   drawClippedBitmap(bitmap, start_x, start_y, width, height, x, y) {
 
     this.canvas.context.save();
