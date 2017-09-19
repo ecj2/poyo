@@ -867,6 +867,34 @@ let Momo = new class {
     this.canvas.context.restore();
   }
 
+  createClippedBitmap(bitmap, start_x, start_y, width, height) {
+
+    let data = bitmap.context.getImageData(start_x, start_y, width, height);
+
+    let sub_canvas = document.createElement("canvas");
+    let sub_canvas_context = sub_canvas.getContext("2d");
+
+    sub_canvas.width = width;
+    sub_canvas.height = height;
+
+    sub_canvas_context.putImageData(data, 0, 0);
+
+    return {
+
+      canvas: sub_canvas,
+
+      context: sub_canvas_context,
+
+      width: width,
+
+      height: height,
+
+      ready: true,
+
+      type: "bitmap"
+    };
+  }
+
   drawPolyline(points, color, thickness) {
 
     this.setStrokeAndFillStyle(color, thickness);
