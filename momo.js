@@ -829,7 +829,7 @@ let Momo = new class {
     context.globalCompositeOperation = "multiply";
 
     context.lineWidth = 0;
-    context.fillStyle = "rgba(" + tint.r + ", " + tint.g + ", " + tint.b + ", " + tint.a / 255 + ")";
+    context.fillStyle = "rgba(" + tint.r + ", " + tint.g + ", " + tint.b + ", " + tint.a / 255.0 + ")";
 
     // Cover the off-screen canvas with a rectangle acting as a tinted overlay.
     context.beginPath();
