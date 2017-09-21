@@ -37,6 +37,9 @@ let Momo = new class {
 
     // The time in which the library was initialized is stored here.
     this.time_initialized = undefined;
+
+    // Sample instances are stored here.
+    this.sample_instances = [];
   }
 
   initialize() {
@@ -670,10 +673,6 @@ let Momo = new class {
 
       element: element,
 
-      file: file_name,
-
-      volume: 1.0,
-
       ready: false,
 
       type: "sample"
@@ -692,47 +691,86 @@ let Momo = new class {
     return sample;
   }
 
-  playSample(sample, volume, speed, loop) {
+  playSample(sample, volume, speed, loop, identifier) {
 
-    if (!loop && this.isSamplePlaying(sample)) {
+    if (this.sample_instances[identifier] === undefined) {
 
-      sample.element.load();
+      // Create a new instance of the sample.
+      this.sample_instances[identifier] = sample.element.cloneNode();
     }
 
-    sample.volume = volume;
+    this.sample_instances[identifier].loop = loop;
+    this.sample_instances[identifier].volume = volume;
+    this.sample_instances[identifier].playbackRate = speed;
 
-    sample.element.loop = loop;
-    sample.element.volume = volume;
-    sample.element.playbackRate = speed;
+    if (!this.isSamplePlaying(identifier)) {
 
-    sample.element.play();
+      this.sample_instances[identifier].play();
+    }
   }
 
-  stopSample(sample) {
+  stopSample(identifier) {
 
-    sample.element.pause();
+    if (this.sample_instances[identifier] !== undefined) {
 
-    sample.element.currentTime = 0;
+      if (this.isSamplePlaying(identifier)) {
+
+        this.pauseSample(identifier);
+
+        this.sample_instances[identifier].currentTime = 0;
+      }
+    }
   }
 
-  pauseSample(sample) {
+  pauseSample(identifier) {
 
-    sample.element.pause();
+    if (this.sample_instances[identifier] !== undefined) {
+
+      if (this.isSamplePlaying(identifier)) {
+
+        this.sample_instances[identifier].pause();
+      }
+    }
   }
 
-  resumeSample(sample) {
+  resumeSample(identifier) {
 
-    sample.element.play();
+    if (this.sample_instances[identifier] !== undefined) {
+
+      this.sample_instances[identifier].play();
+    }
   }
 
-  isSamplePaused(sample) {
+  isSamplePaused(identifier) {
 
-    return sample.element.paused;
+    if (this.sample_instances[identifier] === undefined) {
+
+      // There exists no sample instance matching the specified identifier.
+      return false;
+    }
+
+    return this.sample_instances[identifier].paused;
   }
 
-  isSamplePlaying(sample) {
+  isSamplePlaying(identifier) {
 
-    return !sample.element.paused;
+    if (this.sample_instances[identifier] === undefined) {
+
+      // There exists no sample instance matching the specified identifier.
+      return false;
+    }
+
+    if (this.isSamplePaused(identifier)) {
+
+      return false;
+    }
+
+    if (this.sample_instances[identifier].currentTime < this.sample_instances[identifier].duration) {
+
+      return true;
+    }
+
+    return false;
   }
 
   loadBitmap(file_name) {
