@@ -699,13 +699,21 @@ let Momo = new class {
       this.sample_instances[identifier] = sample.element.cloneNode();
     }
 
-    this.sample_instances[identifier].loop = loop;
-    this.sample_instances[identifier].volume = volume;
-    this.sample_instances[identifier].playbackRate = speed;
-
     if (!this.isSamplePlaying(identifier)) {
 
+      this.adjustSample(identifier, volume, speed, loop);
+
       this.sample_instances[identifier].play();
+    }
+  }
+
+  adjustSample(identifier, volume, speed, loop) {
+
+    if (this.sample_instances[identifier] !== undefined) {
+
+      this.sample_instances[identifier].loop = loop;
+      this.sample_instances[identifier].volume = volume;
+      this.sample_instances[identifier].playbackRate = speed;
     }
   }
 
