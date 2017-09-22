@@ -860,36 +860,9 @@ let Momo = new class {
 
   drawTintedBitmap(bitmap, tint, x, y) {
 
-    // Create an off-screen canvas.
-    let canvas = document.createElement("canvas");
+    let tinted_bitmap = this.createTintedBitmap(bitmap, tint);
 
-    // Match the off-screen canvas' dimensions to that of the bitmap's.
-    canvas.width = bitmap.width;
-    canvas.height = bitmap.height;
-
-    let context = canvas.getContext("2d");
-
-    // Draw the bitmap on the off-screen canvas.
-    context.drawImage(bitmap.canvas, 0, 0);
-
-    context.globalCompositeOperation = "multiply";
-
-    context.lineWidth = 0;
-    context.fillStyle = "rgba(" + tint.r + ", " + tint.g + ", " + tint.b + ", " + tint.a / 255.0 + ")";
-
-    // Cover the off-screen canvas with a rectangle acting as a tinted overlay.
-    context.beginPath();
-    context.rect(0, 0, bitmap.width, bitmap.height);
-    context.closePath();
-    context.fill();
-
-    context.globalCompositeOperation = "destination-atop";
-
-    // Compensate for transparent pixels in the bitmap.
-    context.drawImage(bitmap.canvas, 0, 0);
-
-    // Draw the off-screen canvas on the main canvas.
-    this.canvas.context.drawImage(canvas, x, y);
+    this.drawBitmap(tinted_bitmap, x, y);
   }
 
   drawClippedBitmap(bitmap, start_x, start_y, width, height, x, y) {
@@ -911,6 +884,52 @@ let Momo = new class {
     this.drawBitmap(bitmap, -center_x, -center_y);
 
     this.canvas.context.restore();
+  }
+
+  createTintedBitmap(bitmap, tint) {
+
+    // Create an off-screen canvas.
+    let canvas = document.createElement("canvas");
+
+    // Match the off-screen canvas' dimensions to that of the bitmap's.
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+
+    let context = canvas.getContext("2d");
+
+    // Draw the bitmap on the off-screen canvas.
+    context.drawImage(bitmap.canvas, 0, 0);
+
+    context.globalCompositeOperation = "multiply";
+
+    context.lineWidth = 0;
+    context.fillStyle = "rgba(" + tint.r + ", " + tint.g + ", " + tint.b + ", " + tint.a / 255.0 + ")";
+
+    // Cover the off-screen canvas with a rectangle acting as a tinted overlay.
+    context.beginPath();
+    context.rect(0, 0, canvas.width, canvas.height);
+    context.closePath();
+    context.fill();
+
+    context.globalCompositeOperation = "destination-atop";
+
+    // Compensate for transparent pixels in the bitmap.
+    context.drawImage(bitmap.canvas, 0, 0);
+
+    return {
+
+      canvas: canvas,
+
+      context: context,
+
+      width: bitmap.width,
+
+      height: bitmap.height,
+
+      ready: true,
+
+      type: "bitmap"
+    };
   }
 
   createClippedBitmap(bitmap, start_x, start_y, width, height) {
