@@ -19,7 +19,7 @@ let Momo = new class {
     this.key_pressed = [];
     this.key_released = [];
 
-    // Define key codes.
+    // These define key codes.
     this.key_codes = {};
 
     this.keyboard_method = undefined;
@@ -468,9 +468,7 @@ let Momo = new class {
 
       canvas: canvas,
 
-      context: canvas.getContext("2d"),
-
-      ready: true
+      context: canvas.getContext("2d")
     };
 
     // Set the main canvas as the default target canvas.
@@ -517,9 +515,7 @@ let Momo = new class {
 
       canvas: target_canvas,
 
-      context: target_canvas.getContext("2d"),
-
-      ready: true
+      context: target_canvas.getContext("2d")
     };
   }
 
@@ -555,14 +551,11 @@ let Momo = new class {
 
   resourcesLoaded(procedure) {
 
-    let number_of_resources = 0;
     let number_of_resources_loaded = 0;
 
     let i = 0;
 
     for (i; i < this.resources.length; ++i) {
-
-      ++number_of_resources;
 
       if (this.resources[i].type === "sample") {
 
@@ -581,14 +574,14 @@ let Momo = new class {
       }
     }
 
-    if (number_of_resources_loaded < number_of_resources) {
+    if (number_of_resources_loaded < this.resources.length) {
 
-      // Some resources have not completed downloading yet.
+      // Some resources have not finished loading yet.
       window.setTimeout(this.resourcesLoaded.bind(this), 100, procedure);
     }
     else {
 
-      // All of the resources have completed downloading.
+      // All of the resources have finished loading.
       procedure();
     }
   }
@@ -670,9 +663,7 @@ let Momo = new class {
 
       file: file_name,
 
-      name: font_name,
-
-      type: "font"
+      name: font_name
     };
 
     // Pre-load the font.
@@ -721,14 +712,6 @@ let Momo = new class {
     };
 
     this.resources.push(sample);
-
-    element.onloadeddata = function() {
-
-      if (!sample.ready) {
-
-        sample.ready = true;
-      }
-    };
 
     return sample;
   }
@@ -842,9 +825,7 @@ let Momo = new class {
 
       height: -1,
 
-      ready: false,
-
-      type: "bitmap"
+      ready: false
     };
 
     this.resources.push(bitmap);
@@ -975,11 +956,7 @@ let Momo = new class {
 
       width: bitmap.width,
 
-      height: bitmap.height,
-
-      ready: true,
-
-      type: "bitmap"
+      height: bitmap.height
     };
   }
 
@@ -1003,11 +980,7 @@ let Momo = new class {
 
       width: width,
 
-      height: height,
-
-      ready: true,
-
-      type: "bitmap"
+      height: height
     };
   }
 
@@ -1021,6 +994,8 @@ let Momo = new class {
     let i = 0;
 
     for (i; i < points.length; ++i) {
+
+      // Split the points into their respective axes.
 
       if (i % 2) {
 
@@ -1061,6 +1036,8 @@ let Momo = new class {
     let i = 0;
 
     for (i; i < points.length; ++i) {
+
+      // Split the points into their respective axes.
 
       if (i % 2) {
 
@@ -1103,6 +1080,8 @@ let Momo = new class {
     let i = 0;
 
     for (i; i < points.length; ++i) {
+
+      // Split the points into their respective axes.
 
       if (i % 2) {
 
