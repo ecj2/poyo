@@ -138,8 +138,17 @@ let Momo = new class {
 
     if (button === "any") {
 
-      // There is always at least one button that is up.
-      return true;
+      let i = 0;
+
+      for (i; i < 3; ++i) {
+
+        if (!this.mouse_button[i]) {
+
+          return true;
+        }
+      }
+
+      return false;
     }
 
     return !this.mouse_button[this.mouse_buttons[button]];
@@ -479,8 +488,23 @@ let Momo = new class {
 
     if (key_code === "any") {
 
-      // There is always at least one key that is up.
-      return true;
+      if (this.key.length === 0) {
+
+        // Assume that at least one key is up before any keyboard events are fired.
+        return true;
+      }
+
+      let i = 0;
+
+      for (i; i < this.key.length; ++i) {
+
+        if (!this.key[i]) {
+
+          return true;
+        }
+      }
+
+      return false;
     }
 
     return !this.key[this.key_codes["" + key_code]];
