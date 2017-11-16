@@ -136,20 +136,71 @@ let Momo = new class {
 
   isMouseButtonUp(button) {
 
+    if (button === "any") {
+
+      // There is always at least one button that is up.
+      return true;
+    }
+
     return !this.mouse_button[this.mouse_buttons[button]];
   }
 
   isMouseButtonDown(button) {
+
+    if (button === "any") {
+
+      let i = 0;
+
+      for (i; i < this.mouse_button.length; ++i) {
+
+        if (this.mouse_button[i]) {
+
+          return true;
+        }
+      }
+
+      return false;
+    }
 
     return this.mouse_button[this.mouse_buttons[button]];
   }
 
   isMouseButtonPressed(button) {
 
+    if (button === "any") {
+
+      let i = 0;
+
+      for (i; i < this.mouse_button_pressed.length; ++i) {
+
+        if (this.mouse_button_pressed[i]) {
+
+          return true;
+        }
+      }
+
+      return false;
+    }
+
     return this.mouse_button_pressed[this.mouse_buttons[button]];
   }
 
   isMouseButtonReleased(button) {
+
+    if (button === "any") {
+
+      let i = 0;
+
+      for (i; i < this.mouse_button_released.length; ++i) {
+
+        if (this.mouse_button_released[i]) {
+
+          return true;
+        }
+      }
+
+      return false;
+    }
 
     return this.mouse_button_released[this.mouse_buttons[button]];
   }
@@ -426,20 +477,71 @@ let Momo = new class {
 
   isKeyUp(key_code) {
 
+    if (key_code === "any") {
+
+      // There is always at least one key that is up.
+      return true;
+    }
+
     return !this.key[this.key_codes["" + key_code]];
   }
 
   isKeyDown(key_code) {
+
+    if (key_code === "any") {
+
+      let i = 0;
+
+      for (i; i < this.key.length; ++i) {
+
+        if (this.key[i]) {
+
+          return true;
+        }
+      }
+
+      return false;
+    }
 
     return this.key[this.key_codes["" + key_code]];
   }
 
   isKeyPressed(key_code) {
 
+    if (key_code === "any") {
+
+      let i = 0;
+
+      for (i; i < this.key_pressed.length; ++i) {
+
+        if (this.key_pressed[i]) {
+
+          return true;
+        }
+      }
+
+      return false;
+    }
+
     return this.key_pressed[this.key_codes["" + key_code]];
   }
 
   isKeyReleased(key_code) {
+
+    if (key_code === "any") {
+
+      let i = 0;
+
+      for (i; i < this.key_released.length; ++i) {
+
+        if (this.key_released[i]) {
+
+          return true;
+        }
+      }
+
+      return false;
+    }
 
     return this.key_released[this.key_codes["" + key_code]];
   }
