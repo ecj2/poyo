@@ -919,20 +919,39 @@ let Momo = new class {
     this.target_canvas.context.restore();
   }
 
-  createTintedBitmap(bitmap, tint) {
+  createBitmap(width, height) {
 
     // Create an off-screen canvas.
     let canvas = document.createElement("canvas");
 
-    // Match the off-screen canvas' dimensions to that of the bitmap's.
-    canvas.width = bitmap.width;
-    canvas.height = bitmap.height;
+    // Match the off-screen canvas' dimensions to that of the parameters'.
+    canvas.width = width;
+    canvas.height = height;
 
     let context = canvas.getContext("2d");
 
+    return {
+
+      canvas: canvas,
+
+      context: context,
+
+      width: width,
+
+      height: height
+    };
+  }
+
+  createTintedBitmap(bitmap, tint) {
+
+    // Create an off-screen canvas.
+    let canvas = this.createBitmap(bitmap.width, bitmap.height);
+
+    let context = canvas.context;
+
     let old_target = this.getTargetCanvas();
 
-    this.setTargetCanvas(canvas);
+    this.setTargetCanvas(canvas.canvas);
 
     // Draw the bitmap on the off-screen canvas.
     this.drawBitmap(bitmap, 0, 0);
@@ -948,16 +967,7 @@ let Momo = new class {
 
     this.setTargetCanvas(old_target);
 
-    return {
-
-      canvas: canvas,
-
-      context: context,
-
-      width: bitmap.width,
-
-      height: bitmap.height
-    };
+    return canvas;
   }
 
   createClippedBitmap(bitmap, start_x, start_y, width, height) {
