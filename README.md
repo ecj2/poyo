@@ -1,6 +1,6 @@
 # Momo
 
-Momo is a minimal 2D game library written in JavaScript.
+Momo is a JavaScript game-making library designed to facilitate the development of 2D games for the Web. It handles common tasks such as accepting user inputs, drawing images, playing sounds, and more.
 
 ## Authors
 
