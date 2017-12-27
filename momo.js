@@ -617,7 +617,6 @@ let Momo = new class {
 
     this.setStrokeAndFillStyle(color);
 
-    this.target_canvas.context.clearRect(0, 0, this.target_canvas.width, this.target_canvas.height);
     this.target_canvas.context.fillRect(0, 0, this.target_canvas.width, this.target_canvas.height);
   }
 
