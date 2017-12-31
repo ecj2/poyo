@@ -43,6 +43,9 @@ let Momo = new class {
 
     // Sample instances are stored here.
     this.sample_instances = [];
+
+    this.game_loop_procedure = undefined;
+    this.game_loop_interval_identifier = undefined;
   }
 
   initialize() {
@@ -667,6 +670,13 @@ let Momo = new class {
   setFrameRate(frame_rate) {
 
     this.frame_rate = frame_rate;
+
+    if (this.game_loop_interval_identifier !== undefined) {
+
+      window.clearInterval(this.game_loop_interval_identifier);
+
+      this.createLoop(this.game_loop_procedure);
+    }
   }
 
   getFrameRate() {
@@ -713,7 +723,9 @@ let Momo = new class {
 
   createLoop(procedure) {
 
-    window.setInterval(
+    this.game_loop_procedure = procedure;
+
+    this.game_loop_interval_identifier = window.setInterval(
 
       function() {
 
