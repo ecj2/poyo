@@ -717,24 +717,27 @@ let Momo = new class {
 
       function() {
 
-        procedure();
+        if (!document.hidden) {
 
-        let i = 0;
+          procedure();
 
-        for (i; i < this.mouse_button.length; ++i) {
+          let i = 0;
 
-          // Clear mouse button arrays so each mouse button event fires only once.
-          this.mouse_button_pressed[i] = false;
-          this.mouse_button_released[i] = false;
-        }
+          for (i; i < this.mouse_button.length; ++i) {
 
-        i = 0;
+            // Clear mouse button arrays so each mouse button event fires only once.
+            this.mouse_button_pressed[i] = false;
+            this.mouse_button_released[i] = false;
+          }
 
-        for (i; i < this.key.length; ++i) {
+          i = 0;
 
-          // Clear key arrays so each keyboard event fires only once.
-          this.key_pressed[i] = false;
-          this.key_released[i] = false;
+          for (i; i < this.key.length; ++i) {
+
+            // Clear key arrays so each keyboard event fires only once.
+            this.key_pressed[i] = false;
+            this.key_released[i] = false;
+          }
         }
       }.bind(this),
 
