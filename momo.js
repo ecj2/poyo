@@ -623,6 +623,24 @@ let Momo = new class {
     this.target_canvas.context.fillRect(0, 0, this.target_canvas.width, this.target_canvas.height);
   }
 
+  resizeCanvas(width, height) {
+
+    this.setCanvasWidth(width);
+    this.setCanvasHeight(height);
+  }
+
+  setCanvasWidth(width) {
+
+    this.main_canvas.width = width;
+    this.main_canvas.canvas.width = width;
+  }
+
+  setCanvasHeight(height) {
+
+    this.main_canvas.height = height;
+    this.main_canvas.canvas.height = height;
+  }
+
   getCanvasWidth() {
 
     return this.main_canvas.width;
