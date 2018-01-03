@@ -102,7 +102,10 @@ let Momo = new class {
       break;
     }
 
-    event.preventDefault();
+    if (event.type === "wheel" || event.which === 3) {
+
+      event.preventDefault();
+    }
   }
 
   installMouse() {
