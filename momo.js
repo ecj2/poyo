@@ -97,8 +97,16 @@ let Momo = new class {
 
       case "mousemove":
 
-        this.mouse_x = event.offsetX;
-        this.mouse_y = event.offsetY;
+        if (this.isMouseLocked()) {
+
+          this.mouse_x += event.movementX;
+          this.mouse_y += event.movementY;
+        }
+        else {
+
+          this.mouse_x = event.offsetX;
+          this.mouse_y = event.offsetY;
+        }
       break;
     }
 
@@ -248,6 +256,26 @@ let Momo = new class {
   isMouseCursorHidden() {
 
     return (this.main_canvas.canvas.style.cursor === "none" ? true : false);
+  }
+
+  lockMouse() {
+
+    let canvas = this.getCanvas();
+
+    canvas.requestPointerLock();
+  }
+
+  unlockMouse() {
+
+    if (this.isMouseLocked()) {
+
+      document.exitPointerLock();
+    }
+  }
+
+  isMouseLocked() {
+
+    return (document.pointerLockElement === this.getCanvas());
   }
 
   manageKeyboardEvents(event) {
