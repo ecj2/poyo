@@ -636,12 +636,24 @@ let Momo = new class {
 
     this.main_canvas.width = width;
     this.main_canvas.canvas.width = width;
+
+    if (this.getTargetCanvas() === this.getCanvas()) {
+
+      this.target_canvas.width = width;
+      this.target_canvas.canvas.width = width;
+    }
   }
 
   setCanvasHeight(height) {
 
     this.main_canvas.height = height;
     this.main_canvas.canvas.height = height;
+
+    if (this.getTargetCanvas() === this.getCanvas()) {
+
+      this.target_canvas.height = height;
+      this.target_canvas.canvas.height = height;
+    }
   }
 
   getCanvasWidth() {
