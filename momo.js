@@ -1054,18 +1054,12 @@ let Momo = new class {
 
   drawTintedBitmap(bitmap, tint, x, y) {
 
-    let tinted_bitmap = this.createTintedBitmap(bitmap, tint);
-
-    this.drawBitmap(tinted_bitmap, x, y);
+    this.drawBitmap(this.createTintedBitmap(bitmap, tint), x, y);
   }
 
   drawClippedBitmap(bitmap, start_x, start_y, width, height, x, y) {
 
-    this.target_canvas.context.save();
-
     this.target_canvas.context.drawImage(bitmap.canvas, start_x, start_y, width, height, x, y, width, height);
-
-    this.target_canvas.context.restore();
   }
 
   drawRotatedBitmap(bitmap, center_x, center_y, draw_x, draw_y, angle) {
