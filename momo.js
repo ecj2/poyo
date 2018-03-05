@@ -841,7 +841,7 @@ let Momo = new class {
     window.addEventListener("load", function_name);
   }
 
-  loadFont(file_name) {
+  loadFont(file_name, style = "normal") {
 
     let element = document.createElement("style");
 
@@ -864,7 +864,9 @@ let Momo = new class {
 
       file: file_name,
 
-      name: font_name
+      name: font_name,
+
+      style: style
     };
 
     // Pre-load the font.
@@ -877,7 +879,7 @@ let Momo = new class {
 
     this.target_canvas.context.textAlign = alignment;
 
-    this.target_canvas.context.font = size + "px " + font.name;
+    this.target_canvas.context.font = font.style + " " + size + "px " + font.name;
 
     this.setStrokeAndFillStyle(fill_color);
 
