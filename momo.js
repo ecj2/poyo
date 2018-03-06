@@ -38,6 +38,8 @@ let Momo = new class {
 
     this.mouse_buttons = {};
 
+    this.mouse_focused = false;
+
     // The time in which the library was initialized is stored here.
     this.time_initialized = undefined;
 
@@ -83,6 +85,16 @@ let Momo = new class {
 
         this.mouse_button[event.button] = false;
         this.mouse_button_released[event.button] = true;
+      break;
+
+      case "mouseout":
+
+        this.mouse_focused = false;
+      break;
+
+      case "mouseover":
+
+        this.mouse_focused = true;
       break;
 
       case "mousedown":
@@ -133,6 +145,8 @@ let Momo = new class {
     // Listen for mouse events.
     this.main_canvas.canvas.addEventListener("wheel", this.mouse_method);
     this.main_canvas.canvas.addEventListener("mouseup", this.mouse_method);
+    this.main_canvas.canvas.addEventListener("mouseout", this.mouse_method);
+    this.main_canvas.canvas.addEventListener("mouseover", this.mouse_method);
     this.main_canvas.canvas.addEventListener("mousedown", this.mouse_method);
     this.main_canvas.canvas.addEventListener("mousemove", this.mouse_method);
     this.main_canvas.canvas.addEventListener("contextmenu", this.mouse_method);
@@ -146,6 +160,11 @@ let Momo = new class {
     this.main_canvas.canvas.removeEventListener("mousedown", this.mouse_method);
     this.main_canvas.canvas.removeEventListener("mousemove", this.mouse_method);
     this.main_canvas.canvas.removeEventListener("contextmenu", this.mouse_method);
+  }
+
+  isMouseFocused() {
+
+    return this.mouse_focused;
   }
 
   isMouseButtonUp(button) {
