@@ -174,7 +174,9 @@ let Momo = new class {
 
       let i = 0;
 
-      for (i; i < this.mouse_button.length; ++i) {
+      let length = this.mouse_button.length;
+
+      for (i; i < length; ++i) {
 
         if (this.mouse_button[i]) {
 
@@ -194,7 +196,9 @@ let Momo = new class {
 
       let i = 0;
 
-      for (i; i < this.mouse_button_pressed.length; ++i) {
+      let length = this.mouse_button_pressed.length;
+
+      for (i; i < length; ++i) {
 
         if (this.mouse_button_pressed[i]) {
 
@@ -214,7 +218,9 @@ let Momo = new class {
 
       let i = 0;
 
-      for (i; i < this.mouse_button_released.length; ++i) {
+      let length = this.mouse_button_released.length;
+
+      for (i; i < length; ++i) {
 
         if (this.mouse_button_released[i]) {
 
@@ -530,7 +536,9 @@ let Momo = new class {
 
       let i = 0;
 
-      for (i; i < this.key.length; ++i) {
+      let length = this.key.length;
+
+      for (i; i < length; ++i) {
 
         if (!this.key[i]) {
 
@@ -550,7 +558,9 @@ let Momo = new class {
 
       let i = 0;
 
-      for (i; i < this.key.length; ++i) {
+      let length = this.key.length;
+
+      for (i; i < length; ++i) {
 
         if (this.key[i]) {
 
@@ -570,7 +580,9 @@ let Momo = new class {
 
       let i = 0;
 
-      for (i; i < this.key_pressed.length; ++i) {
+      let length = this.key_pressed.length;
+
+      for (i; i < length; ++i) {
 
         if (this.key_pressed[i]) {
 
@@ -590,7 +602,9 @@ let Momo = new class {
 
       let i = 0;
 
-      for (i; i < this.key_released.length; ++i) {
+      let length = this.key_released.length;
+
+      for (i; i < length; ++i) {
 
         if (this.key_released[i]) {
 
@@ -751,7 +765,9 @@ let Momo = new class {
 
     let i = 0;
 
-    for (i; i < this.resources.length; ++i) {
+    let length = this.resources.length;
+
+    for (i; i < length; ++i) {
 
       if (this.resources[i].type === "sample") {
 
@@ -796,7 +812,9 @@ let Momo = new class {
 
           let i = 0;
 
-          for (i; i < this.mouse_button.length; ++i) {
+          let length = this.mouse_button.length;
+
+          for (i; i < length; ++i) {
 
             // Clear mouse button arrays so each mouse button event fires only once.
             this.mouse_button_pressed[i] = false;
@@ -805,7 +823,9 @@ let Momo = new class {
 
           i = 0;
 
-          for (i; i < this.key.length; ++i) {
+          length = this.key.length;
+
+          for (i; i < length; ++i) {
 
             // Clear key arrays so each keyboard event fires only once.
             this.key_pressed[i] = false;
@@ -1205,7 +1225,9 @@ let Momo = new class {
 
     let i = 0;
 
-    for (i; i < points.length; ++i) {
+    let length = points.length;
+
+    for (i; i < length; ++i) {
 
       // Split the points into their respective axes.
 
@@ -1223,7 +1245,9 @@ let Momo = new class {
 
     i = 0;
 
-    for (i; i < x.length; ++i) {
+    length = x.length;
+
+    for (i; i < length; ++i) {
 
       if (i === 0) {
 
@@ -1247,7 +1271,9 @@ let Momo = new class {
 
     let i = 0;
 
-    for (i; i < points.length; ++i) {
+    let length = points.length;
+
+    for (i; i < length; ++i) {
 
       // Split the points into their respective axes.
 
@@ -1265,7 +1291,9 @@ let Momo = new class {
 
     i = 0;
 
-    for (i; i < x.length; ++i) {
+    length = x.length;
+
+    for (i; i < length; ++i) {
 
       if (i === 0) {
 
@@ -1291,7 +1319,9 @@ let Momo = new class {
 
     let i = 0;
 
-    for (i; i < points.length; ++i) {
+    let length = points.length;
+
+    for (i; i < length; ++i) {
 
       // Split the points into their respective axes.
 
@@ -1309,7 +1339,9 @@ let Momo = new class {
 
     i = 0;
 
-    for (i; i < x.length; ++i) {
+    length = x.length;
+
+    for (i; i < length; ++i) {
 
       if (i === 0) {
 
