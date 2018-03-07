@@ -883,37 +883,27 @@ let Momo = new class {
   loadFont(file_name, style = "normal") {
 
     let element = document.createElement("style");
-    let font_name = Math.random().toString(16).slice(2);
+    let font_name = "font_" + Math.random().toString(16).slice(2);
 
     element.textContent = `
 
       @font-face {
 
-        font-family: ` + font_name + `;
+        font-family: "` + font_name + `";
         src: url("` + file_name + `");
       }
     `;
 
     document.head.appendChild(element);
 
-    let font = {
-
-      name: font_name,
-
-      style: style
-    };
-
-    // Pre-load the font.
-    this.drawText(font, this.makeColor(0, 0, 0, 0), 0, 0, 0, "left", "");
-
-    return font;
+    return this.loadFontFace(font_name, style);
   }
 
-  loadFontFace(font_name, style = "normal") {
+  loadFontFace(font_family_name, style = "normal") {
 
     let font = {
 
-      name: font_name,
+      name: font_family_name,
 
       style: style
     };
