@@ -280,7 +280,7 @@ let Momo = new class {
 
   isMouseCursorHidden() {
 
-    return (this.main_canvas.canvas.style.cursor === "none" ? true : false);
+    return this.main_canvas.canvas.style.cursor === "none";
   }
 
   lockMouse() {
