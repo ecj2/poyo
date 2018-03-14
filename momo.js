@@ -46,6 +46,8 @@ let Momo = new class {
     // Sample instances are stored here.
     this.sample_instances = [];
 
+    this.back_buffer = undefined;
+
     this.game_loop_procedure = undefined;
     this.game_loop_interval_identifier = undefined;
   }
@@ -667,6 +669,8 @@ let Momo = new class {
     // Set the main canvas as the default target canvas.
     this.setTargetCanvas(this.getCanvas());
 
+    this.back_buffer = this.createBitmap(canvas_width, canvas_height);
+
     return true;
   }
 
@@ -678,6 +682,14 @@ let Momo = new class {
   getCanvasContext() {
 
     return this.main_canvas.context;
+  }
+
+  getBackBuffer() {
+
+    // Draw the contents of the main canvas to the back-buffer bitmap.
+    this.back_buffer.context.drawImage(this.main_canvas.canvas, 0, 0);
+
+    return this.back_buffer;
   }
 
   clearCanvas(color) {
@@ -703,6 +715,8 @@ let Momo = new class {
       this.target_canvas.width = width;
       this.target_canvas.canvas.width = width;
     }
+
+    this.back_buffer = this.createBitmap(width, this.getBitmapHeight(this.back_buffer));
   }
 
   setCanvasHeight(height) {
@@ -715,6 +729,8 @@ let Momo = new class {
       this.target_canvas.height = height;
       this.target_canvas.canvas.height = height;
     }
+
+    this.back_buffer = this.createBitmap(this.getBitmapWidth(this.back_buffer), height);
   }
 
   getCanvasWidth() {
