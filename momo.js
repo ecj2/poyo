@@ -777,6 +777,31 @@ let Momo = new class {
     return this.target_canvas.height;
   }
 
+  scaleCanvas(scale_width, scale_height) {
+
+    this.target_canvas.context.scale(scale_width, scale_height);
+  }
+
+  rotateCanvas(angle) {
+
+    this.target_canvas.context.rotate(angle);
+  }
+
+  translateCanvas(x, y) {
+
+    this.target_canvas.context.translate(x, y);
+  }
+
+  saveCanvasState() {
+
+    this.target_canvas.context.save();
+  }
+
+  restoreCanvasState() {
+
+    this.target_canvas.context.restore();
+  }
+
   setFrameRate(frame_rate) {
 
     this.frame_rate = frame_rate;
@@ -1139,14 +1164,14 @@ let Momo = new class {
     origin_y = (origin_y < 0 ? 0 : origin_y);
     origin_y = (origin_y > bitmap.height ? bitmap.height : origin_y);
 
-    this.target_canvas.context.save();
+    this.saveCanvasState();
 
-    this.target_canvas.context.translate(x, y);
-    this.target_canvas.context.scale(scale_width, scale_height);
+    this.translateCanvas(x, y);
+    this.scaleCanvas(scale_width, scale_height);
 
     this.drawBitmap(bitmap, -origin_x, -origin_y);
 
-    this.target_canvas.context.restore();
+    this.restoreCanvasState();
   }
 
   drawTintedBitmap(bitmap, tint, x, y) {
@@ -1161,14 +1186,14 @@ let Momo = new class {
 
   drawRotatedBitmap(bitmap, center_x, center_y, draw_x, draw_y, angle) {
 
-    this.target_canvas.context.save();
+    this.saveCanvasState();
 
-    this.target_canvas.context.translate(draw_x + center_x, draw_y + center_y);
-    this.target_canvas.context.rotate(angle);
+    this.translateCanvas(draw_x + center_x, draw_y + center_y);
+    this.rotateCanvas(angle);
 
     this.drawBitmap(bitmap, -center_x, -center_y);
 
-    this.target_canvas.context.restore();
+    this.restoreCanvasState();
   }
 
   createBitmap(width, height) {
