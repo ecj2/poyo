@@ -925,21 +925,56 @@ let Momo = new class {
 
   loadFont(file_name, style = "normal") {
 
-    let element = document.createElement("style");
-    let font_name = "font_" + Math.random().toString(16).slice(2);
+    return new Promise(
 
-    element.textContent = `
+      (resolve, reject) => {
 
-      @font-face {
+        let request = new XMLHttpRequest();
 
-        font-family: "` + font_name + `";
-        src: url("` + file_name + `");
+        request.onreadystatechange = () => {
+
+          if (request.readyState === 4) {
+
+            if (request.status === 200) {
+
+              let element = document.createElement("style");
+              let font_name = "font_" + Math.random().toString(16).slice(2);
+
+              element.textContent = `
+
+                @font-face {
+
+                  font-family: "` + font_name + `";
+                  src: url("` + file_name + `");
+                }
+              `;
+
+              document.head.appendChild(element);
+
+              resolve(this.loadFontFace(font_name, style));
+            }
+            else {
+
+              reject(false);
+            }
+          }
+        };
+
+        request.open("get", file_name, true);
+        request.send();
       }
-    `;
+    ).then(
 
-    document.head.appendChild(element);
+      (resolved) => {
 
-    return this.loadFontFace(font_name, style);
+        return resolved;
+      },
+
+      (rejected) => {
+
+        return rejected;
+      }
+    );
   }
 
   loadFontFace(font_family_name, style = "normal") {
@@ -977,28 +1012,63 @@ let Momo = new class {
 
   loadSample(file_name) {
 
-    let element = document.createElement("audio");
+    return new Promise(
 
-    if (!!!element.canPlayType("audio/" + file_name.split(".").pop())) {
+      (resolve, reject) => {
 
-      // The browser can not play this audio format.
-      return false;
-    }
+        let request = new XMLHttpRequest();
 
-    element.src = file_name;
+        request.onreadystatechange = () => {
 
-    let sample = {
+          if (request.readyState === 4) {
 
-      element: element,
+            if (request.status === 200) {
 
-      ready: false,
+              let element = document.createElement("audio");
 
-      type: "sample"
-    };
+              if (!!!element.canPlayType("audio/" + file_name.split(".").pop())) {
 
-    this.resources.push(sample);
+                // The browser can not play this audio format.
+                reject(false);
+              }
 
-    return sample;
+              element.src = file_name;
+
+              let sample = {
+
+                element: element,
+
+                ready: false,
+
+                type: "sample"
+              };
+
+              this.resources.push(sample);
+
+              resolve(sample);
+            }
+            else {
+
+              reject(false);
+            }
+          }
+        };
+
+        request.open("get", file_name, true);
+        request.send();
+      }
+    ).then(
+
+      (resolved) => {
+
+        return resolved;
+      },
+
+      (rejected) => {
+
+        return rejected;
+      }
+    );
   }
 
   playSample(sample, volume, speed, loop, identifier) {
@@ -1093,42 +1163,74 @@ let Momo = new class {
 
   loadBitmap(file_name) {
 
-    let element = new Image();
+    return new Promise(
 
-    element.src = file_name;
+      (resolve, reject) => {
 
-    let sub_canvas = document.createElement("canvas");
-    let sub_canvas_context = sub_canvas.getContext("2d");
+        let element = new Image();
 
-    let bitmap = {
+        element.src = file_name;
 
-      canvas: sub_canvas,
+        let sub_canvas = document.createElement("canvas");
+        let sub_canvas_context = sub_canvas.getContext("2d");
 
-      context: sub_canvas_context,
+        let bitmap = {
 
-      width: -1,
+          canvas: sub_canvas,
 
-      height: -1,
+          context: sub_canvas_context,
 
-      ready: false
-    };
+          width: -1,
 
-    this.resources.push(bitmap);
+          height: -1,
 
-    element.onload = function() {
+          ready: false
+        };
 
-      bitmap.canvas.width = element.width;
-      bitmap.canvas.height = element.height;
+        this.resources.push(bitmap);
 
-      bitmap.context.drawImage(element, 0, 0);
+        element.addEventListener(
 
-      bitmap.width = element.width;
-      bitmap.height = element.height;
+          "load",
 
-      bitmap.ready = true;
-    };
+          () => {
 
-    return bitmap;
+            bitmap.canvas.width = element.width;
+            bitmap.canvas.height = element.height;
+
+            bitmap.context.drawImage(element, 0, 0);
+
+            bitmap.width = element.width;
+            bitmap.height = element.height;
+
+            bitmap.ready = true;
+
+            resolve(bitmap);
+          }
+        );
+
+        element.addEventListener(
+
+          "error",
+
+          () => {
+
+            reject(false);
+          }
+        );
+      }
+    ).then(
+
+      (resolved) => {
+
+        return resolved;
+      },
+
+      (rejected) => {
+
+        return rejected;
+      }
+    );
   }
 
   getBitmapWidth(bitmap) {
