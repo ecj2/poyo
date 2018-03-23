@@ -881,6 +881,11 @@ let Momo = new class {
     window.addEventListener("load", function_name);
   }
 
+  setBlendMode(mode) {
+
+    this.target_canvas.context.globalCompositeOperation = mode;
+  }
+
   loadFont(file_name, style = "normal") {
 
     return new Promise(
@@ -1291,11 +1296,11 @@ let Momo = new class {
     // Draw the bitmap on the off-screen canvas.
     this.drawBitmap(bitmap, 0, 0);
 
-    context.globalCompositeOperation = "multiply";
+    this.setBlendMode("multiply");
 
     this.drawFilledRectangle(0, 0, canvas.width, canvas.height, tint);
 
-    context.globalCompositeOperation = "destination-atop";
+    this.setBlendMode("destination-atop");
 
     // Compensate for transparent pixels in the bitmap.
     this.drawBitmap(bitmap, 0, 0);
