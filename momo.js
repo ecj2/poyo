@@ -10,9 +10,6 @@ let Momo = new class {
     // This dictates which canvas should to be used for drawing.
     this.target_canvas = undefined;
 
-    // Resources are queued here.
-    this.resources = [];
-
     // This dictates how often the canvas should be updated.
     this.frame_rate = undefined;
 
@@ -821,45 +818,6 @@ let Momo = new class {
     return this.frame_rate;
   }
 
-  resourcesLoaded(procedure) {
-
-    let number_of_resources_loaded = 0;
-
-    let i = 0;
-
-    let length = this.resources.length;
-
-    for (i; i < length; ++i) {
-
-      if (this.resources[i].type === "sample") {
-
-        // Check if samples have finished loading.
-
-        if (this.resources[i].element.readyState >= this.resources[i].element.HAVE_FUTURE_DATA) {
-
-          // The samples have loaded enough to begin being played.
-          this.resources[i].ready = true;
-        }
-      }
-
-      if (this.resources[i].ready) {
-
-        ++number_of_resources_loaded;
-      }
-    }
-
-    if (number_of_resources_loaded < this.resources.length) {
-
-      // Some resources have not finished loading yet.
-      window.setTimeout(this.resourcesLoaded.bind(this), 100, procedure);
-    }
-    else {
-
-      // All of the resources have finished loading.
-      procedure();
-    }
-  }
-
   createLoop(procedure) {
 
     this.game_loop_procedure = procedure;
@@ -1043,8 +1001,6 @@ let Momo = new class {
                 type: "sample"
               };
 
-              this.resources.push(sample);
-
               resolve(sample);
             }
             else {
@@ -1186,8 +1142,6 @@ let Momo = new class {
 
           ready: false
         };
-
-        this.resources.push(bitmap);
 
         element.addEventListener(
 
