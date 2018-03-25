@@ -979,44 +979,44 @@ let Momo = new class {
 
       (resolve, reject) => {
 
-        let request = new XMLHttpRequest();
+        let element = document.createElement("audio");
 
-        request.onreadystatechange = () => {
+        if (!!!element.canPlayType("audio/" + file_name.split(".").pop())) {
 
-          if (request.readyState === 4) {
+          // The browser can not play this audio format.
+          reject(false);
+        }
 
-            if (request.status === 200) {
+        element.src = file_name;
 
-              let element = document.createElement("audio");
+        let sample = {
 
-              if (!!!element.canPlayType("audio/" + file_name.split(".").pop())) {
+          element: element,
 
-                // The browser can not play this audio format.
-                reject(false);
-              }
+          ready: false,
 
-              element.src = file_name;
-
-              let sample = {
-
-                element: element,
-
-                ready: false,
-
-                type: "sample"
-              };
-
-              resolve(sample);
-            }
-            else {
-
-              reject(false);
-            }
-          }
+          type: "sample"
         };
 
-        request.open("get", file_name, true);
-        request.send();
+        element.addEventListener(
+
+          "canplaythrough",
+
+          () => {
+
+            resolve(sample);
+          }
+        );
+
+        element.addEventListener(
+
+          "error",
+
+          () => {
+
+            reject(false);
+          }
+        );
       }
     ).then(
 
