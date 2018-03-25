@@ -888,54 +888,32 @@ let Momo = new class {
 
   loadFont(file_name, style = "normal") {
 
-    return new Promise(
+    return fetch(file_name).then(
 
-      (resolve, reject) => {
+      (response) => {
 
-        let request = new XMLHttpRequest();
+        if (response.status === 200) {
 
-        request.onreadystatechange = () => {
+          let element = document.createElement("style");
+          let font_name = "font_" + Math.random().toString(16).slice(2);
 
-          if (request.readyState === 4) {
+          element.textContent = `
 
-            if (request.status === 200) {
+            @font-face {
 
-              let element = document.createElement("style");
-              let font_name = "font_" + Math.random().toString(16).slice(2);
-
-              element.textContent = `
-
-                @font-face {
-
-                  font-family: "` + font_name + `";
-                  src: url("` + file_name + `");
-                }
-              `;
-
-              document.head.appendChild(element);
-
-              resolve(this.loadFontFace(font_name, style));
+              font-family: "` + font_name + `";
+              src: url("` + file_name + `");
             }
-            else {
+          `;
 
-              reject(false);
-            }
-          }
-        };
+          document.head.appendChild(element);
 
-        request.open("get", file_name, true);
-        request.send();
-      }
-    ).then(
+          return this.loadFontFace(font_name, style);
+        }
+        else {
 
-      (resolved) => {
-
-        return resolved;
-      },
-
-      (rejected) => {
-
-        return rejected;
+          return false;
+        }
       }
     );
   }
