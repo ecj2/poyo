@@ -4,51 +4,38 @@ let Momo = new class {
 
   constructor() {
 
-    // This is the main canvas.
     this.main_canvas = undefined;
-
-    // This dictates which canvas should to be used for drawing.
     this.target_canvas = undefined;
 
-    // This dictates how often the canvas should be updated.
     this.frame_rate = undefined;
 
-    // These store which keys are pressed and released.
     this.key = [];
+    this.key_codes = this.defineKeyCodes();
     this.key_pressed = [];
     this.key_released = [];
 
-    // These define key codes.
-    this.key_codes = {};
-
-    this.keyboard_method = undefined;
-
-    this.mouse_method = undefined;
-
-    // These store information pertaining to mouse axes.
     this.mouse_x = 0;
     this.mouse_y = 0;
     this.mouse_z = 0;
 
-    // These store information pertaining to mouse buttons.
     this.mouse_button = [];
+    this.mouse_buttons = this.defineMouseButtons();
     this.mouse_button_pressed = [];
     this.mouse_button_released = [];
 
-    this.mouse_buttons = {};
-
     this.mouse_focused = false;
 
-    // The time in which the library was initialized is stored here.
     this.time_initialized = undefined;
 
-    // Sample instances are stored here.
     this.sample_instances = [];
 
     this.back_buffer = undefined;
 
     this.game_loop_procedure = undefined;
     this.game_loop_interval_identifier = undefined;
+
+    this.mouse_method = this.manageMouseEvents.bind(this);
+    this.keyboard_method = this.manageKeyboardEvents.bind(this);
   }
 
   initialize() {
@@ -70,7 +57,7 @@ let Momo = new class {
   getTime() {
 
     // Get the number of seconds elapsed since the library was initialized.
-    return ((Date.now() - this.time_initialized) / 1000).toFixed(6);
+    return (Date.now() - this.time_initialized) / 1000;
   }
 
   manageMouseEvents(event) {
@@ -129,209 +116,9 @@ let Momo = new class {
     }
   }
 
-  installMouse() {
+  defineKeyCodes() {
 
-    // Define mouse buttons.
-    this.mouse_buttons = {
-
-      "left": 0,
-
-      "middle": 1,
-
-      "right": 2
-    };
-
-    this.mouse_method = this.manageMouseEvents.bind(this);
-
-    // Listen for mouse events.
-    this.main_canvas.canvas.addEventListener("wheel", this.mouse_method);
-    this.main_canvas.canvas.addEventListener("mouseup", this.mouse_method);
-    this.main_canvas.canvas.addEventListener("mouseout", this.mouse_method);
-    this.main_canvas.canvas.addEventListener("mouseover", this.mouse_method);
-    this.main_canvas.canvas.addEventListener("mousedown", this.mouse_method);
-    this.main_canvas.canvas.addEventListener("mousemove", this.mouse_method);
-    this.main_canvas.canvas.addEventListener("contextmenu", this.mouse_method);
-  }
-
-  uninstallMouse() {
-
-    // Stop listening for mouse events.
-    this.main_canvas.canvas.removeEventListener("wheel", this.mouse_method);
-    this.main_canvas.canvas.removeEventListener("mouseup", this.mouse_method);
-    this.main_canvas.canvas.removeEventListener("mousedown", this.mouse_method);
-    this.main_canvas.canvas.removeEventListener("mousemove", this.mouse_method);
-    this.main_canvas.canvas.removeEventListener("contextmenu", this.mouse_method);
-  }
-
-  isMouseFocused() {
-
-    return this.mouse_focused;
-  }
-
-  isMouseButtonUp(button) {
-
-    if (button === "any") {
-
-      let i = 0;
-
-      for (i; i < 3; ++i) {
-
-        if (!this.mouse_button[i]) {
-
-          return true;
-        }
-      }
-
-      return false;
-    }
-
-    return !this.mouse_button[this.mouse_buttons[button]];
-  }
-
-  isMouseButtonDown(button) {
-
-    if (button === "any") {
-
-      let i = 0;
-
-      let length = this.mouse_button.length;
-
-      for (i; i < length; ++i) {
-
-        if (this.mouse_button[i]) {
-
-          return true;
-        }
-      }
-
-      return false;
-    }
-
-    return this.mouse_button[this.mouse_buttons[button]];
-  }
-
-  isMouseButtonPressed(button) {
-
-    if (button === "any") {
-
-      let i = 0;
-
-      let length = this.mouse_button_pressed.length;
-
-      for (i; i < length; ++i) {
-
-        if (this.mouse_button_pressed[i]) {
-
-          return true;
-        }
-      }
-
-      return false;
-    }
-
-    return this.mouse_button_pressed[this.mouse_buttons[button]];
-  }
-
-  isMouseButtonReleased(button) {
-
-    if (button === "any") {
-
-      let i = 0;
-
-      let length = this.mouse_button_released.length;
-
-      for (i; i < length; ++i) {
-
-        if (this.mouse_button_released[i]) {
-
-          return true;
-        }
-      }
-
-      return false;
-    }
-
-    return this.mouse_button_released[this.mouse_buttons[button]];
-  }
-
-  getMouseX() {
-
-    return this.mouse_x;
-  }
-
-  getMouseY() {
-
-    return this.mouse_y;
-  }
-
-  getMouseZ() {
-
-    return this.mouse_z;
-  }
-
-  hideMouseCursor() {
-
-    this.main_canvas.canvas.style.cursor = "none";
-  }
-
-  showMouseCursor() {
-
-    this.main_canvas.canvas.style.cursor = "auto";
-  }
-
-  isMouseCursorHidden() {
-
-    return this.main_canvas.canvas.style.cursor === "none";
-  }
-
-  lockMouse() {
-
-    let canvas = this.getCanvas();
-
-    canvas.requestPointerLock();
-  }
-
-  unlockMouse() {
-
-    if (this.isMouseLocked()) {
-
-      document.exitPointerLock();
-    }
-  }
-
-  isMouseLocked() {
-
-    return (document.pointerLockElement === this.getCanvas());
-  }
-
-  manageKeyboardEvents(event) {
-
-    switch (event.type) {
-
-      case "keyup":
-
-        this.key[event.which] = false;
-        this.key_released[event.which] = true;
-      break;
-
-      case "keydown":
-
-        if (!this.key[event.which]) {
-
-          this.key_pressed[event.which] = true;
-        }
-
-        this.key[event.which] = true;
-      break;
-    }
-
-    event.preventDefault();
-  }
-
-  installKeyboard() {
-
-    // Define key codes.
-    this.key_codes = {
+    return {
 
       "backspace": 8,
 
@@ -529,17 +316,207 @@ let Momo = new class {
 
       "quote": 222
     };
+  }
 
-    this.keyboard_method = this.manageKeyboardEvents.bind(this);
+  defineMouseButtons() {
 
-    // Listen for keyboard events.
+    return {
+
+      "left": 0,
+
+      "middle": 1,
+
+      "right": 2
+    };
+  }
+
+  installMouse() {
+
+    this.main_canvas.canvas.addEventListener("wheel", this.mouse_method);
+    this.main_canvas.canvas.addEventListener("mouseup", this.mouse_method);
+    this.main_canvas.canvas.addEventListener("mouseout", this.mouse_method);
+    this.main_canvas.canvas.addEventListener("mouseover", this.mouse_method);
+    this.main_canvas.canvas.addEventListener("mousedown", this.mouse_method);
+    this.main_canvas.canvas.addEventListener("mousemove", this.mouse_method);
+    this.main_canvas.canvas.addEventListener("contextmenu", this.mouse_method);
+  }
+
+  uninstallMouse() {
+
+    this.main_canvas.canvas.removeEventListener("wheel", this.mouse_method);
+    this.main_canvas.canvas.removeEventListener("mouseup", this.mouse_method);
+    this.main_canvas.canvas.removeEventListener("mouseout", this.mouse_method);
+    this.main_canvas.canvas.removeEventListener("mouseover", this.mouse_method);
+    this.main_canvas.canvas.removeEventListener("mousedown", this.mouse_method);
+    this.main_canvas.canvas.removeEventListener("mousemove", this.mouse_method);
+    this.main_canvas.canvas.removeEventListener("contextmenu", this.mouse_method);
+  }
+
+  isMouseFocused() {
+
+    return this.mouse_focused;
+  }
+
+  isMouseButtonUp(button) {
+
+    if (button === "any") {
+
+      let i = 0;
+
+      for (i; i < 3; ++i) {
+
+        if (!this.mouse_button[i]) {
+
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    return !this.mouse_button[this.mouse_buttons[button]];
+  }
+
+  isMouseButtonDown(button) {
+
+    if (button === "any") {
+
+      let i = 0;
+
+      for (i; i < 3; ++i) {
+
+        if (this.mouse_button[i]) {
+
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    return this.mouse_button[this.mouse_buttons[button]];
+  }
+
+  isMouseButtonPressed(button) {
+
+    if (button === "any") {
+
+      let i = 0;
+
+      for (i; i < 3; ++i) {
+
+        if (this.mouse_button_pressed[i]) {
+
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    return this.mouse_button_pressed[this.mouse_buttons[button]];
+  }
+
+  isMouseButtonReleased(button) {
+
+    if (button === "any") {
+
+      let i = 0;
+
+      for (i; i < 3; ++i) {
+
+        if (this.mouse_button_released[i]) {
+
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    return this.mouse_button_released[this.mouse_buttons[button]];
+  }
+
+  getMouseX() {
+
+    return this.mouse_x;
+  }
+
+  getMouseY() {
+
+    return this.mouse_y;
+  }
+
+  getMouseZ() {
+
+    return this.mouse_z;
+  }
+
+  hideMouseCursor() {
+
+    this.main_canvas.canvas.style.cursor = "none";
+  }
+
+  showMouseCursor() {
+
+    this.main_canvas.canvas.style.cursor = "auto";
+  }
+
+  isMouseCursorHidden() {
+
+    return this.main_canvas.canvas.style.cursor === "none";
+  }
+
+  lockMouse() {
+
+    this.main_canvas.canvas.requestPointerLock();
+  }
+
+  unlockMouse() {
+
+    if (this.isMouseLocked()) {
+
+      document.exitPointerLock();
+    }
+  }
+
+  isMouseLocked() {
+
+    return document.pointerLockElement === this.getCanvas();
+  }
+
+  manageKeyboardEvents(event) {
+
+    switch (event.type) {
+
+      case "keyup":
+
+        this.key[event.which] = false;
+        this.key_released[event.which] = true;
+      break;
+
+      case "keydown":
+
+        if (!this.key[event.which]) {
+
+          this.key_pressed[event.which] = true;
+        }
+
+        this.key[event.which] = true;
+      break;
+    }
+
+    event.preventDefault();
+  }
+
+  installKeyboard() {
+
     document.addEventListener("keyup", this.keyboard_method);
     document.addEventListener("keydown", this.keyboard_method);
   }
 
   uninstallKeyboard() {
 
-    // Stop listening for keyboard events.
     document.removeEventListener("keyup", this.keyboard_method);
     document.removeEventListener("keydown", this.keyboard_method);
   }
@@ -569,7 +546,7 @@ let Momo = new class {
       return false;
     }
 
-    return !this.key[this.key_codes["" + key_code]];
+    return !this.key[this.key_codes[key_code]];
   }
 
   isKeyDown(key_code) {
@@ -591,7 +568,7 @@ let Momo = new class {
       return false;
     }
 
-    return this.key[this.key_codes["" + key_code]];
+    return this.key[this.key_codes[key_code]];
   }
 
   isKeyPressed(key_code) {
@@ -613,7 +590,7 @@ let Momo = new class {
       return false;
     }
 
-    return this.key_pressed[this.key_codes["" + key_code]];
+    return this.key_pressed[this.key_codes[key_code]];
   }
 
   isKeyReleased(key_code) {
@@ -635,12 +612,11 @@ let Momo = new class {
       return false;
     }
 
-    return this.key_released[this.key_codes["" + key_code]];
+    return this.key_released[this.key_codes[key_code]];
   }
 
   setCanvas(canvas_identifier, canvas_width, canvas_height) {
 
-    // Get the specified canvas element.
     let canvas = document.getElementById(canvas_identifier);
 
     if (!!!canvas) {
@@ -649,11 +625,9 @@ let Momo = new class {
       return false;
     }
 
-    // Set the dimensions of the canvas.
     canvas.width = canvas_width;
     canvas.height = canvas_height;
 
-    // Set the dimensions, elements, and contexts of the member canvas.
     this.main_canvas = {
 
       width: canvas_width,
@@ -807,7 +781,7 @@ let Momo = new class {
 
     if (this.game_loop_interval_identifier !== undefined) {
 
-      window.clearInterval(this.game_loop_interval_identifier);
+      clearInterval(this.game_loop_interval_identifier);
 
       this.createLoop(this.game_loop_procedure);
     }
@@ -822,9 +796,9 @@ let Momo = new class {
 
     this.game_loop_procedure = procedure;
 
-    this.game_loop_interval_identifier = window.setInterval(
+    this.game_loop_interval_identifier = setInterval(
 
-      function() {
+      (() => {
 
         if (!document.hidden) {
 
@@ -832,9 +806,7 @@ let Momo = new class {
 
           let i = 0;
 
-          let length = this.mouse_button.length;
-
-          for (i; i < length; ++i) {
+          for (i; i < 3; ++i) {
 
             // Clear mouse button arrays so each mouse button event fires only once.
             this.mouse_button_pressed[i] = false;
@@ -852,7 +824,7 @@ let Momo = new class {
             this.key_released[i] = false;
           }
         }
-      }.bind(this),
+      }).bind(this),
 
       1000 / this.frame_rate
     );
@@ -878,7 +850,7 @@ let Momo = new class {
   setEntryPoint(function_name) {
 
     // Call the specified function when the window loads.
-    window.addEventListener("load", function_name);
+    addEventListener("load", function_name);
   }
 
   setBlendMode(mode) {
@@ -943,7 +915,7 @@ let Momo = new class {
 
     this.target_canvas.context.fillText(text, x, y + size);
 
-    if (outline_color != undefined && outline_width > 0) {
+    if (outline_color !== undefined && outline_width > 0) {
 
       this.setStrokeAndFillStyle(outline_color, outline_width);
 
@@ -953,57 +925,55 @@ let Momo = new class {
 
   loadSample(file_name) {
 
+    let element = document.createElement("audio");
+
+    if (!!!element.canPlayType("audio/" + file_name.split(".").pop())) {
+
+      // The browser can not play this audio format.
+      return false;
+    }
+
+    element.src = file_name;
+
+    let reject_function = undefined;
+    let resolve_function = undefined;
+
     return new Promise(
 
       (resolve, reject) => {
 
-        let element = document.createElement("audio");
+        resolve_function = () => {
 
-        if (!!!element.canPlayType("audio/" + file_name.split(".").pop())) {
+          let sample = {
 
-          // The browser can not play this audio format.
-          reject(false);
-        }
+            element: element
+          };
 
-        element.src = file_name;
-
-        let sample = {
-
-          element: element,
-
-          ready: false,
-
-          type: "sample"
+          resolve(sample);
         };
 
-        element.addEventListener(
+        reject_function = () => {
 
-          "canplaythrough",
+          reject(false);
+        };
 
-          () => {
-
-            resolve(sample);
-          }
-        );
-
-        element.addEventListener(
-
-          "error",
-
-          () => {
-
-            reject(false);
-          }
-        );
+        element.addEventListener("error", reject_function);
+        element.addEventListener("canplaythrough", resolve_function);
       }
     ).then(
 
       (resolved) => {
 
+        element.removeEventListener("error", reject_function);
+        element.removeEventListener("canplaythrough", resolve_function);
+
         return resolved;
       },
 
       (rejected) => {
+
+        element.removeEventListener("error", reject_function);
+        element.removeEventListener("canplaythrough", resolve_function);
 
         return rejected;
       }
@@ -1102,68 +1072,66 @@ let Momo = new class {
 
   loadBitmap(file_name) {
 
+    let element = new Image();
+
+    element.src = file_name;
+
+    let reject_function = undefined;
+    let resolve_function = undefined;
+
     return new Promise(
 
       (resolve, reject) => {
 
-        let element = new Image();
+        resolve_function = () => {
 
-        element.src = file_name;
+          let sub_canvas = document.createElement("canvas");
+          let sub_canvas_context = sub_canvas.getContext("2d");
 
-        let sub_canvas = document.createElement("canvas");
-        let sub_canvas_context = sub_canvas.getContext("2d");
+          let bitmap = {
 
-        let bitmap = {
+            canvas: sub_canvas,
 
-          canvas: sub_canvas,
+            context: sub_canvas_context,
 
-          context: sub_canvas_context,
+            width: 0,
 
-          width: -1,
+            height: 0
+          };
 
-          height: -1,
+          bitmap.canvas.width = element.width;
+          bitmap.canvas.height = element.height;
 
-          ready: false
+          bitmap.context.drawImage(element, 0, 0);
+
+          bitmap.width = element.width;
+          bitmap.height = element.height;
+
+          resolve(bitmap);
         };
 
-        element.addEventListener(
+        reject_function = () => {
 
-          "load",
+          reject(false);
+        };
 
-          () => {
-
-            bitmap.canvas.width = element.width;
-            bitmap.canvas.height = element.height;
-
-            bitmap.context.drawImage(element, 0, 0);
-
-            bitmap.width = element.width;
-            bitmap.height = element.height;
-
-            bitmap.ready = true;
-
-            resolve(bitmap);
-          }
-        );
-
-        element.addEventListener(
-
-          "error",
-
-          () => {
-
-            reject(false);
-          }
-        );
+        element.addEventListener("load", resolve_function);
+        element.addEventListener("error", reject_function);
       }
     ).then(
 
       (resolved) => {
 
+        element.removeEventListener("load", resolve_function);
+        element.removeEventListener("error", reject_function);
+
         return resolved;
       },
 
       (rejected) => {
+
+        element.removeEventListener("load", resolve_function);
+        element.removeEventListener("error", reject_function);
 
         return rejected;
       }
@@ -1239,10 +1207,8 @@ let Momo = new class {
 
   createBitmap(width, height) {
 
-    // Create an off-screen canvas.
     let canvas = document.createElement("canvas");
 
-    // Match the off-screen canvas' dimensions to that of the parameters'.
     canvas.width = width;
     canvas.height = height;
 
@@ -1262,7 +1228,6 @@ let Momo = new class {
 
   createTintedBitmap(bitmap, tint) {
 
-    // Create an off-screen canvas.
     let canvas = this.createBitmap(bitmap.width, bitmap.height);
 
     let context = canvas.context;
@@ -1271,11 +1236,11 @@ let Momo = new class {
 
     this.setTargetCanvas(canvas.canvas);
 
-    // Draw the bitmap on the off-screen canvas.
     this.drawBitmap(bitmap, 0, 0);
 
     this.setBlendMode("multiply");
 
+    // Apply the tint.
     this.drawFilledRectangle(0, 0, canvas.width, canvas.height, tint);
 
     this.setBlendMode("destination-atop");
@@ -1456,13 +1421,7 @@ let Momo = new class {
 
   drawLine(begin_x, begin_y, end_x, end_y, color, thickness) {
 
-    this.setStrokeAndFillStyle(color, thickness);
-
-    this.target_canvas.context.beginPath();
-    this.target_canvas.context.moveTo(begin_x, begin_y);
-    this.target_canvas.context.lineTo(end_x, end_y);
-    this.target_canvas.context.closePath();
-    this.target_canvas.context.stroke();
+    this.drawPolyline([begin_x, begin_y, end_x, end_y], color, thickness);
   }
 
   drawPixel(x, y, color) {
