@@ -1070,6 +1070,28 @@ let Momo = new class {
     return false;
   }
 
+  getSampleProperties(identifier) {
+
+    let properties = this.sample_instances[identifier];
+
+    if (properties === undefined) {
+
+      // There does not exist a sample instance with this identifier.
+      return undefined;
+    }
+    else {
+
+      return {
+
+        "loop": properties.loop,
+
+        "speed": properties.playbackRate,
+
+        "volume": properties.volume
+      };
+    }
+  }
+
   loadBitmap(file_name) {
 
     let element = new Image();
