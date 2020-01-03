@@ -36,6 +36,8 @@ let Momo = new class {
 
     this.mouse_method = this.manageMouseEvents.bind(this);
     this.keyboard_method = this.manageKeyboardEvents.bind(this);
+
+    this.version = 2;
   }
 
   initialize() {
@@ -794,6 +796,11 @@ let Momo = new class {
   getFrameRate() {
 
     return this.frame_rate;
+  }
+
+  getVersion() {
+
+    return this.version;
   }
 
   createLoop(procedure) {
