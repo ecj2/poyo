@@ -644,6 +644,10 @@ let Momo = new class {
 
     this.back_buffer = this.createBitmap(canvas_width, canvas_height);
 
+    // Listen for mouse and keyboard events on the canvas by default.
+    this.installMouse();
+    this.installKeyboard();
+
     return true;
   }
 
