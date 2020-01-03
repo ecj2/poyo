@@ -7,7 +7,7 @@ let Momo = new class {
     this.main_canvas = undefined;
     this.target_canvas = undefined;
 
-    this.frame_rate = undefined;
+    this.frame_rate = 60.0;
 
     this.key = [];
     this.key_codes = this.defineKeyCodes();
