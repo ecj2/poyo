@@ -635,7 +635,23 @@ let Momo = new class {
 
       canvas: canvas,
 
-      context: canvas.getContext("webgl")
+      context: canvas.getContext(
+
+        "webgl",
+
+        {
+
+          alpha: false,
+
+          depth: false,
+
+          antialias: false,
+
+          powerPreference: "high-performance",
+
+          failIfMajorPerformanceCaveat: true
+        }
+      )
     };
 
     // Set the main canvas as the default target canvas.
