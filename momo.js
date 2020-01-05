@@ -41,9 +41,9 @@ let Momo = new class {
 
     let canvas = document.createElement("canvas");
 
-    if (!!!(canvas && canvas.getContext("2d"))) {
+    if (!!!(canvas && canvas.getContext("webgl"))) {
 
-      // The browser does not support the canvas element.
+      // The browser does not support the canvas element or WebGL.
       return false;
     }
 
@@ -635,7 +635,7 @@ let Momo = new class {
 
       canvas: canvas,
 
-      context: canvas.getContext("2d")
+      context: canvas.getContext("webgl")
     };
 
     // Set the main canvas as the default target canvas.
