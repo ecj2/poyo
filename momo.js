@@ -35,6 +35,8 @@ let Momo = new class {
     this.keyboard_method = this.manageKeyboardEvents.bind(this);
 
     this.version = 2;
+
+    this.shader_program = undefined;
   }
 
   initialize() {
@@ -51,6 +53,76 @@ let Momo = new class {
     this.time_initialized = Date.now();
 
     return true;
+  }
+
+  createShadersAndPrograms() {
+
+    let vertex_shader_source = `
+
+      attribute vec2 a_vertex_position;
+
+      void main(void) {
+
+        gl_Position = vec4(a_vertex_position, 0.0, 1.0);
+      }
+    `;
+
+    let fragment_shader_source = `
+
+      precision mediump float;
+
+      void main(void) {
+
+        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+      }
+    `;
+
+    let vertex_shader = this.createShader(vertex_shader_source, this.context.VERTEX_SHADER);
+
+    let fragment_shader = this.createShader(fragment_shader_source, this.context.FRAGMENT_SHADER);
+
+    this.shader_program = this.createProgram(vertex_shader, fragment_shader);
+
+    return !!vertex_shader && !!fragment_shader && !!this.shader_program;
+  }
+
+  createShader(source, type) {
+
+    let shader = this.context.createShader(type);
+
+    this.context.shaderSource(shader, source);
+
+    this.context.compileShader(shader);
+
+    if (!this.context.getShaderParameter(shader, this.context.COMPILE_STATUS)) {
+
+      // The shader failed to compile.
+      return false;
+    }
+
+    return shader;
+  }
+
+  createProgram(vertex_shader, fragment_shader) {
+
+    let program = this.context.createProgram();
+
+    this.context.attachShader(program, vertex_shader);
+    this.context.attachShader(program, fragment_shader);
+
+    this.context.linkProgram(program);
+
+    if (!this.context.getProgramParameter(program, this.context.LINK_STATUS)) {
+
+      // The program failed to link the two shaders.
+      return false;
+    }
+
+    // The compiled shaders are not needed after being linked.
+    this.context.deleteShader(vertex_shader);
+    this.context.deleteShader(fragment_shader);
+
+    return program;
   }
 
   getTime() {
@@ -650,6 +722,12 @@ let Momo = new class {
     // @TODO: These are currently broken; fix them later.
     //this.installMouse();
     //this.installKeyboard();
+
+    if (!this.createShadersAndPrograms()) {
+
+      // Failed to create shaders and programs.
+      return false;
+    }
 
     return true;
   }
