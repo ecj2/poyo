@@ -1245,27 +1245,32 @@ let Momo = new class {
 
         resolve_function = () => {
 
-          let sub_canvas = document.createElement("canvas");
-          let sub_canvas_context = sub_canvas.getContext("2d");
+          let texture = this.context.createTexture();
+
+          this.context.bindTexture(this.context.TEXTURE_2D, texture);
+
+          // Use the image's contents as a texture.
+          this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.context.RGBA, this.context.UNSIGNED_BYTE, element);
+
+          // Clamp the texture to the edges if it bleeds beyond its boundaries.
+          this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_S, this.context.CLAMP_TO_EDGE);
+          this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_T, this.context.CLAMP_TO_EDGE);
+
+          // Use linear interpolation when scaling the texture by default.
+          this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.context.LINEAR);
+          this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.context.LINEAR);
+
+          // We're done with the texture for now. Unbind it.
+          this.context.bindTexture(this.context.TEXTURE_2D, null);
 
           let bitmap = {
 
-            canvas: sub_canvas,
+            width: element.width,
 
-            context: sub_canvas_context,
+            height: element.height,
 
-            width: 0,
-
-            height: 0
+            texture: texture
           };
-
-          bitmap.canvas.width = element.width;
-          bitmap.canvas.height = element.height;
-
-          bitmap.context.drawImage(element, 0, 0);
-
-          bitmap.width = element.width;
-          bitmap.height = element.height;
 
           resolve(bitmap);
         };
