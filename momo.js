@@ -830,7 +830,7 @@ let Momo = new class {
     );
   }
 
-  makeColor(r, g, b, a = 255) {
+  makeColor(r, g, b, a = 1.0) {
 
     return {r: r, g: g, b: b, a: a};
   }
