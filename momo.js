@@ -4,8 +4,8 @@ let Momo = new class {
 
   constructor() {
 
-    this.main_canvas = undefined;
-    this.target_canvas = undefined;
+    this.canvas = undefined;
+    this.context = undefined;
 
     this.frame_rate = 60;
 
@@ -627,41 +627,29 @@ let Momo = new class {
     canvas.width = canvas_width;
     canvas.height = canvas_height;
 
-    this.main_canvas = {
+    this.canvas = canvas;
+    this.context = canvas.getContext(
 
-      width: canvas_width,
+      "webgl",
 
-      height: canvas_height,
+      {
 
-      canvas: canvas,
+        alpha: false,
 
-      context: canvas.getContext(
+        depth: false,
 
-        "webgl",
+        antialias: false,
 
-        {
+        powerPreference: "high-performance",
 
-          alpha: false,
-
-          depth: false,
-
-          antialias: false,
-
-          powerPreference: "high-performance",
-
-          failIfMajorPerformanceCaveat: true
-        }
-      )
-    };
-
-    // Set the main canvas as the default target canvas.
-    this.setTargetCanvas(this.getCanvas());
-
-    this.back_buffer = this.createBitmap(canvas_width, canvas_height);
+        failIfMajorPerformanceCaveat: true
+      }
+    );
 
     // Listen for mouse and keyboard events on the canvas by default.
-    this.installMouse();
-    this.installKeyboard();
+    // @TODO: These are currently broken; fix them later.
+    //this.installMouse();
+    //this.installKeyboard();
 
     return true;
   }
