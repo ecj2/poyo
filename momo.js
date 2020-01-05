@@ -31,9 +31,6 @@ let Momo = new class {
 
     this.back_buffer = undefined;
 
-    this.game_loop_procedure = undefined;
-    this.game_loop_interval_identifier = undefined;
-
     this.mouse_method = this.manageMouseEvents.bind(this);
     this.keyboard_method = this.manageKeyboardEvents.bind(this);
 
@@ -781,18 +778,6 @@ let Momo = new class {
     this.target_canvas.context.restore();
   }
 
-  setFrameRate(frame_rate) {
-
-    this.frame_rate = frame_rate;
-
-    if (this.game_loop_interval_identifier !== undefined) {
-
-      clearInterval(this.game_loop_interval_identifier);
-
-      this.createGameLoop(this.game_loop_procedure);
-    }
-  }
-
   getFrameRate() {
 
     return this.frame_rate;
@@ -807,9 +792,7 @@ let Momo = new class {
 
     this.frame_rate = frame_rate;
 
-    this.game_loop_procedure = procedure;
-
-    this.game_loop_interval_identifier = setInterval(
+    setInterval(
 
       (() => {
 
