@@ -841,6 +841,9 @@ let Momo = new class {
 
     this.setUniformsAndAttributes();
 
+    // @TODO: Update this whenever the canvas is resized.
+    this.context.viewport(0, 0, canvas_width, canvas_height);
+
     return true;
   }
 
