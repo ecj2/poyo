@@ -7,7 +7,7 @@ let Momo = new class {
     this.main_canvas = undefined;
     this.target_canvas = undefined;
 
-    this.frame_rate = 60.0;
+    this.frame_rate = 60;
 
     this.key = [];
     this.key_codes = this.defineKeyCodes();
@@ -803,7 +803,9 @@ let Momo = new class {
     return this.version;
   }
 
-  createGameLoop(procedure) {
+  createGameLoop(procedure, frame_rate) {
+
+    this.frame_rate = frame_rate;
 
     this.game_loop_procedure = procedure;
 
