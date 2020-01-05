@@ -789,7 +789,7 @@ let Momo = new class {
 
       clearInterval(this.game_loop_interval_identifier);
 
-      this.createLoop(this.game_loop_procedure);
+      this.createGameLoop(this.game_loop_procedure);
     }
   }
 
@@ -803,7 +803,7 @@ let Momo = new class {
     return this.version;
   }
 
-  createLoop(procedure) {
+  createGameLoop(procedure) {
 
     this.game_loop_procedure = procedure;
 
