@@ -64,9 +64,15 @@ let Momo = new class {
 
       attribute vec2 a_vertex_position;
 
+      attribute vec2 a_texture_position;
+
+      varying vec2 v_texture_position;
+
       void main(void) {
 
         gl_Position = vec4(a_vertex_position, 0.0, 1.0);
+
+        v_texture_position = a_texture_position;
       }
     `;
 
@@ -74,9 +80,13 @@ let Momo = new class {
 
       precision mediump float;
 
+      varying vec2 v_texture_position;
+
+      uniform sampler2D u_texture;
+
       void main(void) {
 
-        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        gl_FragColor = texture2D(u_texture, v_texture_position);
       }
     `;
 
@@ -138,6 +148,17 @@ let Momo = new class {
       return false;
     }
 
+    this.locations.a_texture_position = this.context.getAttribLocation(this.shader_program, "a_texture_position");
+
+    if (this.locations.a_texture_position == -1) {
+
+      // Failed to find location of a_texture_position.
+      return false;
+    }
+
+    // @TODO: Error-checking on uniforms. They always seem to return null for me...
+    this.locations.u_texture = this.context.getUniformLocation(this.shader_program, "u_texture");
+
     return true;
   }
 
@@ -174,6 +195,37 @@ let Momo = new class {
     this.context.vertexAttribPointer(this.locations.a_vertex_position, 2, this.context.FLOAT, false, 0, 0);
     this.context.enableVertexAttribArray(this.locations.a_vertex_position);
 
+    // Unbind the vertex buffer.
+    this.context.bindBuffer(this.context.ARRAY_BUFFER, null);
+
+    let texture_buffer = this.context.createBuffer();
+
+    // Define texture coordinates.
+    let texture_buffer_data = new Float32Array(
+
+      [
+
+        0.0, 1.0,
+
+        1.0, 1.0,
+
+        1.0, 0.0,
+
+        0.0, 1.0,
+
+        1.0, 0.0,
+
+        0.0, 0.0
+      ]
+    );
+
+    this.context.bindBuffer(this.context.ARRAY_BUFFER, texture_buffer);
+    this.context.bufferData(this.context.ARRAY_BUFFER, texture_buffer_data, this.context.STATIC_DRAW);
+
+    this.context.vertexAttribPointer(this.locations.a_texture_position, 2, this.context.FLOAT, false, 0, 0);
+    this.context.enableVertexAttribArray(this.locations.a_texture_position);
+
+    // Unbind the texture buffer.
     this.context.bindBuffer(this.context.ARRAY_BUFFER, null);
   }
 
@@ -1325,7 +1377,16 @@ let Momo = new class {
 
   drawBitmap(bitmap, x, y) {
 
-    this.target_canvas.context.drawImage(bitmap.canvas, x, y);
+    this.context.useProgram(this.shader_program);
+
+    // Set the active texture.
+    this.context.activeTexture(this.context.TEXTURE0);
+    this.context.bindTexture(this.context.TEXTURE_2D, bitmap.texture);
+    this.context.uniform1i(this.locations.u_texture, 0);
+
+    // @TODO: Unbind texture? It might be costly; research it.
+
+    this.context.drawArrays(this.context.TRIANGLES, 0, 6);
   }
 
   drawScaledBitmap(bitmap, origin_x, origin_y, scale_width, scale_height, x, y) {
