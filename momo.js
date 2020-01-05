@@ -37,6 +37,9 @@ let Momo = new class {
     this.version = 2;
 
     this.shader_program = undefined;
+
+    // Uniform and attribute locations.
+    this.locations = {};
   }
 
   initialize() {
@@ -123,6 +126,55 @@ let Momo = new class {
     this.context.deleteShader(fragment_shader);
 
     return program;
+  }
+
+  getUniformAndAttributeLocations() {
+
+    this.locations.a_vertex_position = this.context.getAttribLocation(this.shader_program, "a_vertex_position");
+
+    if (this.locations.a_vertex_position == -1) {
+
+      // Failed to find location of a_vertex_position.
+      return false;
+    }
+
+    return true;
+  }
+
+  setUniformsAndAttributes() {
+
+    // @TODO: Error-checking.
+
+    this.context.useProgram(this.shader_program);
+
+    let vertex_buffer = this.context.createBuffer();
+
+    // Define a quad.
+    let vertex_buffer_data = new Float32Array(
+
+      [
+
+        -1.0, -1.0,
+
+        1.0, -1.0,
+
+        1.0, 1.0,
+
+        -1.0, -1.0,
+
+        1.0, 1.0,
+
+        -1.0, 1.0
+      ]
+    );
+
+    this.context.bindBuffer(this.context.ARRAY_BUFFER, vertex_buffer);
+    this.context.bufferData(this.context.ARRAY_BUFFER, vertex_buffer_data, this.context.STATIC_DRAW);
+
+    this.context.vertexAttribPointer(this.locations.a_vertex_position, 2, this.context.FLOAT, false, 0, 0);
+    this.context.enableVertexAttribArray(this.locations.a_vertex_position);
+
+    this.context.bindBuffer(this.context.ARRAY_BUFFER, null);
   }
 
   getTime() {
@@ -728,6 +780,14 @@ let Momo = new class {
       // Failed to create shaders and programs.
       return false;
     }
+
+    if (!this.getUniformAndAttributeLocations()) {
+
+      // Failed to get uniform and attribute locations.
+      return false;
+    }
+
+    this.setUniformsAndAttributes();
 
     return true;
   }
