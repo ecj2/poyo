@@ -674,9 +674,9 @@ let Momo = new class {
 
   clearCanvas(color) {
 
-    this.setStrokeAndFillStyle(color);
+    this.context.clearColor(color.r, color.g, color.b, color.a);
 
-    this.target_canvas.context.fillRect(0, 0, this.target_canvas.width, this.target_canvas.height);
+    this.context.clear(this.context.COLOR_BUFFER_BIT);
   }
 
   resizeCanvas(width, height) {
