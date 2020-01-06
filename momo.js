@@ -827,6 +827,9 @@ let Momo = new class {
       }
     );
 
+    this.context.enable(this.context.BLEND);
+    this.context.blendFunc(this.context.SRC_ALPHA, this.context.ONE_MINUS_SRC_ALPHA);
+
     // Listen for mouse and keyboard events on the canvas by default.
     // @TODO: These are currently broken; fix them later.
     //this.installMouse();
