@@ -1371,7 +1371,7 @@ let Momo = new class {
     );
   }
 
-  setBitmapFlags(flag, value) {
+  setNewBitmapFlags(flag, value) {
 
     switch (flag) {
 
