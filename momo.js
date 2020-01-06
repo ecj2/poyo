@@ -850,7 +850,6 @@ let Momo = new class {
 
     this.setUniformsAndAttributes();
 
-    // @TODO: Update this whenever the canvas is resized.
     this.context.viewport(0, 0, canvas_width, canvas_height);
 
     // Use linear texture filtering by default.
@@ -861,12 +860,12 @@ let Momo = new class {
 
   getCanvas() {
 
-    /*return this.main_canvas.canvas;*/
+    return this.canvas;
   }
 
   getCanvasContext() {
 
-    /*return this.main_canvas.context;*/
+    return this.context;
   }
 
   getBackBuffer() {
@@ -892,74 +891,28 @@ let Momo = new class {
 
   setCanvasWidth(width) {
 
-    /*this.main_canvas.width = width;
-    this.main_canvas.canvas.width = width;
+    this.canvas.width = width;
 
-    if (this.getTargetCanvas() === this.getCanvas()) {
-
-      this.target_canvas.width = width;
-      this.target_canvas.canvas.width = width;
-    }
-
-    this.back_buffer = this.createBitmap(width, this.getBitmapHeight(this.back_buffer));*/
+    // Update the viewport to reflect the new canvas size.
+    this.context.viewport(0, 0, this.canvas.width, this.canvas.height);
   }
 
   setCanvasHeight(height) {
 
-    /*this.main_canvas.height = height;
-    this.main_canvas.canvas.height = height;
+    this.canvas.height = height;
 
-    if (this.getTargetCanvas() === this.getCanvas()) {
-
-      this.target_canvas.height = height;
-      this.target_canvas.canvas.height = height;
-    }
-
-    this.back_buffer = this.createBitmap(this.getBitmapWidth(this.back_buffer), height);*/
+    // Update the viewport to reflect the new canvas size.
+    this.context.viewport(0, 0, this.canvas.width, this.canvas.height);
   }
 
   getCanvasWidth() {
 
-    /*return this.main_canvas.width;*/
+    return this.canvas.width;
   }
 
   getCanvasHeight() {
 
-    /*return this.main_canvas.height;*/
-  }
-
-  setTargetCanvas(target_canvas) {
-
-    /*this.target_canvas = {
-
-      width: target_canvas.width,
-
-      height: target_canvas.height,
-
-      canvas: target_canvas,
-
-      context: target_canvas.getContext("2d")
-    };*/
-  }
-
-  getTargetCanvas() {
-
-    /*return this.target_canvas.canvas;*/
-  }
-
-  getTargetCanvasContext() {
-
-    /*return this.target_canvas.context;*/
-  }
-
-  getTargetCanvasWidth() {
-
-    /*return this.target_canvas.width;*/
-  }
-
-  getTargetCanvasHeight() {
-
-    /*return this.target_canvas.height;*/
+    return this.canvas.height;
   }
 
   scaleCanvas(scale_width, scale_height) {
@@ -1396,16 +1349,6 @@ let Momo = new class {
   getBitmapHeight(bitmap) {
 
     return bitmap.height;
-  }
-
-  getBitmapCanvas(bitmap) {
-
-    /*return bitmap.canvas;*/
-  }
-
-  getBitmapCanvasContext(bitmap) {
-
-    /*return bitmap.context;*/
   }
 
   drawBitmap(bitmap, x, y) {
