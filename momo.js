@@ -248,7 +248,7 @@ let Momo = new class {
 
       case "wheel":
 
-        this.mouse_z = event.deltaY;
+        this.mouse_z = event.deltaY < 0 ? 1 : -1;
       break;
 
       case "mouseup":
