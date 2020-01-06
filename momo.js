@@ -514,24 +514,24 @@ let Momo = new class {
 
   installMouse() {
 
-    /*this.main_canvas.canvas.addEventListener("wheel", this.mouse_method);
-    this.main_canvas.canvas.addEventListener("mouseup", this.mouse_method);
-    this.main_canvas.canvas.addEventListener("mouseout", this.mouse_method);
-    this.main_canvas.canvas.addEventListener("mouseover", this.mouse_method);
-    this.main_canvas.canvas.addEventListener("mousedown", this.mouse_method);
-    this.main_canvas.canvas.addEventListener("mousemove", this.mouse_method);
-    this.main_canvas.canvas.addEventListener("contextmenu", this.mouse_method);*/
+    this.canvas.addEventListener("wheel", this.mouse_method);
+    this.canvas.addEventListener("mouseup", this.mouse_method);
+    this.canvas.addEventListener("mouseout", this.mouse_method);
+    this.canvas.addEventListener("mouseover", this.mouse_method);
+    this.canvas.addEventListener("mousedown", this.mouse_method);
+    this.canvas.addEventListener("mousemove", this.mouse_method);
+    this.canvas.addEventListener("contextmenu", this.mouse_method);
   }
 
   uninstallMouse() {
 
-    /*this.main_canvas.canvas.removeEventListener("wheel", this.mouse_method);
-    this.main_canvas.canvas.removeEventListener("mouseup", this.mouse_method);
-    this.main_canvas.canvas.removeEventListener("mouseout", this.mouse_method);
-    this.main_canvas.canvas.removeEventListener("mouseover", this.mouse_method);
-    this.main_canvas.canvas.removeEventListener("mousedown", this.mouse_method);
-    this.main_canvas.canvas.removeEventListener("mousemove", this.mouse_method);
-    this.main_canvas.canvas.removeEventListener("contextmenu", this.mouse_method);*/
+    this.canvas.removeEventListener("wheel", this.mouse_method);
+    this.canvas.removeEventListener("mouseup", this.mouse_method);
+    this.canvas.removeEventListener("mouseout", this.mouse_method);
+    this.canvas.removeEventListener("mouseover", this.mouse_method);
+    this.canvas.removeEventListener("mousedown", this.mouse_method);
+    this.canvas.removeEventListener("mousemove", this.mouse_method);
+    this.canvas.removeEventListener("contextmenu", this.mouse_method);
   }
 
   isMouseFocused() {
@@ -636,22 +636,22 @@ let Momo = new class {
 
   hideMouseCursor() {
 
-    /*this.main_canvas.canvas.style.cursor = "none";*/
+    this.canvas.style.cursor = "none";
   }
 
   showMouseCursor() {
 
-    /*this.main_canvas.canvas.style.cursor = "auto";*/
+    this.canvas.style.cursor = "auto";
   }
 
   isMouseCursorHidden() {
 
-    /*return this.main_canvas.canvas.style.cursor === "none";*/
+    return this.canvas.style.cursor === "none";
   }
 
   lockMouse() {
 
-    /*this.main_canvas.canvas.requestPointerLock();*/
+    this.canvas.requestPointerLock();
   }
 
   unlockMouse() {
@@ -833,9 +833,8 @@ let Momo = new class {
     this.context.blendFunc(this.context.SRC_ALPHA, this.context.ONE_MINUS_SRC_ALPHA);
 
     // Listen for mouse and keyboard events on the canvas by default.
-    // @TODO: These are currently broken; fix them later.
-    //this.installMouse();
-    //this.installKeyboard();
+    this.installMouse();
+    this.installKeyboard();
 
     if (!this.createShadersAndPrograms()) {
 
