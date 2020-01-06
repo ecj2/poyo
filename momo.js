@@ -514,24 +514,24 @@ let Momo = new class {
 
   installMouse() {
 
-    this.main_canvas.canvas.addEventListener("wheel", this.mouse_method);
+    /*this.main_canvas.canvas.addEventListener("wheel", this.mouse_method);
     this.main_canvas.canvas.addEventListener("mouseup", this.mouse_method);
     this.main_canvas.canvas.addEventListener("mouseout", this.mouse_method);
     this.main_canvas.canvas.addEventListener("mouseover", this.mouse_method);
     this.main_canvas.canvas.addEventListener("mousedown", this.mouse_method);
     this.main_canvas.canvas.addEventListener("mousemove", this.mouse_method);
-    this.main_canvas.canvas.addEventListener("contextmenu", this.mouse_method);
+    this.main_canvas.canvas.addEventListener("contextmenu", this.mouse_method);*/
   }
 
   uninstallMouse() {
 
-    this.main_canvas.canvas.removeEventListener("wheel", this.mouse_method);
+    /*this.main_canvas.canvas.removeEventListener("wheel", this.mouse_method);
     this.main_canvas.canvas.removeEventListener("mouseup", this.mouse_method);
     this.main_canvas.canvas.removeEventListener("mouseout", this.mouse_method);
     this.main_canvas.canvas.removeEventListener("mouseover", this.mouse_method);
     this.main_canvas.canvas.removeEventListener("mousedown", this.mouse_method);
     this.main_canvas.canvas.removeEventListener("mousemove", this.mouse_method);
-    this.main_canvas.canvas.removeEventListener("contextmenu", this.mouse_method);
+    this.main_canvas.canvas.removeEventListener("contextmenu", this.mouse_method);*/
   }
 
   isMouseFocused() {
@@ -636,22 +636,22 @@ let Momo = new class {
 
   hideMouseCursor() {
 
-    this.main_canvas.canvas.style.cursor = "none";
+    /*this.main_canvas.canvas.style.cursor = "none";*/
   }
 
   showMouseCursor() {
 
-    this.main_canvas.canvas.style.cursor = "auto";
+    /*this.main_canvas.canvas.style.cursor = "auto";*/
   }
 
   isMouseCursorHidden() {
 
-    return this.main_canvas.canvas.style.cursor === "none";
+    /*return this.main_canvas.canvas.style.cursor === "none";*/
   }
 
   lockMouse() {
 
-    this.main_canvas.canvas.requestPointerLock();
+    /*this.main_canvas.canvas.requestPointerLock();*/
   }
 
   unlockMouse() {
@@ -862,20 +862,20 @@ let Momo = new class {
 
   getCanvas() {
 
-    return this.main_canvas.canvas;
+    /*return this.main_canvas.canvas;*/
   }
 
   getCanvasContext() {
 
-    return this.main_canvas.context;
+    /*return this.main_canvas.context;*/
   }
 
   getBackBuffer() {
 
     // Draw the contents of the main canvas to the back-buffer bitmap.
-    this.back_buffer.context.drawImage(this.main_canvas.canvas, 0, 0);
+    /*this.back_buffer.context.drawImage(this.main_canvas.canvas, 0, 0);
 
-    return this.back_buffer;
+    return this.back_buffer;*/
   }
 
   clearCanvas(color) {
@@ -893,7 +893,7 @@ let Momo = new class {
 
   setCanvasWidth(width) {
 
-    this.main_canvas.width = width;
+    /*this.main_canvas.width = width;
     this.main_canvas.canvas.width = width;
 
     if (this.getTargetCanvas() === this.getCanvas()) {
@@ -902,12 +902,12 @@ let Momo = new class {
       this.target_canvas.canvas.width = width;
     }
 
-    this.back_buffer = this.createBitmap(width, this.getBitmapHeight(this.back_buffer));
+    this.back_buffer = this.createBitmap(width, this.getBitmapHeight(this.back_buffer));*/
   }
 
   setCanvasHeight(height) {
 
-    this.main_canvas.height = height;
+    /*this.main_canvas.height = height;
     this.main_canvas.canvas.height = height;
 
     if (this.getTargetCanvas() === this.getCanvas()) {
@@ -916,22 +916,22 @@ let Momo = new class {
       this.target_canvas.canvas.height = height;
     }
 
-    this.back_buffer = this.createBitmap(this.getBitmapWidth(this.back_buffer), height);
+    this.back_buffer = this.createBitmap(this.getBitmapWidth(this.back_buffer), height);*/
   }
 
   getCanvasWidth() {
 
-    return this.main_canvas.width;
+    /*return this.main_canvas.width;*/
   }
 
   getCanvasHeight() {
 
-    return this.main_canvas.height;
+    /*return this.main_canvas.height;*/
   }
 
   setTargetCanvas(target_canvas) {
 
-    this.target_canvas = {
+    /*this.target_canvas = {
 
       width: target_canvas.width,
 
@@ -940,52 +940,52 @@ let Momo = new class {
       canvas: target_canvas,
 
       context: target_canvas.getContext("2d")
-    };
+    };*/
   }
 
   getTargetCanvas() {
 
-    return this.target_canvas.canvas;
+    /*return this.target_canvas.canvas;*/
   }
 
   getTargetCanvasContext() {
 
-    return this.target_canvas.context;
+    /*return this.target_canvas.context;*/
   }
 
   getTargetCanvasWidth() {
 
-    return this.target_canvas.width;
+    /*return this.target_canvas.width;*/
   }
 
   getTargetCanvasHeight() {
 
-    return this.target_canvas.height;
+    /*return this.target_canvas.height;*/
   }
 
   scaleCanvas(scale_width, scale_height) {
 
-    this.target_canvas.context.scale(scale_width, scale_height);
+    /*this.target_canvas.context.scale(scale_width, scale_height);*/
   }
 
   rotateCanvas(angle) {
 
-    this.target_canvas.context.rotate(angle);
+    /*this.target_canvas.context.rotate(angle);*/
   }
 
   translateCanvas(x, y) {
 
-    this.target_canvas.context.translate(x, y);
+    /*this.target_canvas.context.translate(x, y);*/
   }
 
   saveCanvasState() {
 
-    this.target_canvas.context.save();
+    /*this.target_canvas.context.save();*/
   }
 
   restoreCanvasState() {
 
-    this.target_canvas.context.restore();
+    /*this.target_canvas.context.restore();*/
   }
 
   getFrameRate() {
@@ -1043,14 +1043,14 @@ let Momo = new class {
 
   setStrokeAndFillStyle(color, line_width = 0) {
 
-    let r = color.r;
+    /*let r = color.r;
     let g = color.g;
     let b = color.b;
     let a = color.a / 255.0;
 
     this.target_canvas.context.lineWidth = line_width;
     this.target_canvas.context.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
-    this.target_canvas.context.strokeStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
+    this.target_canvas.context.strokeStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";*/
   }
 
   setEntryPoint(function_name) {
@@ -1061,12 +1061,12 @@ let Momo = new class {
 
   setBlendMode(mode) {
 
-    this.target_canvas.context.globalCompositeOperation = mode;
+    /*this.target_canvas.context.globalCompositeOperation = mode;*/
   }
 
   loadFont(file_name, style = "normal") {
 
-    return fetch(file_name).then(
+    /*return fetch(file_name).then(
 
       (response) => {
 
@@ -1093,12 +1093,12 @@ let Momo = new class {
           return false;
         }
       }
-    );
+    );*/
   }
 
   loadFontFace(font_family_name, style = "normal") {
 
-    let font = {
+    /*let font = {
 
       name: font_family_name,
 
@@ -1108,12 +1108,12 @@ let Momo = new class {
     // Pre-load the font.
     this.drawText(font, this.makeColor(0, 0, 0, 0), 0, 0, 0, "left", "");
 
-    return font;
+    return font;*/
   }
 
   drawText(font, fill_color, size, x, y, alignment, text, outline_color = undefined, outline_width = 0) {
 
-    this.target_canvas.context.textAlign = alignment;
+    /*this.target_canvas.context.textAlign = alignment;
 
     this.target_canvas.context.font = font.style + " " + size + "px " + font.name;
 
@@ -1126,7 +1126,7 @@ let Momo = new class {
       this.setStrokeAndFillStyle(outline_color, outline_width);
 
       this.target_canvas.context.strokeText(text, x, y + size);
-    }
+    }*/
   }
 
   loadSample(file_name) {
@@ -1401,12 +1401,12 @@ let Momo = new class {
 
   getBitmapCanvas(bitmap) {
 
-    return bitmap.canvas;
+    /*return bitmap.canvas;*/
   }
 
   getBitmapCanvasContext(bitmap) {
 
-    return bitmap.context;
+    /*return bitmap.context;*/
   }
 
   drawBitmap(bitmap, x, y) {
@@ -1426,7 +1426,7 @@ let Momo = new class {
   drawScaledBitmap(bitmap, origin_x, origin_y, scale_width, scale_height, x, y) {
 
     // Keep origin_x within the bitmap's horizontal boundaries.
-    origin_x = (origin_x < 0 ? 0 : origin_x);
+    /*origin_x = (origin_x < 0 ? 0 : origin_x);
     origin_x = (origin_x > bitmap.width ? bitmap.width : origin_x);
 
     // Keep origin_y within the bitmap's vertical boundaries.
@@ -1440,34 +1440,34 @@ let Momo = new class {
 
     this.drawBitmap(bitmap, -origin_x, -origin_y);
 
-    this.restoreCanvasState();
+    this.restoreCanvasState();*/
   }
 
   drawTintedBitmap(bitmap, tint, x, y) {
 
-    this.drawBitmap(this.createTintedBitmap(bitmap, tint), x, y);
+    /*this.drawBitmap(this.createTintedBitmap(bitmap, tint), x, y);*/
   }
 
   drawClippedBitmap(bitmap, start_x, start_y, width, height, x, y) {
 
-    this.target_canvas.context.drawImage(bitmap.canvas, start_x, start_y, width, height, x, y, width, height);
+    /*this.target_canvas.context.drawImage(bitmap.canvas, start_x, start_y, width, height, x, y, width, height);*/
   }
 
   drawRotatedBitmap(bitmap, center_x, center_y, draw_x, draw_y, angle) {
 
-    this.saveCanvasState();
+    /*this.saveCanvasState();
 
     this.translateCanvas(draw_x + center_x, draw_y + center_y);
     this.rotateCanvas(angle);
 
     this.drawBitmap(bitmap, -center_x, -center_y);
 
-    this.restoreCanvasState();
+    this.restoreCanvasState();*/
   }
 
   createBitmap(width, height) {
 
-    let canvas = document.createElement("canvas");
+    /*let canvas = document.createElement("canvas");
 
     canvas.width = width;
     canvas.height = height;
@@ -1483,12 +1483,12 @@ let Momo = new class {
       width: width,
 
       height: height
-    };
+    };*/
   }
 
   createTintedBitmap(bitmap, tint) {
 
-    let canvas = this.createBitmap(bitmap.width, bitmap.height);
+    /*let canvas = this.createBitmap(bitmap.width, bitmap.height);
 
     let context = canvas.context;
 
@@ -1510,12 +1510,12 @@ let Momo = new class {
 
     this.setTargetCanvas(old_target);
 
-    return canvas;
+    return canvas;*/
   }
 
   createClippedBitmap(bitmap, start_x, start_y, width, height) {
 
-    let data = bitmap.context.getImageData(start_x, start_y, width, height);
+    /*let data = bitmap.context.getImageData(start_x, start_y, width, height);
 
     let sub_canvas = document.createElement("canvas");
     let sub_canvas_context = sub_canvas.getContext("2d");
@@ -1534,12 +1534,12 @@ let Momo = new class {
       width: width,
 
       height: height
-    };
+    };*/
   }
 
   drawPolyline(points, color, thickness) {
 
-    this.setStrokeAndFillStyle(color, thickness);
+    /*this.setStrokeAndFillStyle(color, thickness);
 
     let x = [];
     let y = [];
@@ -1580,12 +1580,12 @@ let Momo = new class {
       this.target_canvas.context.lineTo(x[i], y[i]);
     }
 
-    this.target_canvas.context.stroke();
+    this.target_canvas.context.stroke();*/
   }
 
   drawPolygon(points, color, thickness) {
 
-    this.setStrokeAndFillStyle(color, thickness);
+    /*this.setStrokeAndFillStyle(color, thickness);
 
     let x = [];
     let y = [];
@@ -1628,12 +1628,12 @@ let Momo = new class {
 
     this.target_canvas.context.closePath();
 
-    this.target_canvas.context.stroke();
+    this.target_canvas.context.stroke();*/
   }
 
   drawFilledPolygon(points, color) {
 
-    this.setStrokeAndFillStyle(color);
+    /*this.setStrokeAndFillStyle(color);
 
     let x = [];
     let y = [];
@@ -1676,96 +1676,96 @@ let Momo = new class {
 
     this.target_canvas.context.closePath();
 
-    this.target_canvas.context.fill();
+    this.target_canvas.context.fill();*/
   }
 
   drawLine(begin_x, begin_y, end_x, end_y, color, thickness) {
 
-    this.drawPolyline([begin_x, begin_y, end_x, end_y], color, thickness);
+    /*this.drawPolyline([begin_x, begin_y, end_x, end_y], color, thickness);*/
   }
 
   drawPixel(x, y, color) {
 
-    this.drawFilledRectangle(x, y, x + 1, y + 1, color);
+    /*this.drawFilledRectangle(x, y, x + 1, y + 1, color);*/
   }
 
   drawArc(center_x, center_y, radius, start_angle, end_angle, color, thickness) {
 
-    this.setStrokeAndFillStyle(color, thickness);
+    /*this.setStrokeAndFillStyle(color, thickness);
 
     this.target_canvas.context.beginPath();
     this.target_canvas.context.arc(center_x, center_y, radius, start_angle, end_angle);
     this.target_canvas.context.closePath();
-    this.target_canvas.context.stroke();
+    this.target_canvas.context.stroke();*/
   }
 
   drawFilledArc(center_x, center_y, radius, start_angle, end_angle, color) {
 
-    this.setStrokeAndFillStyle(color);
+    /*this.setStrokeAndFillStyle(color);
 
     this.target_canvas.context.beginPath();
     this.target_canvas.context.arc(center_x, center_y, radius, start_angle, end_angle);
     this.target_canvas.context.closePath();
-    this.target_canvas.context.fill();
+    this.target_canvas.context.fill();*/
   }
 
   drawCircle(center_x, center_y, radius, color, thickness) {
 
-    this.drawArc(center_x, center_y, radius, 0, 2 * Math.PI, color, thickness);
+    /*this.drawArc(center_x, center_y, radius, 0, 2 * Math.PI, color, thickness);*/
   }
 
   drawFilledCircle(center_x, center_y, radius, color) {
 
-    this.drawFilledArc(center_x, center_y, radius, 0, 2 * Math.PI, color);
+    /*this.drawFilledArc(center_x, center_y, radius, 0, 2 * Math.PI, color);*/
   }
 
   drawEllipse(center_x, center_y, radius_x, radius_y, color, thickness) {
 
-    this.setStrokeAndFillStyle(color, thickness);
+    /*this.setStrokeAndFillStyle(color, thickness);
 
     this.target_canvas.context.beginPath();
     this.target_canvas.context.ellipse(center_x, center_y, radius_x, radius_y, 0, 0, 2 * Math.PI);
     this.target_canvas.context.closePath();
-    this.target_canvas.context.stroke();
+    this.target_canvas.context.stroke();*/
   }
 
   drawFilledEllipse(center_x, center_y, radius_x, radius_y, color) {
 
-    this.setStrokeAndFillStyle(color);
+    /*this.setStrokeAndFillStyle(color);
 
     this.target_canvas.context.beginPath();
     this.target_canvas.context.ellipse(center_x, center_y, radius_x, radius_y, 0, 0, 2 * Math.PI);
     this.target_canvas.context.closePath();
-    this.target_canvas.context.fill();
+    this.target_canvas.context.fill();*/
   }
 
   drawRectangle(begin_x, begin_y, end_x, end_y, color, thickness) {
 
-    this.setStrokeAndFillStyle(color, thickness);
+    /*this.setStrokeAndFillStyle(color, thickness);
 
     this.target_canvas.context.beginPath();
     this.target_canvas.context.rect(begin_x, begin_y, end_x - begin_x, end_y - begin_y);
     this.target_canvas.context.closePath();
-    this.target_canvas.context.stroke();
+    this.target_canvas.context.stroke();*/
   }
 
   drawFilledRectangle(begin_x, begin_y, end_x, end_y, color) {
 
-    this.setStrokeAndFillStyle(color);
+    /*this.setStrokeAndFillStyle(color);
 
     this.target_canvas.context.beginPath();
     this.target_canvas.context.rect(begin_x, begin_y, end_x - begin_x, end_y - begin_y);
     this.target_canvas.context.closePath();
-    this.target_canvas.context.fill();
+    this.target_canvas.context.fill();*/
   }
 
   drawTriangle(x_1, y_1, x_2, y_2, x_3, y_3, color, thickness) {
 
-    this.drawPolygon([x_1, y_1, x_2, y_2, x_3, y_3], color, thickness);
+    /*this.drawPolygon([x_1, y_1, x_2, y_2, x_3, y_3], color, thickness);*/
   }
 
   drawFilledTriangle(x_1, y_1, x_2, y_2, x_3, y_3, color) {
 
-    this.drawFilledPolygon([x_1, y_1, x_2, y_2, x_3, y_3], color);
+    /*this.drawFilledPolygon([x_1, y_1, x_2, y_2, x_3, y_3], color);*/
   }
 };
