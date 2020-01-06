@@ -156,8 +156,13 @@ let Momo = new class {
       return false;
     }
 
-    // @TODO: Error-checking on uniforms. They always seem to return null for me...
     this.locations.u_texture = this.context.getUniformLocation(this.shader_program, "u_texture");
+
+    if (this.locations.u_texture == null) {
+
+      // Failed to find location of u_texture.
+      return false;
+    }
 
     return true;
   }
