@@ -40,6 +40,8 @@ let Momo = new class {
 
     // Uniform and attribute locations.
     this.locations = {};
+
+    this.texture_filtering = undefined;
   }
 
   initialize() {
@@ -852,6 +854,9 @@ let Momo = new class {
     // @TODO: Update this whenever the canvas is resized.
     this.context.viewport(0, 0, canvas_width, canvas_height);
 
+    // Use linear texture filtering by default.
+    this.texture_filtering = this.context.LINEAR;
+
     return true;
   }
 
@@ -1320,8 +1325,8 @@ let Momo = new class {
           this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_T, this.context.CLAMP_TO_EDGE);
 
           // Use linear interpolation when scaling the texture by default.
-          this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.context.LINEAR);
-          this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.context.LINEAR);
+          this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.texture_filtering);
+          this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.texture_filtering);
 
           // We're done with the texture for now. Unbind it.
           this.context.bindTexture(this.context.TEXTURE_2D, null);
@@ -1364,6 +1369,24 @@ let Momo = new class {
         return rejected;
       }
     );
+  }
+
+  setBitmapFlags(flag, value) {
+
+    switch (flag) {
+
+      case "filtering":
+
+        if (value == "linear") {
+
+          this.texture_filtering = this.context.LINEAR;
+        }
+        else if (value == "nearest") {
+
+          this.texture_filtering = this.context.NEAREST;
+        }
+      break;
+    }
   }
 
   getBitmapWidth(bitmap) {
