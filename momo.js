@@ -42,6 +42,8 @@ let Momo = new class {
     this.locations = {};
 
     this.texture_filtering = undefined;
+
+    this.matrix = this.getIdentityMatrix();
   }
 
   initialize() {
@@ -68,11 +70,21 @@ let Momo = new class {
 
       attribute vec2 a_texture_position;
 
+      uniform mat3 u_matrix;
+
+      uniform vec2 u_canvas_resolution;
+
       varying vec2 v_texture_position;
 
       void main(void) {
 
-        gl_Position = vec4(a_vertex_position, 0.0, 1.0);
+        // Convert from pixel space to clip space.
+        vec2 clip_space_position = vec2((u_matrix * vec3(a_vertex_position, 1.0)).xy / u_canvas_resolution) * 2.0 - 1.0;
+
+        // Flip the Y axis.
+        clip_space_position.y *= -1.0;
+
+        gl_Position = vec4(clip_space_position, 0.0, 1.0);
 
         v_texture_position = a_texture_position;
       }
@@ -166,6 +178,22 @@ let Momo = new class {
       return false;
     }
 
+    this.locations.u_matrix = this.context.getUniformLocation(this.shader_program, "u_matrix");
+
+    if (this.locations.u_matrix == null) {
+
+      // Failed to find location of u_matrix.
+      return false;
+    }
+
+    this.locations.u_canvas_resolution = this.context.getUniformLocation(this.shader_program, "u_canvas_resolution");
+
+    if (this.locations.u_canvas_resolution == null) {
+
+      // Failed to find location of u_canvas_resolution.
+      return false;
+    }
+
     return true;
   }
 
@@ -182,17 +210,17 @@ let Momo = new class {
 
       [
 
-        -1.0, -1.0,
+        0, 0,
 
-        1.0, -1.0,
+        this.canvas.width, 0,
 
-        1.0, 1.0,
+        this.canvas.width, this.canvas.height,
 
-        -1.0, -1.0,
+        0, 0,
 
-        1.0, 1.0,
+        this.canvas.width, this.canvas.height,
 
-        -1.0, 1.0
+        0, this.canvas.height
       ]
     );
 
@@ -212,17 +240,17 @@ let Momo = new class {
 
       [
 
-        0.0, 1.0,
+        0.0, 0.0,
+
+        1.0, 0.0,
 
         1.0, 1.0,
 
-        1.0, 0.0,
+        0.0, 0.0,
 
-        0.0, 1.0,
+        1.0, 1.0,
 
-        1.0, 0.0,
-
-        0.0, 0.0
+        0.0, 1.0
       ]
     );
 
@@ -234,6 +262,9 @@ let Momo = new class {
 
     // Unbind the texture buffer.
     this.context.bindBuffer(this.context.ARRAY_BUFFER, null);
+
+    // Upload the canvas' resolution.
+    this.context.uniform2fv(this.locations.u_canvas_resolution, [this.canvas.width, this.canvas.height]);
   }
 
   getTime() {
@@ -893,6 +924,8 @@ let Momo = new class {
 
     this.canvas.width = width;
 
+    // @TODO: Update a_texture_position whenever the canvas' size changes.
+
     // Update the viewport to reflect the new canvas size.
     this.context.viewport(0, 0, this.canvas.width, this.canvas.height);
   }
@@ -900,6 +933,8 @@ let Momo = new class {
   setCanvasHeight(height) {
 
     this.canvas.height = height;
+
+    // @TODO: Update a_texture_position whenever the canvas' size changes.
 
     // Update the viewport to reflect the new canvas size.
     this.context.viewport(0, 0, this.canvas.width, this.canvas.height);
@@ -915,27 +950,16 @@ let Momo = new class {
     return this.canvas.height;
   }
 
-  scaleCanvas(scale_width, scale_height) {
-
-    /*this.target_canvas.context.scale(scale_width, scale_height);*/
-  }
-
-  rotateCanvas(angle) {
-
-    /*this.target_canvas.context.rotate(angle);*/
-  }
-
-  translateCanvas(x, y) {
-
-    /*this.target_canvas.context.translate(x, y);*/
-  }
-
   saveCanvasState() {
+
+    // @TODO: Update this to work with the new transformation / matrix system.
 
     /*this.target_canvas.context.save();*/
   }
 
   restoreCanvasState() {
+
+    // @TODO: Update this to work with the new transformation / matrix system.
 
     /*this.target_canvas.context.restore();*/
   }
@@ -1360,9 +1384,24 @@ let Momo = new class {
     this.context.bindTexture(this.context.TEXTURE_2D, bitmap.texture);
     this.context.uniform1i(this.locations.u_texture, 0);
 
-    // @TODO: Unbind texture? It might be costly; research it.
+    let transformation = this.createTransformation();
 
+    // Move the bitmap.
+    this.translateCanvas(transformation, x, y);
+
+    // Scale the bitmap to its proper resolution.
+    this.scaleCanvas(transformation, bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
+
+    this.applyTransformation(transformation);
+
+    // Upload the transformation matrix.
+    this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix);
+
+    // Draw the bitmap.
     this.context.drawArrays(this.context.TRIANGLES, 0, 6);
+
+    // Unbind the texture.
+    this.context.bindTexture(this.context.TEXTURE_2D, null);
   }
 
   drawScaledBitmap(bitmap, origin_x, origin_y, scale_width, scale_height, x, y) {
@@ -1709,5 +1748,158 @@ let Momo = new class {
   drawFilledTriangle(x_1, y_1, x_2, y_2, x_3, y_3, color) {
 
     /*this.drawFilledPolygon([x_1, y_1, x_2, y_2, x_3, y_3], color);*/
+  }
+
+  getIdentityMatrix() {
+
+    return [
+
+      1.0, 0.0, 0.0,
+
+      0.0, 1.0, 0.0,
+
+      0.0, 0.0, 1.0
+    ]
+  }
+
+  scaleCanvas(transformation, scale_x, scale_y) {
+
+    transformation.stack.push([0, scale_x, scale_y]);
+  }
+
+  rotateCanvas(transformation, theta) {
+
+    transformation.stack.push([1, theta]);
+  }
+
+  translateCanvas(transformation, translate_x, translate_y) {
+
+    transformation.stack.push([2, translate_x, translate_y]);
+  }
+
+  createTransformation() {
+
+    return {
+
+      matrix: this.getIdentityMatrix(),
+
+      stack: []
+    };
+  }
+
+  applyTransformation(transformation) {
+
+    const SIZE_OF_STACK = transformation.stack.length;
+
+    let i = 0;
+
+    for (i; i < SIZE_OF_STACK; ++i) {
+
+      let operation = transformation.stack.pop();
+
+      switch (operation[0]) {
+
+        case 0:
+
+          // Scaling.
+
+          let scale_x = operation[1];
+          let scale_y = operation[2];
+
+          let scaled_matrix = [
+
+            scale_x, 0.0, 0.0,
+
+            0.0, scale_y, 0.0,
+
+            0.0, 0.0, 1.0
+          ];
+
+          transformation.matrix = this.multiplyMatrices(scaled_matrix, transformation.matrix);
+        break;
+
+        case 1:
+
+          // Rotating.
+
+          let theta = operation[1];
+
+          let sine = Math.sin(theta);
+          let cosine = Math.cos(theta);
+
+          let rotated_matrix = [
+
+            cosine, sine, 0.0,
+
+            -sine, cosine, 0.0,
+
+            0.0, 0.0, 1.0
+          ];
+
+          transformation.matrix = this.multiplyMatrices(rotated_matrix, transformation.matrix);
+        break;
+
+        case 2:
+
+          // Translating.
+
+          let translate_x = operation[1];
+          let translate_y = operation[2];
+
+          let translated_matrix = [
+
+            1.0, 0.0, 0.0,
+
+            0.0, 1.0, 0.0,
+
+            translate_x, translate_y, 1.0
+          ]
+
+          transformation.matrix = this.multiplyMatrices(translated_matrix, transformation.matrix);
+        break;
+      }
+    }
+
+    this.matrix = transformation.matrix;
+  }
+
+  multiplyMatrices(a, b) {
+
+    // The first matrix' rows and columns.
+    const A_1_1 = a[0];
+    const A_1_2 = a[3];
+    const A_1_3 = a[6];
+    const A_2_1 = a[1];
+    const A_2_2 = a[4];
+    const A_2_3 = a[7];
+    const A_3_1 = a[2];
+    const A_3_2 = a[5];
+    const A_3_3 = a[8];
+
+    // The second matrix's rows and columns.
+    const B_1_1 = b[0];
+    const B_1_2 = b[3];
+    const B_1_3 = b[6];
+    const B_2_1 = b[1];
+    const B_2_2 = b[4];
+    const B_2_3 = b[7];
+    const B_3_1 = b[2];
+    const B_3_2 = b[5];
+    const B_3_3 = b[8];
+
+    let multiplied_matrix = this.getIdentityMatrix();
+
+    // Multiply the two matrices together.
+    multiplied_matrix[0] = A_1_1 * B_1_1 + A_1_2 * B_2_1 + A_1_3 * B_3_1;
+    multiplied_matrix[3] = A_1_1 * B_1_2 + A_1_2 * B_2_2 + A_1_3 * B_3_2;
+    multiplied_matrix[6] = A_1_1 * B_1_3 + A_1_2 * B_2_3 + A_1_3 * B_3_3;
+    multiplied_matrix[1] = A_2_1 * B_1_1 + A_2_2 * B_2_1 + A_2_3 * B_3_1;
+    multiplied_matrix[4] = A_2_1 * B_1_2 + A_2_2 * B_2_2 + A_2_3 * B_3_2;
+    multiplied_matrix[7] = A_2_1 * B_1_3 + A_2_2 * B_2_3 + A_2_3 * B_3_3;
+    multiplied_matrix[2] = A_3_1 * B_1_1 + A_3_2 * B_2_1 + A_3_3 * B_3_1;
+    multiplied_matrix[5] = A_3_1 * B_1_2 + A_3_2 * B_2_2 + A_3_3 * B_3_2;
+    multiplied_matrix[8] = A_3_1 * B_1_3 + A_3_2 * B_2_3 + A_3_3 * B_3_3;
+
+    return multiplied_matrix;
   }
 };
