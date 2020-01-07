@@ -100,9 +100,28 @@ let Momo = new class {
 
       uniform vec4 u_tint;
 
+      uniform vec4 u_texture_offset;
+
       void main(void) {
 
-        gl_FragColor = texture2D(u_texture, v_texture_position) * u_tint;
+        vec2 texture_position = v_texture_position;
+
+        // Offset the texture back to the top left origin of the bitmap.
+        texture_position += vec2(u_texture_offset[0], u_texture_offset[1]);
+
+        if (texture_position.x < u_texture_offset[0] || texture_position.y < u_texture_offset[1]) {
+
+          // Don't draw texels outside of the beginning offset.
+          discard;
+        }
+
+        if (texture_position.x > u_texture_offset[2] || texture_position.y > u_texture_offset[3]) {
+
+          // Don't draw texels outside of the ending offset.
+          discard;
+        }
+
+        gl_FragColor = texture2D(u_texture, texture_position) * u_tint;
       }
     `;
 
@@ -201,6 +220,14 @@ let Momo = new class {
     if (this.locations.u_tint == null) {
 
       // Failed to find location of u_tint.
+      return false;
+    }
+
+    this.locations.u_texture_offset = this.context.getUniformLocation(this.shader_program, "u_texture_offset");
+
+    if (this.locations.u_texture_offset == null) {
+
+      // Failed to find location of u_texture_offset.
       return false;
     }
 
@@ -1410,6 +1437,9 @@ let Momo = new class {
     // No tinting.
     this.context.uniform4fv(this.locations.u_tint, [1.0, 1.0, 1.0, 1.0]);
 
+    // Upload the default texture offset.
+    this.context.uniform4fv(this.locations.u_texture_offset, [0.0, 0.0, 1.0, 1.0]);
+
     // Draw the bitmap.
     this.context.drawArrays(this.context.TRIANGLES, 0, 6);
 
@@ -1462,6 +1492,9 @@ let Momo = new class {
     // Upload the tint.
     this.context.uniform4fv(this.locations.u_tint, [tint.r, tint.g, tint.b, tint.a]);
 
+    // Upload the default texture offset.
+    this.context.uniform4fv(this.locations.u_texture_offset, [0.0, 0.0, 1.0, 1.0]);
+
     // Draw the bitmap.
     this.context.drawArrays(this.context.TRIANGLES, 0, 6);
 
@@ -1471,7 +1504,48 @@ let Momo = new class {
 
   drawClippedBitmap(bitmap, start_x, start_y, width, height, x, y) {
 
-    /*this.target_canvas.context.drawImage(bitmap.canvas, start_x, start_y, width, height, x, y, width, height);*/
+    this.context.useProgram(this.shader_program);
+
+    // Set the active texture.
+    this.context.activeTexture(this.context.TEXTURE0);
+    this.context.bindTexture(this.context.TEXTURE_2D, bitmap.texture);
+    this.context.uniform1i(this.locations.u_texture, 0);
+
+    let transformation = this.createTransformation();
+
+    // Move the bitmap.
+    this.translateCanvas(transformation, x, y);
+
+    // Scale the bitmap to its proper resolution.
+    this.scaleCanvas(transformation, bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
+
+    this.applyTransformation(transformation);
+
+    // Upload the transformation matrix.
+    this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix);
+
+    // No tinting.
+    this.context.uniform4fv(this.locations.u_tint, [1.0, 1.0, 1.0, 1.0]);
+
+    let texture_offset = [
+
+      start_x / bitmap.width,
+
+      start_y / bitmap.height,
+
+      (start_x + width) / bitmap.width,
+
+      (start_y + height) / bitmap.height
+    ];
+
+    // Upload the texture offset.
+    this.context.uniform4fv(this.locations.u_texture_offset, texture_offset);
+
+    // Draw the bitmap.
+    this.context.drawArrays(this.context.TRIANGLES, 0, 6);
+
+    // Unbind the texture.
+    this.context.bindTexture(this.context.TEXTURE_2D, null);
   }
 
   drawRotatedBitmap(bitmap, center_x, center_y, draw_x, draw_y, theta) {
@@ -1504,6 +1578,9 @@ let Momo = new class {
 
     // No tinting.
     this.context.uniform4fv(this.locations.u_tint, [1.0, 1.0, 1.0, 1.0]);
+
+    // Upload the default texture offset.
+    this.context.uniform4fv(this.locations.u_texture_offset, [0.0, 0.0, 1.0, 1.0]);
 
     // Draw the bitmap.
     this.context.drawArrays(this.context.TRIANGLES, 0, 6);
