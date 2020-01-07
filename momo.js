@@ -1434,16 +1434,39 @@ let Momo = new class {
     /*this.target_canvas.context.drawImage(bitmap.canvas, start_x, start_y, width, height, x, y, width, height);*/
   }
 
-  drawRotatedBitmap(bitmap, center_x, center_y, draw_x, draw_y, angle) {
+  drawRotatedBitmap(bitmap, center_x, center_y, draw_x, draw_y, theta) {
 
-    /*this.saveCanvasState();
+    this.context.useProgram(this.shader_program);
 
-    this.translateCanvas(draw_x + center_x, draw_y + center_y);
-    this.rotateCanvas(angle);
+    // Set the active texture.
+    this.context.activeTexture(this.context.TEXTURE0);
+    this.context.bindTexture(this.context.TEXTURE_2D, bitmap.texture);
+    this.context.uniform1i(this.locations.u_texture, 0);
 
-    this.drawBitmap(bitmap, -center_x, -center_y);
+    let transformation = this.createTransformation();
 
-    this.restoreCanvasState();*/
+    // Move the origin.
+    this.translateCanvas(transformation, draw_x, draw_y);
+
+    // Rotate the bitmap around the newly-moved origin.
+    this.rotateCanvas(transformation, theta);
+
+    // Move the origin back.
+    this.translateCanvas(transformation, -center_x, -center_y);
+
+    // Scale the bitmap to its proper resolution.
+    this.scaleCanvas(transformation, bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
+
+    this.applyTransformation(transformation);
+
+    // Upload the transformation matrix.
+    this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix);
+
+    // Draw the bitmap.
+    this.context.drawArrays(this.context.TRIANGLES, 0, 6);
+
+    // Unbind the texture.
+    this.context.bindTexture(this.context.TEXTURE_2D, null);
   }
 
   createBitmap(width, height) {
@@ -1865,7 +1888,7 @@ let Momo = new class {
 
   multiplyMatrices(a, b) {
 
-    // The first matrix' rows and columns.
+    // The first matrix's rows and columns.
     const A_1_1 = a[0];
     const A_1_2 = a[3];
     const A_1_3 = a[6];
