@@ -1449,22 +1449,43 @@ let Momo = new class {
 
   drawScaledBitmap(bitmap, origin_x, origin_y, scale_width, scale_height, x, y) {
 
-    // Keep origin_x within the bitmap's horizontal boundaries.
-    /*origin_x = (origin_x < 0 ? 0 : origin_x);
-    origin_x = (origin_x > bitmap.width ? bitmap.width : origin_x);
+    this.context.useProgram(this.shader_program);
 
-    // Keep origin_y within the bitmap's vertical boundaries.
-    origin_y = (origin_y < 0 ? 0 : origin_y);
-    origin_y = (origin_y > bitmap.height ? bitmap.height : origin_y);
+    // Set the active texture.
+    this.context.activeTexture(this.context.TEXTURE0);
+    this.context.bindTexture(this.context.TEXTURE_2D, bitmap.texture);
+    this.context.uniform1i(this.locations.u_texture, 0);
 
-    this.saveCanvasState();
+    let transformation = this.createTransformation();
 
-    this.translateCanvas(x, y);
-    this.scaleCanvas(scale_width, scale_height);
+    // Move the bitmap.
+    this.translateCanvas(transformation, x, y);
 
-    this.drawBitmap(bitmap, -origin_x, -origin_y);
+    // Scale the bitmap.
+    this.scaleCanvas(transformation, scale_width, scale_height);
 
-    this.restoreCanvasState();*/
+    // Offset by the origin.
+    this.translateCanvas(transformation, -origin_x, -origin_y);
+
+    // Scale the bitmap to its proper resolution.
+    this.scaleCanvas(transformation, bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
+
+    this.applyTransformation(transformation);
+
+    // Upload the transformation matrix.
+    this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix);
+
+    // No tinting.
+    this.context.uniform4fv(this.locations.u_tint, [1.0, 1.0, 1.0, 1.0]);
+
+    // Upload the default texture offset.
+    this.context.uniform4fv(this.locations.u_texture_offset, [0.0, 0.0, 1.0, 1.0]);
+
+    // Draw the bitmap.
+    this.context.drawArrays(this.context.TRIANGLES, 0, 6);
+
+    // Unbind the texture.
+    this.context.bindTexture(this.context.TEXTURE_2D, null);
   }
 
   drawTintedBitmap(bitmap, tint, x, y) {
