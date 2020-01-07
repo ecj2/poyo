@@ -43,10 +43,12 @@ let Momo = new class {
 
     this.texture_filtering = undefined;
 
-    this.matrix = this.getIdentityMatrix();
-
     this.canvas_width = 0;
     this.canvas_height = 0;
+
+    this.matrix_stack = [];
+
+    this.matrix_stack[0] = this.getIdentityMatrix();
   }
 
   initialize() {
@@ -995,16 +997,17 @@ let Momo = new class {
 
   saveCanvasState() {
 
-    // @TODO: Update this to work with the new transformation / matrix system.
-
-    /*this.target_canvas.context.save();*/
+    this.matrix_stack.push(this.matrix_stack[this.matrix_stack.length - 1].slice());
   }
 
   restoreCanvasState() {
 
-    // @TODO: Update this to work with the new transformation / matrix system.
+    this.matrix_stack.pop();
 
-    /*this.target_canvas.context.restore();*/
+    if (this.matrix_stack.length == 0) {
+
+      this.matrix_stack[0] = this.getIdentityMatrix();
+    }
   }
 
   getFrameRate() {
@@ -1427,18 +1430,18 @@ let Momo = new class {
     this.context.bindTexture(this.context.TEXTURE_2D, bitmap.texture);
     this.context.uniform1i(this.locations.u_texture, 0);
 
-    let transformation = this.createTransformation();
+    this.saveCanvasState();
 
     // Move the bitmap.
-    this.translateCanvas(transformation, x, y);
+    this.translateCanvas(x, y);
 
     // Scale the bitmap to its proper resolution.
-    this.scaleCanvas(transformation, bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
-
-    this.applyTransformation(transformation);
+    this.scaleCanvas(bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
 
     // Upload the transformation matrix.
-    this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix);
+    this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
+
+    this.restoreCanvasState();
 
     // No tinting.
     this.context.uniform4fv(this.locations.u_tint, [1.0, 1.0, 1.0, 1.0]);
@@ -1462,24 +1465,24 @@ let Momo = new class {
     this.context.bindTexture(this.context.TEXTURE_2D, bitmap.texture);
     this.context.uniform1i(this.locations.u_texture, 0);
 
-    let transformation = this.createTransformation();
+    this.saveCanvasState();
 
     // Move the bitmap.
-    this.translateCanvas(transformation, x, y);
+    this.translateCanvas(x, y);
 
     // Scale the bitmap.
-    this.scaleCanvas(transformation, scale_width, scale_height);
+    this.scaleCanvas(scale_width, scale_height);
 
     // Offset by the origin.
-    this.translateCanvas(transformation, -origin_x, -origin_y);
+    this.translateCanvas(-origin_x, -origin_y);
 
     // Scale the bitmap to its proper resolution.
-    this.scaleCanvas(transformation, bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
-
-    this.applyTransformation(transformation);
+    this.scaleCanvas(bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
 
     // Upload the transformation matrix.
-    this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix);
+    this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
+
+    this.restoreCanvasState();
 
     // No tinting.
     this.context.uniform4fv(this.locations.u_tint, [1.0, 1.0, 1.0, 1.0]);
@@ -1503,18 +1506,18 @@ let Momo = new class {
     this.context.bindTexture(this.context.TEXTURE_2D, bitmap.texture);
     this.context.uniform1i(this.locations.u_texture, 0);
 
-    let transformation = this.createTransformation();
+    this.saveCanvasState();
 
     // Move the bitmap.
-    this.translateCanvas(transformation, x, y);
+    this.translateCanvas(x, y);
 
     // Scale the bitmap to its proper resolution.
-    this.scaleCanvas(transformation, bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
-
-    this.applyTransformation(transformation);
+    this.scaleCanvas(bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
 
     // Upload the transformation matrix.
-    this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix);
+    this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
+
+    this.restoreCanvasState();
 
     // Upload the tint.
     this.context.uniform4fv(this.locations.u_tint, [tint.r, tint.g, tint.b, tint.a]);
@@ -1538,18 +1541,18 @@ let Momo = new class {
     this.context.bindTexture(this.context.TEXTURE_2D, bitmap.texture);
     this.context.uniform1i(this.locations.u_texture, 0);
 
-    let transformation = this.createTransformation();
+    this.saveCanvasState();
 
     // Move the bitmap.
-    this.translateCanvas(transformation, x, y);
+    this.translateCanvas(x, y);
 
     // Scale the bitmap to its proper resolution.
-    this.scaleCanvas(transformation, bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
-
-    this.applyTransformation(transformation);
+    this.scaleCanvas(bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
 
     // Upload the transformation matrix.
-    this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix);
+    this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
+
+    this.restoreCanvasState();
 
     // No tinting.
     this.context.uniform4fv(this.locations.u_tint, [1.0, 1.0, 1.0, 1.0]);
@@ -1584,24 +1587,24 @@ let Momo = new class {
     this.context.bindTexture(this.context.TEXTURE_2D, bitmap.texture);
     this.context.uniform1i(this.locations.u_texture, 0);
 
-    let transformation = this.createTransformation();
+    this.saveCanvasState();
 
     // Move the origin.
-    this.translateCanvas(transformation, draw_x, draw_y);
+    this.translateCanvas(draw_x + center_x, draw_y + center_y);
 
     // Rotate the bitmap around the newly-moved origin.
-    this.rotateCanvas(transformation, theta);
+    this.rotateCanvas(theta);
 
     // Move the origin back.
-    this.translateCanvas(transformation, -center_x, -center_y);
+    this.translateCanvas(-center_x, -center_y);
 
     // Scale the bitmap to its proper resolution.
-    this.scaleCanvas(transformation, bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
-
-    this.applyTransformation(transformation);
+    this.scaleCanvas(bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
 
     // Upload the transformation matrix.
-    this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix);
+    this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
+
+    this.restoreCanvasState();
 
     // No tinting.
     this.context.uniform4fv(this.locations.u_tint, [1.0, 1.0, 1.0, 1.0]);
@@ -1932,105 +1935,55 @@ let Momo = new class {
     ]
   }
 
-  scaleCanvas(transformation, scale_x, scale_y) {
+  scaleCanvas(scale_x, scale_y) {
 
-    transformation.stack.push([0, scale_x, scale_y]);
+    let scaled_matrix = [
+
+      scale_x, 0.0, 0.0,
+
+      0.0, scale_y, 0.0,
+
+      0.0, 0.0, 1.0
+    ];
+
+    let result = this.multiplyMatrices(this.matrix_stack[this.matrix_stack.length - 1].slice(), scaled_matrix);
+
+    this.matrix_stack[this.matrix_stack.length - 1] = result;
   }
 
-  rotateCanvas(transformation, theta) {
+  rotateCanvas(theta) {
 
-    transformation.stack.push([1, theta]);
+    const SINE = Math.sin(theta);
+    const COSINE = Math.cos(theta);
+
+    let rotated_matrix = [
+
+      COSINE, SINE, 0.0,
+
+      -SINE, COSINE, 0.0,
+
+      0.0, 0.0, 1.0
+    ];
+
+    let result = this.multiplyMatrices(this.matrix_stack[this.matrix_stack.length - 1].slice(), rotated_matrix)
+
+    this.matrix_stack[this.matrix_stack.length - 1] = result;
   }
 
-  translateCanvas(transformation, translate_x, translate_y) {
+  translateCanvas(translate_x, translate_y) {
 
-    transformation.stack.push([2, translate_x, translate_y]);
-  }
+    let translated_matrix = [
 
-  createTransformation() {
+      1.0, 0.0, 0.0,
 
-    return {
+      0.0, 1.0, 0.0,
 
-      matrix: this.getIdentityMatrix(),
+      translate_x, translate_y, 1.0
+    ];
 
-      stack: []
-    };
-  }
+    let result = this.multiplyMatrices(this.matrix_stack[this.matrix_stack.length - 1].slice(), translated_matrix);
 
-  applyTransformation(transformation) {
-
-    const SIZE_OF_STACK = transformation.stack.length;
-
-    let i = 0;
-
-    for (i; i < SIZE_OF_STACK; ++i) {
-
-      let operation = transformation.stack.pop();
-
-      switch (operation[0]) {
-
-        case 0:
-
-          // Scaling.
-
-          let scale_x = operation[1];
-          let scale_y = operation[2];
-
-          let scaled_matrix = [
-
-            scale_x, 0.0, 0.0,
-
-            0.0, scale_y, 0.0,
-
-            0.0, 0.0, 1.0
-          ];
-
-          transformation.matrix = this.multiplyMatrices(scaled_matrix, transformation.matrix);
-        break;
-
-        case 1:
-
-          // Rotating.
-
-          let theta = operation[1];
-
-          let sine = Math.sin(theta);
-          let cosine = Math.cos(theta);
-
-          let rotated_matrix = [
-
-            cosine, sine, 0.0,
-
-            -sine, cosine, 0.0,
-
-            0.0, 0.0, 1.0
-          ];
-
-          transformation.matrix = this.multiplyMatrices(rotated_matrix, transformation.matrix);
-        break;
-
-        case 2:
-
-          // Translating.
-
-          let translate_x = operation[1];
-          let translate_y = operation[2];
-
-          let translated_matrix = [
-
-            1.0, 0.0, 0.0,
-
-            0.0, 1.0, 0.0,
-
-            translate_x, translate_y, 1.0
-          ]
-
-          transformation.matrix = this.multiplyMatrices(translated_matrix, transformation.matrix);
-        break;
-      }
-    }
-
-    this.matrix = transformation.matrix;
+    this.matrix_stack[this.matrix_stack.length - 1] = result;
   }
 
   multiplyMatrices(a, b) {
