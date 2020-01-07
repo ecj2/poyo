@@ -1468,7 +1468,7 @@ let Momo = new class {
     this.saveCanvasState();
 
     // Move the bitmap.
-    this.translateCanvas(x, y);
+    this.translateCanvas(x + origin_x, y + origin_y);
 
     // Scale the bitmap.
     this.scaleCanvas(scale_width, scale_height);
