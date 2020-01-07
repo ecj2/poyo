@@ -98,9 +98,11 @@ let Momo = new class {
 
       uniform sampler2D u_texture;
 
+      uniform vec4 u_tint;
+
       void main(void) {
 
-        gl_FragColor = texture2D(u_texture, v_texture_position);
+        gl_FragColor = texture2D(u_texture, v_texture_position) * u_tint;
       }
     `;
 
@@ -191,6 +193,14 @@ let Momo = new class {
     if (this.locations.u_canvas_resolution == null) {
 
       // Failed to find location of u_canvas_resolution.
+      return false;
+    }
+
+    this.locations.u_tint = this.context.getUniformLocation(this.shader_program, "u_tint");
+
+    if (this.locations.u_tint == null) {
+
+      // Failed to find location of u_tint.
       return false;
     }
 
@@ -1397,6 +1407,9 @@ let Momo = new class {
     // Upload the transformation matrix.
     this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix);
 
+    // No tinting.
+    this.context.uniform4fv(this.locations.u_tint, [1.0, 1.0, 1.0, 1.0]);
+
     // Draw the bitmap.
     this.context.drawArrays(this.context.TRIANGLES, 0, 6);
 
@@ -1426,7 +1439,34 @@ let Momo = new class {
 
   drawTintedBitmap(bitmap, tint, x, y) {
 
-    /*this.drawBitmap(this.createTintedBitmap(bitmap, tint), x, y);*/
+    this.context.useProgram(this.shader_program);
+
+    // Set the active texture.
+    this.context.activeTexture(this.context.TEXTURE0);
+    this.context.bindTexture(this.context.TEXTURE_2D, bitmap.texture);
+    this.context.uniform1i(this.locations.u_texture, 0);
+
+    let transformation = this.createTransformation();
+
+    // Move the bitmap.
+    this.translateCanvas(transformation, x, y);
+
+    // Scale the bitmap to its proper resolution.
+    this.scaleCanvas(transformation, bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
+
+    this.applyTransformation(transformation);
+
+    // Upload the transformation matrix.
+    this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix);
+
+    // Upload the tint.
+    this.context.uniform4fv(this.locations.u_tint, [tint.r, tint.g, tint.b, tint.a]);
+
+    // Draw the bitmap.
+    this.context.drawArrays(this.context.TRIANGLES, 0, 6);
+
+    // Unbind the texture.
+    this.context.bindTexture(this.context.TEXTURE_2D, null);
   }
 
   drawClippedBitmap(bitmap, start_x, start_y, width, height, x, y) {
@@ -1461,6 +1501,9 @@ let Momo = new class {
 
     // Upload the transformation matrix.
     this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix);
+
+    // No tinting.
+    this.context.uniform4fv(this.locations.u_tint, [1.0, 1.0, 1.0, 1.0]);
 
     // Draw the bitmap.
     this.context.drawArrays(this.context.TRIANGLES, 0, 6);
