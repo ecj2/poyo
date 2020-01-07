@@ -44,6 +44,9 @@ let Momo = new class {
     this.texture_filtering = undefined;
 
     this.matrix = this.getIdentityMatrix();
+
+    this.canvas_width = 0;
+    this.canvas_height = 0;
   }
 
   initialize() {
@@ -897,6 +900,9 @@ let Momo = new class {
       }
     );
 
+    this.canvas_width = canvas_width;
+    this.canvas_height = canvas_height;
+
     this.context.enable(this.context.BLEND);
     this.context.blendFunc(this.context.SRC_ALPHA, this.context.ONE_MINUS_SRC_ALPHA);
 
@@ -979,12 +985,12 @@ let Momo = new class {
 
   getCanvasWidth() {
 
-    return this.canvas.width;
+    return this.canvas_width;
   }
 
   getCanvasHeight() {
 
-    return this.canvas.height;
+    return this.canvas_height;
   }
 
   saveCanvasState() {
