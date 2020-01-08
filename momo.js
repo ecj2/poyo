@@ -254,15 +254,15 @@ let Momo = new class {
 
         0, 0,
 
-        this.canvas.width, 0,
+        this.canvas_width, 0,
 
-        this.canvas.width, this.canvas.height,
+        this.canvas_width, this.canvas_height,
 
         0, 0,
 
-        this.canvas.width, this.canvas.height,
+        this.canvas_width, this.canvas_height,
 
-        0, this.canvas.height
+        0, this.canvas_height
       ]
     );
 
@@ -306,7 +306,7 @@ let Momo = new class {
     this.context.bindBuffer(this.context.ARRAY_BUFFER, null);
 
     // Upload the canvas' resolution.
-    this.context.uniform2fv(this.locations.u_canvas_resolution, [this.canvas.width, this.canvas.height]);
+    this.context.uniform2fv(this.locations.u_canvas_resolution, [this.canvas_width, this.canvas_height]);
   }
 
   getTime() {
@@ -968,21 +968,25 @@ let Momo = new class {
   setCanvasWidth(width) {
 
     this.canvas.width = width;
+    this.canvas_width = width;
 
-    // @TODO: Update a_texture_position whenever the canvas' size changes.
+    // Update the vertex buffer.
+    this.setUniformsAndAttributes();
 
     // Update the viewport to reflect the new canvas size.
-    this.context.viewport(0, 0, this.canvas.width, this.canvas.height);
+    this.context.viewport(0, 0, this.canvas_width, this.canvas_height);
   }
 
   setCanvasHeight(height) {
 
     this.canvas.height = height;
+    this.canvas_height = height;
 
-    // @TODO: Update a_texture_position whenever the canvas' size changes.
+    // Update the vertex buffer.
+    this.setUniformsAndAttributes();
 
     // Update the viewport to reflect the new canvas size.
-    this.context.viewport(0, 0, this.canvas.width, this.canvas.height);
+    this.context.viewport(0, 0, this.canvas_width, this.canvas_height);
   }
 
   getCanvasWidth() {
@@ -1436,7 +1440,7 @@ let Momo = new class {
     this.translateCanvas(x, y);
 
     // Scale the bitmap to its proper resolution.
-    this.scaleCanvas(bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
+    this.scaleCanvas(bitmap.width / this.canvas_width, bitmap.height / this.canvas_height);
 
     // Upload the transformation matrix.
     this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
@@ -1477,7 +1481,7 @@ let Momo = new class {
     this.translateCanvas(-origin_x, -origin_y);
 
     // Scale the bitmap to its proper resolution.
-    this.scaleCanvas(bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
+    this.scaleCanvas(bitmap.width / this.canvas_width, bitmap.height / this.canvas_height);
 
     // Upload the transformation matrix.
     this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
@@ -1512,7 +1516,7 @@ let Momo = new class {
     this.translateCanvas(x, y);
 
     // Scale the bitmap to its proper resolution.
-    this.scaleCanvas(bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
+    this.scaleCanvas(bitmap.width / this.canvas_width, bitmap.height / this.canvas_height);
 
     // Upload the transformation matrix.
     this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
@@ -1547,7 +1551,7 @@ let Momo = new class {
     this.translateCanvas(x, y);
 
     // Scale the bitmap to its proper resolution.
-    this.scaleCanvas(bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
+    this.scaleCanvas(bitmap.width / this.canvas_width, bitmap.height / this.canvas_height);
 
     // Upload the transformation matrix.
     this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
@@ -1599,7 +1603,7 @@ let Momo = new class {
     this.translateCanvas(-center_x, -center_y);
 
     // Scale the bitmap to its proper resolution.
-    this.scaleCanvas(bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
+    this.scaleCanvas(bitmap.width / this.canvas_width, bitmap.height / this.canvas_height);
 
     // Upload the transformation matrix.
     this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
