@@ -363,7 +363,7 @@ let Momo = new class {
       break;
     }
 
-    if (event.type === "wheel" || event.which === 3) {
+    if (event.type == "wheel" || event.which == 3) {
 
       event.preventDefault();
     }
@@ -612,7 +612,7 @@ let Momo = new class {
 
   isMouseButtonUp(button) {
 
-    if (button === "any") {
+    if (button == "any") {
 
       let i = 0;
 
@@ -632,7 +632,7 @@ let Momo = new class {
 
   isMouseButtonDown(button) {
 
-    if (button === "any") {
+    if (button == "any") {
 
       let i = 0;
 
@@ -652,7 +652,7 @@ let Momo = new class {
 
   isMouseButtonPressed(button) {
 
-    if (button === "any") {
+    if (button == "any") {
 
       let i = 0;
 
@@ -672,7 +672,7 @@ let Momo = new class {
 
   isMouseButtonReleased(button) {
 
-    if (button === "any") {
+    if (button == "any") {
 
       let i = 0;
 
@@ -717,7 +717,7 @@ let Momo = new class {
 
   isMouseCursorHidden() {
 
-    return this.canvas.style.cursor === "none";
+    return this.canvas.style.cursor == "none";
   }
 
   lockMouse() {
@@ -735,7 +735,7 @@ let Momo = new class {
 
   isMouseLocked() {
 
-    return document.pointerLockElement === this.getCanvas();
+    return document.pointerLockElement == this.getCanvas();
   }
 
   manageKeyboardEvents(event) {
@@ -776,9 +776,9 @@ let Momo = new class {
 
   isKeyUp(key_code) {
 
-    if (key_code === "any") {
+    if (key_code == "any") {
 
-      if (this.key.length === 0) {
+      if (this.key.length == 0) {
 
         // Assume that at least one key is up before any keyboard events are fired.
         return true;
@@ -804,7 +804,7 @@ let Momo = new class {
 
   isKeyDown(key_code) {
 
-    if (key_code === "any") {
+    if (key_code == "any") {
 
       let i = 0;
 
@@ -826,7 +826,7 @@ let Momo = new class {
 
   isKeyPressed(key_code) {
 
-    if (key_code === "any") {
+    if (key_code == "any") {
 
       let i = 0;
 
@@ -848,7 +848,7 @@ let Momo = new class {
 
   isKeyReleased(key_code) {
 
-    if (key_code === "any") {
+    if (key_code == "any") {
 
       let i = 0;
 
@@ -1211,7 +1211,7 @@ let Momo = new class {
 
   playSample(sample, volume, speed, loop, identifier) {
 
-    if (this.sample_instances[identifier] === undefined) {
+    if (this.sample_instances[identifier] == undefined) {
 
       // Create a new instance of the sample.
       this.sample_instances[identifier] = sample.element.cloneNode();
@@ -1227,7 +1227,7 @@ let Momo = new class {
 
   adjustSample(identifier, volume, speed, loop) {
 
-    if (this.sample_instances[identifier] !== undefined) {
+    if (this.sample_instances[identifier] != undefined) {
 
       this.sample_instances[identifier].loop = loop;
       this.sample_instances[identifier].volume = volume;
@@ -1237,7 +1237,7 @@ let Momo = new class {
 
   stopSample(identifier) {
 
-    if (this.sample_instances[identifier] !== undefined) {
+    if (this.sample_instances[identifier] != undefined) {
 
       if (this.isSamplePlaying(identifier)) {
 
@@ -1250,7 +1250,7 @@ let Momo = new class {
 
   pauseSample(identifier) {
 
-    if (this.sample_instances[identifier] !== undefined) {
+    if (this.sample_instances[identifier] != undefined) {
 
       if (this.isSamplePlaying(identifier)) {
 
@@ -1261,7 +1261,7 @@ let Momo = new class {
 
   resumeSample(identifier) {
 
-    if (this.sample_instances[identifier] !== undefined) {
+    if (this.sample_instances[identifier] != undefined) {
 
       this.sample_instances[identifier].play();
     }
@@ -1269,7 +1269,7 @@ let Momo = new class {
 
   isSamplePaused(identifier) {
 
-    if (this.sample_instances[identifier] === undefined) {
+    if (this.sample_instances[identifier] == undefined) {
 
       // There exists no sample instance matching the specified identifier.
       return false;
@@ -1280,7 +1280,7 @@ let Momo = new class {
 
   isSamplePlaying(identifier) {
 
-    if (this.sample_instances[identifier] === undefined) {
+    if (this.sample_instances[identifier] == undefined) {
 
       // There exists no sample instance matching the specified identifier.
       return false;
@@ -1303,7 +1303,7 @@ let Momo = new class {
 
     let properties = this.sample_instances[identifier];
 
-    if (properties === undefined) {
+    if (properties == undefined) {
 
       // There does not exist a sample instance with this identifier.
       return undefined;
