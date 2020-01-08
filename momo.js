@@ -1425,7 +1425,7 @@ let Momo = new class {
     return bitmap.height;
   }
 
-  drawBitmap(bitmap, x, y) {
+  drawConsolidatedBitmap(bitmap, texture_offset, tint) {
 
     this.context.useProgram(this.shader_program);
 
@@ -1436,10 +1436,7 @@ let Momo = new class {
 
     this.saveCanvasState();
 
-    // Move the bitmap.
-    this.translateCanvas(x, y);
-
-    // Scale the bitmap to its proper resolution.
+    // Scale the texture to its proper resolution.
     this.scaleCanvas(bitmap.width / this.canvas_width, bitmap.height / this.canvas_height);
 
     // Upload the transformation matrix.
@@ -1447,11 +1444,11 @@ let Momo = new class {
 
     this.restoreCanvasState();
 
-    // No tinting.
-    this.context.uniform4fv(this.locations.u_tint, [1.0, 1.0, 1.0, 1.0]);
+    // Upload the tint.
+    this.context.uniform4fv(this.locations.u_tint, [tint.r, tint.g, tint.b, tint.a]);
 
-    // Upload the default texture offset.
-    this.context.uniform4fv(this.locations.u_texture_offset, [0.0, 0.0, 1.0, 1.0]);
+    // Upload the texture offset.
+    this.context.uniform4fv(this.locations.u_texture_offset, texture_offset);
 
     // Draw the bitmap.
     this.context.drawArrays(this.context.TRIANGLES, 0, 6);
@@ -1460,14 +1457,19 @@ let Momo = new class {
     this.context.bindTexture(this.context.TEXTURE_2D, null);
   }
 
+  drawBitmap(bitmap, x, y) {
+
+    this.saveCanvasState();
+
+    // Move the bitmap.
+    this.translateCanvas(x, y);
+
+    this.drawConsolidatedBitmap(bitmap, [0.0, 0.0, 1.0, 1.0], this.makeColor(1.0, 1.0, 1.0));
+
+    this.restoreCanvasState();
+  }
+
   drawScaledBitmap(bitmap, origin_x, origin_y, scale_width, scale_height, x, y) {
-
-    this.context.useProgram(this.shader_program);
-
-    // Set the active texture.
-    this.context.activeTexture(this.context.TEXTURE0);
-    this.context.bindTexture(this.context.TEXTURE_2D, bitmap.texture);
-    this.context.uniform1i(this.locations.u_texture, 0);
 
     this.saveCanvasState();
 
@@ -1480,86 +1482,24 @@ let Momo = new class {
     // Offset by the origin.
     this.translateCanvas(-origin_x, -origin_y);
 
-    // Scale the bitmap to its proper resolution.
-    this.scaleCanvas(bitmap.width / this.canvas_width, bitmap.height / this.canvas_height);
-
-    // Upload the transformation matrix.
-    this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
+    this.drawConsolidatedBitmap(bitmap, [0.0, 0.0, 1.0, 1.0], this.makeColor(1.0, 1.0, 1.0));
 
     this.restoreCanvasState();
-
-    // No tinting.
-    this.context.uniform4fv(this.locations.u_tint, [1.0, 1.0, 1.0, 1.0]);
-
-    // Upload the default texture offset.
-    this.context.uniform4fv(this.locations.u_texture_offset, [0.0, 0.0, 1.0, 1.0]);
-
-    // Draw the bitmap.
-    this.context.drawArrays(this.context.TRIANGLES, 0, 6);
-
-    // Unbind the texture.
-    this.context.bindTexture(this.context.TEXTURE_2D, null);
   }
 
   drawTintedBitmap(bitmap, tint, x, y) {
 
-    this.context.useProgram(this.shader_program);
-
-    // Set the active texture.
-    this.context.activeTexture(this.context.TEXTURE0);
-    this.context.bindTexture(this.context.TEXTURE_2D, bitmap.texture);
-    this.context.uniform1i(this.locations.u_texture, 0);
-
     this.saveCanvasState();
 
     // Move the bitmap.
     this.translateCanvas(x, y);
 
-    // Scale the bitmap to its proper resolution.
-    this.scaleCanvas(bitmap.width / this.canvas_width, bitmap.height / this.canvas_height);
-
-    // Upload the transformation matrix.
-    this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
+    this.drawConsolidatedBitmap(bitmap, [0.0, 0.0, 1.0, 1.0], tint);
 
     this.restoreCanvasState();
-
-    // Upload the tint.
-    this.context.uniform4fv(this.locations.u_tint, [tint.r, tint.g, tint.b, tint.a]);
-
-    // Upload the default texture offset.
-    this.context.uniform4fv(this.locations.u_texture_offset, [0.0, 0.0, 1.0, 1.0]);
-
-    // Draw the bitmap.
-    this.context.drawArrays(this.context.TRIANGLES, 0, 6);
-
-    // Unbind the texture.
-    this.context.bindTexture(this.context.TEXTURE_2D, null);
   }
 
   drawClippedBitmap(bitmap, start_x, start_y, width, height, x, y) {
-
-    this.context.useProgram(this.shader_program);
-
-    // Set the active texture.
-    this.context.activeTexture(this.context.TEXTURE0);
-    this.context.bindTexture(this.context.TEXTURE_2D, bitmap.texture);
-    this.context.uniform1i(this.locations.u_texture, 0);
-
-    this.saveCanvasState();
-
-    // Move the bitmap.
-    this.translateCanvas(x, y);
-
-    // Scale the bitmap to its proper resolution.
-    this.scaleCanvas(bitmap.width / this.canvas_width, bitmap.height / this.canvas_height);
-
-    // Upload the transformation matrix.
-    this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
-
-    this.restoreCanvasState();
-
-    // No tinting.
-    this.context.uniform4fv(this.locations.u_tint, [1.0, 1.0, 1.0, 1.0]);
 
     let texture_offset = [
 
@@ -1572,24 +1512,17 @@ let Momo = new class {
       (start_y + height) / bitmap.height
     ];
 
-    // Upload the texture offset.
-    this.context.uniform4fv(this.locations.u_texture_offset, texture_offset);
+    this.saveCanvasState();
 
-    // Draw the bitmap.
-    this.context.drawArrays(this.context.TRIANGLES, 0, 6);
+    // Move the bitmap.
+    this.translateCanvas(x, y);
 
-    // Unbind the texture.
-    this.context.bindTexture(this.context.TEXTURE_2D, null);
+    this.drawConsolidatedBitmap(bitmap, texture_offset, this.makeColor(1.0, 1.0, 1.0));
+
+    this.restoreCanvasState();
   }
 
   drawRotatedBitmap(bitmap, center_x, center_y, draw_x, draw_y, theta) {
-
-    this.context.useProgram(this.shader_program);
-
-    // Set the active texture.
-    this.context.activeTexture(this.context.TEXTURE0);
-    this.context.bindTexture(this.context.TEXTURE_2D, bitmap.texture);
-    this.context.uniform1i(this.locations.u_texture, 0);
 
     this.saveCanvasState();
 
@@ -1602,25 +1535,9 @@ let Momo = new class {
     // Move the origin back.
     this.translateCanvas(-center_x, -center_y);
 
-    // Scale the bitmap to its proper resolution.
-    this.scaleCanvas(bitmap.width / this.canvas_width, bitmap.height / this.canvas_height);
-
-    // Upload the transformation matrix.
-    this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
+    this.drawConsolidatedBitmap(bitmap, [0.0, 0.0, 1.0, 1.0], this.makeColor(1.0, 1.0, 1.0));
 
     this.restoreCanvasState();
-
-    // No tinting.
-    this.context.uniform4fv(this.locations.u_tint, [1.0, 1.0, 1.0, 1.0]);
-
-    // Upload the default texture offset.
-    this.context.uniform4fv(this.locations.u_texture_offset, [0.0, 0.0, 1.0, 1.0]);
-
-    // Draw the bitmap.
-    this.context.drawArrays(this.context.TRIANGLES, 0, 6);
-
-    // Unbind the texture.
-    this.context.bindTexture(this.context.TEXTURE_2D, null);
   }
 
   createBitmap(width, height) {
