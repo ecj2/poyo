@@ -7,8 +7,6 @@ let Momo = new class {
     this.canvas = undefined;
     this.context = undefined;
 
-    this.frame_rate = 60;
-
     this.key = [];
     this.key_codes = this.defineKeyCodes();
     this.key_pressed = [];
@@ -1014,52 +1012,51 @@ let Momo = new class {
     }
   }
 
-  getFrameRate() {
-
-    return this.frame_rate;
-  }
-
   getVersion() {
 
     return this.version;
   }
 
-  createGameLoop(procedure, frame_rate) {
-
-    this.frame_rate = frame_rate;
+  createGameLoop(update_procedure, render_procedure, update_interval) {
 
     setInterval(
 
       (() => {
 
-        if (!document.hidden) {
+        update_procedure();
 
-          procedure();
+        let i = 0;
 
-          let i = 0;
+        for (i; i < 3; ++i) {
 
-          for (i; i < 3; ++i) {
+          // Clear mouse button arrays so each mouse button event fires only once.
+          this.mouse_button_pressed[i] = false;
+          this.mouse_button_released[i] = false;
+        }
 
-            // Clear mouse button arrays so each mouse button event fires only once.
-            this.mouse_button_pressed[i] = false;
-            this.mouse_button_released[i] = false;
-          }
+        i = 0;
 
-          i = 0;
+        let length = this.key.length;
 
-          length = this.key.length;
+        for (i; i < length; ++i) {
 
-          for (i; i < length; ++i) {
-
-            // Clear key arrays so each keyboard event fires only once.
-            this.key_pressed[i] = false;
-            this.key_released[i] = false;
-          }
+          // Clear key arrays so each keyboard event fires only once.
+          this.key_pressed[i] = false;
+          this.key_released[i] = false;
         }
       }).bind(this),
 
-      1000 / this.frame_rate
+      1000 / update_interval
     );
+
+    let animation_request = () => {
+
+      window.requestAnimationFrame(animation_request);
+
+      render_procedure();
+    };
+
+    window.requestAnimationFrame(animation_request);
   }
 
   makeColor(r, g, b, a = 1.0) {
