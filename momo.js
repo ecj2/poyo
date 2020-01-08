@@ -1469,12 +1469,12 @@ let Momo = new class {
     this.restoreCanvasState();
   }
 
-  drawScaledBitmap(bitmap, origin_x, origin_y, scale_width, scale_height, x, y) {
+  drawScaledBitmap(bitmap, origin_x, origin_y, scale_width, scale_height, draw_x, draw_y) {
 
     this.saveCanvasState();
 
     // Move the bitmap.
-    this.translateCanvas(x + origin_x, y + origin_y);
+    this.translateCanvas(draw_x, draw_y);
 
     // Scale the bitmap.
     this.scaleCanvas(scale_width, scale_height);
@@ -1527,7 +1527,7 @@ let Momo = new class {
     this.saveCanvasState();
 
     // Move the origin.
-    this.translateCanvas(draw_x + center_x, draw_y + center_y);
+    this.translateCanvas(draw_x, draw_y);
 
     // Rotate the bitmap around the newly-moved origin.
     this.rotateCanvas(theta);
