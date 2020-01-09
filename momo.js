@@ -1165,7 +1165,7 @@ let Momo = new class {
     let r = fill_color.r * 255.0;
     let g = fill_color.g * 255.0;
     let b = fill_color.b * 255.0;
-    let a = fill_color.a * 255.0;
+    let a = fill_color.a;
 
     this.font_canvas_context.textAlign = alignment;
 
@@ -1181,7 +1181,7 @@ let Momo = new class {
       r = outline_color.r * 255.0;
       g = outline_color.g * 255.0;
       b = outline_color.b * 255.0;
-      a = outline_color.a * 255.0;
+      a = outline_color.a;
 
       this.font_canvas_context.lineWidth = outline_width;
       this.font_canvas_context.strokeStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
