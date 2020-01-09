@@ -8,19 +8,13 @@ let Momo = new class {
     this.context = undefined;
 
     this.mouse = {};
-
-    this.key = [];
-    this.key_codes = this.defineKeyCodes();
-    this.key_pressed = [];
-    this.key_released = [];
+    this.keyboard = {};
 
     this.time_initialized = undefined;
 
     this.sample_instances = [];
 
     this.back_buffer = undefined;
-
-    this.keyboard_method = this.manageKeyboardEvents.bind(this);
 
     this.version = 2;
 
@@ -77,6 +71,20 @@ let Momo = new class {
       focused: false,
 
       method: this.manageMouseEvents.bind(this)
+    };
+
+    // Construct the keyboard object.
+    this.keyboard = {
+
+      key: [],
+
+      codes: this.defineKeyCodes(),
+
+      pressed: [],
+
+      released: [],
+
+      method: this.manageKeyboardEvents.bind(this)
     };
 
     return true;
@@ -761,18 +769,18 @@ let Momo = new class {
 
       case "keyup":
 
-        this.key[event.which] = false;
-        this.key_released[event.which] = true;
+        this.keyboard.key[event.which] = false;
+        this.keyboard.released[event.which] = true;
       break;
 
       case "keydown":
 
-        if (!this.key[event.which]) {
+        if (!this.keyboard.key[event.which]) {
 
-          this.key_pressed[event.which] = true;
+          this.keyboard.pressed[event.which] = true;
         }
 
-        this.key[event.which] = true;
+        this.keyboard.key[event.which] = true;
       break;
     }
 
@@ -781,21 +789,23 @@ let Momo = new class {
 
   installKeyboard() {
 
-    document.addEventListener("keyup", this.keyboard_method);
-    document.addEventListener("keydown", this.keyboard_method);
+    document.addEventListener("keyup", this.keyboard.method);
+    document.addEventListener("keydown", this.keyboard.method);
   }
 
   uninstallKeyboard() {
 
-    document.removeEventListener("keyup", this.keyboard_method);
-    document.removeEventListener("keydown", this.keyboard_method);
+    document.removeEventListener("keyup", this.keyboard.method);
+    document.removeEventListener("keydown", this.keyboard.method);
   }
 
   isKeyUp(key_code) {
 
     if (key_code == "any") {
 
-      if (this.key.length == 0) {
+      let length = this.keyboard.key.length;
+
+      if (length == 0) {
 
         // Assume that at least one key is up before any keyboard events are fired.
         return true;
@@ -803,11 +813,9 @@ let Momo = new class {
 
       let i = 0;
 
-      let length = this.key.length;
-
       for (i; i < length; ++i) {
 
-        if (!this.key[i]) {
+        if (!this.keyboard.key[i]) {
 
           return true;
         }
@@ -816,7 +824,7 @@ let Momo = new class {
       return false;
     }
 
-    return !this.key[this.key_codes[key_code]];
+    return !this.keyboard.key[this.keyboard.codes[key_code]];
   }
 
   isKeyDown(key_code) {
@@ -825,11 +833,11 @@ let Momo = new class {
 
       let i = 0;
 
-      let length = this.key.length;
+      let length = this.keyboard.key.length;
 
       for (i; i < length; ++i) {
 
-        if (this.key[i]) {
+        if (this.keyboard.key[i]) {
 
           return true;
         }
@@ -838,7 +846,7 @@ let Momo = new class {
       return false;
     }
 
-    return this.key[this.key_codes[key_code]];
+    return this.keyboard.key[this.keyboard.codes[key_code]];
   }
 
   isKeyPressed(key_code) {
@@ -847,11 +855,11 @@ let Momo = new class {
 
       let i = 0;
 
-      let length = this.key_pressed.length;
+      let length = this.keyboard.pressed.length;
 
       for (i; i < length; ++i) {
 
-        if (this.key_pressed[i]) {
+        if (this.keyboard.pressed[i]) {
 
           return true;
         }
@@ -860,7 +868,7 @@ let Momo = new class {
       return false;
     }
 
-    return this.key_pressed[this.key_codes[key_code]];
+    return this.keyboard.pressed[this.keyboard.codes[key_code]];
   }
 
   isKeyReleased(key_code) {
@@ -869,11 +877,11 @@ let Momo = new class {
 
       let i = 0;
 
-      let length = this.key_released.length;
+      let length = this.keyboard.released.length;
 
       for (i; i < length; ++i) {
 
-        if (this.key_released[i]) {
+        if (this.keyboard.released[i]) {
 
           return true;
         }
@@ -882,7 +890,7 @@ let Momo = new class {
       return false;
     }
 
-    return this.key_released[this.key_codes[key_code]];
+    return this.keyboard.released[this.keyboard.codes[key_code]];
   }
 
   setCanvas(canvas_identifier, canvas_width, canvas_height) {
@@ -1053,13 +1061,13 @@ let Momo = new class {
 
         i = 0;
 
-        let length = this.key.length;
+        let length = this.keyboard.key.length;
 
         for (i; i < length; ++i) {
 
           // Clear key arrays so each keyboard event fires only once.
-          this.key_pressed[i] = false;
-          this.key_released[i] = false;
+          this.keyboard.pressed[i] = false;
+          this.keyboard.released[i] = false;
         }
       }).bind(this),
 
