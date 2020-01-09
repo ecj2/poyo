@@ -7,21 +7,12 @@ let Momo = new class {
     this.canvas = undefined;
     this.context = undefined;
 
+    this.mouse = {};
+
     this.key = [];
     this.key_codes = this.defineKeyCodes();
     this.key_pressed = [];
     this.key_released = [];
-
-    this.mouse_x = 0;
-    this.mouse_y = 0;
-    this.mouse_z = 0;
-
-    this.mouse_button = [];
-    this.mouse_buttons = this.defineMouseButtons();
-    this.mouse_button_pressed = [];
-    this.mouse_button_released = [];
-
-    this.mouse_focused = false;
 
     this.time_initialized = undefined;
 
@@ -29,7 +20,6 @@ let Momo = new class {
 
     this.back_buffer = undefined;
 
-    this.mouse_method = this.manageMouseEvents.bind(this);
     this.keyboard_method = this.manageKeyboardEvents.bind(this);
 
     this.version = 2;
@@ -66,6 +56,28 @@ let Momo = new class {
 
     // Set the time in which the library was initialized.
     this.time_initialized = Date.now();
+
+    // Construct the mouse object.
+    this.mouse = {
+
+      x: 0,
+
+      y: 0,
+
+      z: 0,
+
+      button: [],
+
+      buttons: this.defineMouseButtons(),
+
+      pressed: [],
+
+      released: [],
+
+      focused: false,
+
+      method: this.manageMouseEvents.bind(this)
+    };
 
     return true;
   }
@@ -324,46 +336,46 @@ let Momo = new class {
 
       case "wheel":
 
-        this.mouse_z = event.deltaY < 0 ? 1 : -1;
+        this.mouse.z = event.deltaY < 0 ? 1 : -1;
       break;
 
       case "mouseup":
 
-        this.mouse_button[event.button] = false;
-        this.mouse_button_released[event.button] = true;
+        this.mouse.button[event.button] = false;
+        this.mouse.released[event.button] = true;
       break;
 
       case "mouseout":
 
-        this.mouse_focused = false;
+        this.mouse.focused = false;
       break;
 
       case "mouseover":
 
-        this.mouse_focused = true;
+        this.mouse.focused = true;
       break;
 
       case "mousedown":
 
-        if (!this.mouse_button[event.button]) {
+        if (!this.mouse.button[event.button]) {
 
-          this.mouse_button_pressed[event.button] = true;
+          this.mouse.pressed[event.button] = true;
         }
 
-        this.mouse_button[event.button] = true;
+        this.mouse.button[event.button] = true;
       break;
 
       case "mousemove":
 
         if (this.isMouseLocked()) {
 
-          this.mouse_x += event.movementX;
-          this.mouse_y += event.movementY;
+          this.mouse.x += event.movementX;
+          this.mouse.y += event.movementY;
         }
         else {
 
-          this.mouse_x = event.offsetX;
-          this.mouse_y = event.offsetY;
+          this.mouse.x = event.offsetX;
+          this.mouse.y = event.offsetY;
         }
       break;
     }
@@ -590,29 +602,29 @@ let Momo = new class {
 
   installMouse() {
 
-    this.canvas.addEventListener("wheel", this.mouse_method);
-    this.canvas.addEventListener("mouseup", this.mouse_method);
-    this.canvas.addEventListener("mouseout", this.mouse_method);
-    this.canvas.addEventListener("mouseover", this.mouse_method);
-    this.canvas.addEventListener("mousedown", this.mouse_method);
-    this.canvas.addEventListener("mousemove", this.mouse_method);
-    this.canvas.addEventListener("contextmenu", this.mouse_method);
+    this.canvas.addEventListener("wheel", this.mouse.method);
+    this.canvas.addEventListener("mouseup", this.mouse.method);
+    this.canvas.addEventListener("mouseout", this.mouse.method);
+    this.canvas.addEventListener("mouseover", this.mouse.method);
+    this.canvas.addEventListener("mousedown", this.mouse.method);
+    this.canvas.addEventListener("mousemove", this.mouse.method);
+    this.canvas.addEventListener("contextmenu", this.mouse.method);
   }
 
   uninstallMouse() {
 
-    this.canvas.removeEventListener("wheel", this.mouse_method);
-    this.canvas.removeEventListener("mouseup", this.mouse_method);
-    this.canvas.removeEventListener("mouseout", this.mouse_method);
-    this.canvas.removeEventListener("mouseover", this.mouse_method);
-    this.canvas.removeEventListener("mousedown", this.mouse_method);
-    this.canvas.removeEventListener("mousemove", this.mouse_method);
-    this.canvas.removeEventListener("contextmenu", this.mouse_method);
+    this.canvas.removeEventListener("wheel", this.mouse.method);
+    this.canvas.removeEventListener("mouseup", this.mouse.method);
+    this.canvas.removeEventListener("mouseout", this.mouse.method);
+    this.canvas.removeEventListener("mouseover", this.mouse.method);
+    this.canvas.removeEventListener("mousedown", this.mouse.method);
+    this.canvas.removeEventListener("mousemove", this.mouse.method);
+    this.canvas.removeEventListener("contextmenu", this.mouse.method);
   }
 
   isMouseFocused() {
 
-    return this.mouse_focused;
+    return this.mouse.focused;
   }
 
   isMouseButtonUp(button) {
@@ -623,7 +635,7 @@ let Momo = new class {
 
       for (i; i < 3; ++i) {
 
-        if (!this.mouse_button[i]) {
+        if (!this.mouse.button[i]) {
 
           return true;
         }
@@ -632,7 +644,7 @@ let Momo = new class {
       return false;
     }
 
-    return !this.mouse_button[this.mouse_buttons[button]];
+    return !this.mouse.button[this.mouse.buttons[button]];
   }
 
   isMouseButtonDown(button) {
@@ -643,7 +655,7 @@ let Momo = new class {
 
       for (i; i < 3; ++i) {
 
-        if (this.mouse_button[i]) {
+        if (this.mouse.button[i]) {
 
           return true;
         }
@@ -652,7 +664,7 @@ let Momo = new class {
       return false;
     }
 
-    return this.mouse_button[this.mouse_buttons[button]];
+    return this.mouse.button[this.mouse.buttons[button]];
   }
 
   isMouseButtonPressed(button) {
@@ -663,7 +675,7 @@ let Momo = new class {
 
       for (i; i < 3; ++i) {
 
-        if (this.mouse_button_pressed[i]) {
+        if (this.mouse.pressed[i]) {
 
           return true;
         }
@@ -672,7 +684,7 @@ let Momo = new class {
       return false;
     }
 
-    return this.mouse_button_pressed[this.mouse_buttons[button]];
+    return this.mouse.pressed[this.mouse.buttons[button]];
   }
 
   isMouseButtonReleased(button) {
@@ -683,7 +695,7 @@ let Momo = new class {
 
       for (i; i < 3; ++i) {
 
-        if (this.mouse_button_released[i]) {
+        if (this.mouse.released[i]) {
 
           return true;
         }
@@ -692,22 +704,22 @@ let Momo = new class {
       return false;
     }
 
-    return this.mouse_button_released[this.mouse_buttons[button]];
+    return this.mouse.released[this.mouse.buttons[button]];
   }
 
   getMouseX() {
 
-    return this.mouse_x;
+    return this.mouse.x;
   }
 
   getMouseY() {
 
-    return this.mouse_y;
+    return this.mouse.y;
   }
 
   getMouseZ() {
 
-    return this.mouse_z;
+    return this.mouse.z;
   }
 
   hideMouseCursor() {
@@ -1035,8 +1047,8 @@ let Momo = new class {
         for (i; i < 3; ++i) {
 
           // Clear mouse button arrays so each mouse button event fires only once.
-          this.mouse_button_pressed[i] = false;
-          this.mouse_button_released[i] = false;
+          this.mouse.pressed[i] = false;
+          this.mouse.released[i] = false;
         }
 
         i = 0;
