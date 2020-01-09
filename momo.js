@@ -47,6 +47,11 @@ let Momo = new class {
     this.matrix_stack = [];
 
     this.matrix_stack[0] = this.getIdentityMatrix();
+
+    this.font_texture = undefined;
+
+    this.font_canvas = undefined;
+    this.font_canvas_context = undefined;
   }
 
   initialize() {
@@ -1064,18 +1069,6 @@ let Momo = new class {
     return {r: r, g: g, b: b, a: a};
   }
 
-  setStrokeAndFillStyle(color, line_width = 0) {
-
-    /*let r = color.r;
-    let g = color.g;
-    let b = color.b;
-    let a = color.a / 255.0;
-
-    this.target_canvas.context.lineWidth = line_width;
-    this.target_canvas.context.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
-    this.target_canvas.context.strokeStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";*/
-  }
-
   setEntryPoint(function_name) {
 
     // Call the specified function when the window loads.
@@ -1089,11 +1082,11 @@ let Momo = new class {
 
   loadFont(file_name, style = "normal") {
 
-    /*return fetch(file_name).then(
+    return fetch(file_name).then(
 
       (response) => {
 
-        if (response.status === 200) {
+        if (response.status == 200) {
 
           let element = document.createElement("style");
           let font_name = "font_" + Math.random().toString(16).slice(2);
@@ -1116,12 +1109,12 @@ let Momo = new class {
           return false;
         }
       }
-    );*/
+    );
   }
 
   loadFontFace(font_family_name, style = "normal") {
 
-    /*let font = {
+    let font = {
 
       name: font_family_name,
 
@@ -1129,27 +1122,93 @@ let Momo = new class {
     };
 
     // Pre-load the font.
-    this.drawText(font, this.makeColor(0, 0, 0, 0), 0, 0, 0, "left", "");
+    this.drawText(font, this.makeColor(0.0, 0.0, 0.0, 0.0), 0, 0, 0, "left", "");
 
-    return font;*/
+    return font;
   }
 
   drawText(font, fill_color, size, x, y, alignment, text, outline_color = undefined, outline_width = 0) {
 
-    /*this.target_canvas.context.textAlign = alignment;
+    if (this.font_texture == undefined) {
 
-    this.target_canvas.context.font = font.style + " " + size + "px " + font.name;
+      this.font_canvas = document.createElement("canvas");
 
-    this.setStrokeAndFillStyle(fill_color);
+      // @TODO: Update this whenever the main canvas' dimensions change.
 
-    this.target_canvas.context.fillText(text, x, y + size);
+      // Match the canvas for text-drawing to that of the main canvas' dimensions.
+      this.font_canvas.width = this.canvas_width;
+      this.font_canvas.height = this.canvas_height;
 
-    if (outline_color !== undefined && outline_width > 0) {
+      // Use the Canvas 2D context to handle drawing text.
+      this.font_canvas_context = this.font_canvas.getContext("2d");
 
-      this.setStrokeAndFillStyle(outline_color, outline_width);
+      this.font_texture = this.context.createTexture();
 
-      this.target_canvas.context.strokeText(text, x, y + size);
-    }*/
+      this.context.bindTexture(this.context.TEXTURE_2D, this.font_texture);
+
+      this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.context.RGBA, this.context.UNSIGNED_BYTE, this.font_canvas);
+
+      // Clamp the texture to the edges if it bleeds beyond its boundaries.
+      this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_S, this.context.CLAMP_TO_EDGE);
+      this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_T, this.context.CLAMP_TO_EDGE);
+
+      // Use linear filtering.
+      this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.context.LINEAR);
+      this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.context.LINEAR);
+
+      this.context.bindTexture(this.context.TEXTURE_2D, null);
+    }
+
+    // Clear the canvas.
+    this.font_canvas_context.clearRect(0, 0, this.canvas_width, this.canvas_height);
+
+    let r = fill_color.r * 255.0;
+    let g = fill_color.g * 255.0;
+    let b = fill_color.b * 255.0;
+    let a = fill_color.a * 255.0;
+
+    this.font_canvas_context.textAlign = alignment;
+
+    this.font_canvas_context.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
+
+    this.font_canvas_context.font = font.style + " " + size + "px " + font.name;
+
+    // Draw the text to the canvas.
+    this.font_canvas_context.fillText(text, x, y + size);
+
+    if (outline_color != undefined && outline_width > 0) {
+
+      r = outline_color.r * 255.0;
+      g = outline_color.g * 255.0;
+      b = outline_color.b * 255.0;
+      a = outline_color.a * 255.0;
+
+      this.font_canvas_context.lineWidth = outline_width;
+      this.font_canvas_context.strokeStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
+
+      // Draw the outline.
+      this.font_canvas_context.strokeText(text, x, y + size);
+    }
+
+    this.context.bindTexture(this.context.TEXTURE_2D, this.font_texture);
+
+    // Use the font canvas' contents as a texture.
+    this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.context.RGBA, this.context.UNSIGNED_BYTE, this.font_canvas);
+
+    this.context.bindTexture(this.context.TEXTURE_2D, null);
+
+    // Create a bitmap using the texture from the font canvas.
+    let font_bitmap = {
+
+      width: this.canvas_width,
+
+      height: this.canvas_height,
+
+      texture: this.font_texture
+    };
+
+    // Draw the font bitmap.
+    this.drawBitmap(font_bitmap, 0, 0);
   }
 
   loadSample(file_name) {
