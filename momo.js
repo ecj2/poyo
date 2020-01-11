@@ -36,6 +36,8 @@ let Momo = new class {
 
     this.font_canvas = undefined;
     this.font_canvas_context = undefined;
+
+    this.cache = {};
   }
 
   initialize() {
@@ -85,6 +87,13 @@ let Momo = new class {
       released: [],
 
       method: this.manageKeyboardEvents.bind(this)
+    };
+
+    this.cache = {
+
+      tint: "",
+
+      texture_offset: []
     };
 
     return true;
@@ -1495,6 +1504,26 @@ let Momo = new class {
 
   drawConsolidatedBitmap(bitmap, texture_offset, tint) {
 
+    let tint_needs_updating = false;
+    let texture_offset_needs_updating = false;
+
+    if (this.cache.tint != "" + tint.r + tint.g + tint.b + tint.a) {
+
+      tint_needs_updating = true;
+    }
+
+    let i = 0;
+
+    for (i; i < 4; ++i) {
+
+      if (this.cache.texture_offset[i] != texture_offset[i]) {
+
+        texture_offset_needs_updating = true;
+
+        break;
+      }
+    }
+
     this.context.useProgram(this.shader_program);
 
     // Set the active texture.
@@ -1512,17 +1541,26 @@ let Momo = new class {
 
     this.restoreCanvasState();
 
-    // Upload the tint.
-    this.context.uniform4fv(this.locations.u_tint, [tint.r, tint.g, tint.b, tint.a]);
+    if (tint_needs_updating) {
 
-    // Upload the texture offset.
-    this.context.uniform4fv(this.locations.u_texture_offset, texture_offset);
+      // Upload the tint.
+      this.context.uniform4fv(this.locations.u_tint, [tint.r, tint.g, tint.b, tint.a]);
+
+      // Cache the tint for next time.
+      this.cache.tint = "" + tint.r + tint.g + tint.b + tint.a;
+    }
+
+    if (texture_offset_needs_updating) {
+
+      // Upload the texture offset.
+      this.context.uniform4fv(this.locations.u_texture_offset, texture_offset);
+
+      // Cache the texture offset for next time.
+      this.cache.texture_offset = texture_offset;
+    }
 
     // Draw the bitmap.
     this.context.drawArrays(this.context.TRIANGLE_FAN, 0, 4);
-
-    // Unbind the texture.
-    this.context.bindTexture(this.context.TEXTURE_2D, null);
   }
 
   drawBitmap(bitmap, x, y) {
