@@ -275,17 +275,13 @@ let Momo = new class {
 
       [
 
-        0, 0,
+        0.0, 0.0,
 
-        this.canvas_width, 0,
-
-        this.canvas_width, this.canvas_height,
-
-        0, 0,
+        this.canvas_width, 0.0,
 
         this.canvas_width, this.canvas_height,
 
-        0, this.canvas_height
+        0.0, this.canvas_height
       ]
     );
 
@@ -308,10 +304,6 @@ let Momo = new class {
         0.0, 0.0,
 
         1.0, 0.0,
-
-        1.0, 1.0,
-
-        0.0, 0.0,
 
         1.0, 1.0,
 
@@ -1527,7 +1519,7 @@ let Momo = new class {
     this.context.uniform4fv(this.locations.u_texture_offset, texture_offset);
 
     // Draw the bitmap.
-    this.context.drawArrays(this.context.TRIANGLES, 0, 6);
+    this.context.drawArrays(this.context.TRIANGLE_FAN, 0, 4);
 
     // Unbind the texture.
     this.context.bindTexture(this.context.TEXTURE_2D, null);
