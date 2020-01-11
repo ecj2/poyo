@@ -42,9 +42,9 @@ let Momo = new class {
 
     let canvas = document.createElement("canvas");
 
-    if (!!!(canvas && canvas.getContext("webgl"))) {
+    if (!!!(canvas && canvas.getContext("webgl2"))) {
 
-      // The browser does not support the canvas element or WebGL.
+      // The browser does not support the canvas element or WebGL 2.
       return false;
     }
 
@@ -901,7 +901,7 @@ let Momo = new class {
     this.canvas = canvas;
     this.context = canvas.getContext(
 
-      "webgl",
+      "webgl2",
 
       {
 
