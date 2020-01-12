@@ -1471,6 +1471,11 @@ let Momo = new class {
 
   drawConsolidatedBitmap(bitmap, texture_offset, tint) {
 
+    if (bitmap.texture_offset[0] != -1.0) {
+
+      texture_offset = bitmap.texture_offset;
+    }
+
     if (bitmap.tint.a != -1.0) {
 
       // Combine tints.
@@ -1532,8 +1537,6 @@ let Momo = new class {
     this.saveCanvasState();
 
     if (bitmap.texture_offset[0] != -1.0) {
-
-      texture_offset = bitmap.texture_offset;
 
       // Scale the texture to its proper resolution.
       this.scaleCanvas(bitmap.parent_width / this.canvas_width, bitmap.parent_height / this.canvas_height);
