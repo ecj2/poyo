@@ -19,8 +19,6 @@ let Momo = new class {
     this.version = 2;
 
     this.shader_program = undefined;
-
-    // Uniform and attribute locations.
     this.locations = {};
 
     this.texture_filtering = undefined;
@@ -30,17 +28,9 @@ let Momo = new class {
 
     this.matrix_stack = [];
 
-    this.matrix_stack[0] = this.getIdentityMatrix();
-
-    this.font_texture = undefined;
-
-    this.font_canvas = undefined;
-    this.font_canvas_context = undefined;
-
     this.cache = {};
 
     this.hold_texture_switching = false;
-
     this.texture_already_set = false;
   }
 
@@ -57,7 +47,6 @@ let Momo = new class {
     // Set the time in which the library was initialized.
     this.time_initialized = Date.now();
 
-    // Construct the mouse object.
     this.mouse = {
 
       x: 0,
@@ -79,7 +68,6 @@ let Momo = new class {
       method: this.manageMouseEvents.bind(this)
     };
 
-    // Construct the keyboard object.
     this.keyboard = {
 
       key: [],
@@ -97,8 +85,16 @@ let Momo = new class {
 
       tint: "",
 
-      texture_offset: []
+      texture_offset: [],
+
+      font_texture: undefined,
+
+      font_canvas: undefined,
+
+      font_canvas_context: undefined
     };
+
+    this.matrix_stack[0] = this.getIdentityMatrix();
 
     return true;
   }
@@ -223,59 +219,23 @@ let Momo = new class {
   getUniformAndAttributeLocations() {
 
     this.locations.a_vertex_position = this.context.getAttribLocation(this.shader_program, "a_vertex_position");
-
-    if (this.locations.a_vertex_position == -1) {
-
-      // Failed to find location of a_vertex_position.
-      return false;
-    }
-
     this.locations.a_texture_position = this.context.getAttribLocation(this.shader_program, "a_texture_position");
 
-    if (this.locations.a_texture_position == -1) {
-
-      // Failed to find location of a_texture_position.
-      return false;
-    }
-
-    this.locations.u_texture = this.context.getUniformLocation(this.shader_program, "u_texture");
-
-    if (this.locations.u_texture == null) {
-
-      // Failed to find location of u_texture.
-      return false;
-    }
-
+    this.locations.u_tint = this.context.getUniformLocation(this.shader_program, "u_tint");
     this.locations.u_matrix = this.context.getUniformLocation(this.shader_program, "u_matrix");
-
-    if (this.locations.u_matrix == null) {
-
-      // Failed to find location of u_matrix.
-      return false;
-    }
-
+    this.locations.u_texture = this.context.getUniformLocation(this.shader_program, "u_texture");
+    this.locations.u_texture_offset = this.context.getUniformLocation(this.shader_program, "u_texture_offset");
     this.locations.u_canvas_resolution = this.context.getUniformLocation(this.shader_program, "u_canvas_resolution");
 
-    if (this.locations.u_canvas_resolution == null) {
+    let key = undefined;
 
-      // Failed to find location of u_canvas_resolution.
-      return false;
-    }
+    for (key in this.locations) {
 
-    this.locations.u_tint = this.context.getUniformLocation(this.shader_program, "u_tint");
+      if (this.locations[key] == -1 || this.locations[key] == null) {
 
-    if (this.locations.u_tint == null) {
-
-      // Failed to find location of u_tint.
-      return false;
-    }
-
-    this.locations.u_texture_offset = this.context.getUniformLocation(this.shader_program, "u_texture_offset");
-
-    if (this.locations.u_texture_offset == null) {
-
-      // Failed to find location of u_texture_offset.
-      return false;
+        // Failed to find location of an attribute or uniform.
+        return false;
+      }
     }
 
     return true;
@@ -283,13 +243,10 @@ let Momo = new class {
 
   setUniformsAndAttributes() {
 
-    // @TODO: Error-checking.
-
     this.context.useProgram(this.shader_program);
 
     let vertex_buffer = this.context.createBuffer();
 
-    // Define a quad.
     let vertex_buffer_data = new Float32Array(
 
       [
@@ -312,7 +269,6 @@ let Momo = new class {
 
     let texture_buffer = this.context.createBuffer();
 
-    // Define texture coordinates.
     let texture_buffer_data = new Float32Array(
 
       [
@@ -395,6 +351,7 @@ let Momo = new class {
 
     if (event.type == "wheel" || event.which == 3) {
 
+      // Prevent default event when scrolling the wheel or right-clicking.
       event.preventDefault();
     }
   }
@@ -912,6 +869,7 @@ let Momo = new class {
     canvas.height = canvas_height;
 
     this.canvas = canvas;
+
     this.context = canvas.getContext(
 
       "webgl2",
@@ -933,8 +891,10 @@ let Momo = new class {
     this.canvas_width = canvas_width;
     this.canvas_height = canvas_height;
 
+    // Set default blend mode.
     this.context.enable(this.context.BLEND);
     this.context.blendFunc(this.context.SRC_ALPHA, this.context.ONE_MINUS_SRC_ALPHA);
+    this.context.blendEquation(this.context.FUNC_ADD);
 
     // Listen for mouse and keyboard events on the canvas by default.
     this.installMouse();
@@ -1097,12 +1057,7 @@ let Momo = new class {
   setEntryPoint(function_name) {
 
     // Call the specified function when the window loads.
-    addEventListener("load", function_name);
-  }
-
-  setBlendMode(mode) {
-
-    /*this.target_canvas.context.globalCompositeOperation = mode;*/
+    window.addEventListener("load", function_name);
   }
 
   loadFont(file_name, style = "normal") {
@@ -1154,24 +1109,24 @@ let Momo = new class {
 
   drawText(font, fill_color, size, x, y, alignment, text, outline_color = undefined, outline_width = 0) {
 
-    if (this.font_texture == undefined) {
+    if (this.cache.font_texture == undefined) {
 
-      this.font_canvas = document.createElement("canvas");
+      this.cache.font_canvas = document.createElement("canvas");
 
       // @TODO: Update this whenever the main canvas' dimensions change.
 
       // Match the canvas for text-drawing to that of the main canvas' dimensions.
-      this.font_canvas.width = this.canvas_width;
-      this.font_canvas.height = this.canvas_height;
+      this.cache.font_canvas.width = this.canvas_width;
+      this.cache.font_canvas.height = this.canvas_height;
 
       // Use the Canvas 2D context to handle drawing text.
-      this.font_canvas_context = this.font_canvas.getContext("2d");
+      this.cache.font_canvas_context = this.cache.font_canvas.getContext("2d");
 
-      this.font_texture = this.context.createTexture();
+      this.cache.font_texture = this.context.createTexture();
 
-      this.context.bindTexture(this.context.TEXTURE_2D, this.font_texture);
+      this.context.bindTexture(this.context.TEXTURE_2D, this.cache.font_texture);
 
-      this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.context.RGBA, this.context.UNSIGNED_BYTE, this.font_canvas);
+      this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.context.RGBA, this.context.UNSIGNED_BYTE, this.cache.font_canvas);
 
       // Clamp the texture to the edges if it bleeds beyond its boundaries.
       this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_S, this.context.CLAMP_TO_EDGE);
@@ -1183,21 +1138,21 @@ let Momo = new class {
     }
 
     // Clear the canvas.
-    this.font_canvas_context.clearRect(0, 0, this.canvas_width, this.canvas_height);
+    this.cache.font_canvas_context.clearRect(0, 0, this.canvas_width, this.canvas_height);
 
     let r = fill_color.r * 255.0;
     let g = fill_color.g * 255.0;
     let b = fill_color.b * 255.0;
     let a = fill_color.a;
 
-    this.font_canvas_context.textAlign = alignment;
+    this.cache.font_canvas_context.textAlign = alignment;
 
-    this.font_canvas_context.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
+    this.cache.font_canvas_context.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
 
-    this.font_canvas_context.font = font.style + " " + size + "px " + font.name;
+    this.cache.font_canvas_context.font = font.style + " " + size + "px " + font.name;
 
     // Draw the text to the canvas.
-    this.font_canvas_context.fillText(text, x, y + size);
+    this.cache.font_canvas_context.fillText(text, x, y + size);
 
     if (outline_color != undefined && outline_width > 0) {
 
@@ -1206,17 +1161,17 @@ let Momo = new class {
       b = outline_color.b * 255.0;
       a = outline_color.a;
 
-      this.font_canvas_context.lineWidth = outline_width;
-      this.font_canvas_context.strokeStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
+      this.cache.font_canvas_context.lineWidth = outline_width;
+      this.cache.font_canvas_context.strokeStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
 
       // Draw the outline.
-      this.font_canvas_context.strokeText(text, x, y + size);
+      this.cache.font_canvas_context.strokeText(text, x, y + size);
     }
 
-    this.context.bindTexture(this.context.TEXTURE_2D, this.font_texture);
+    this.context.bindTexture(this.context.TEXTURE_2D, this.cache.font_texture);
 
     // Use the font canvas' contents as a texture.
-    this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.context.RGBA, this.context.UNSIGNED_BYTE, this.font_canvas);
+    this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.context.RGBA, this.context.UNSIGNED_BYTE, this.cache.font_canvas);
 
     // Create a bitmap using the texture from the font canvas.
     let font_bitmap = {
@@ -1225,7 +1180,7 @@ let Momo = new class {
 
       height: this.canvas_height,
 
-      texture: this.font_texture
+      texture: this.cache.font_texture
     };
 
     // Draw the font bitmap.
@@ -1427,7 +1382,7 @@ let Momo = new class {
           this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_S, this.context.CLAMP_TO_EDGE);
           this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_T, this.context.CLAMP_TO_EDGE);
 
-          // Use linear interpolation when scaling the texture by default.
+          // Specify texture filtering.
           this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.texture_filtering);
           this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.texture_filtering);
 
@@ -1593,7 +1548,6 @@ let Momo = new class {
 
     this.saveCanvasState();
 
-    // Move the bitmap.
     this.translateCanvas(x, y);
 
     this.drawConsolidatedBitmap(bitmap, [0.0, 0.0, 1.0, 1.0], this.makeColor(1.0, 1.0, 1.0));
@@ -1605,13 +1559,10 @@ let Momo = new class {
 
     this.saveCanvasState();
 
-    // Move the bitmap.
     this.translateCanvas(draw_x, draw_y);
 
-    // Scale the bitmap.
     this.scaleCanvas(scale_width, scale_height);
 
-    // Offset by the origin.
     this.translateCanvas(-origin_x, -origin_y);
 
     this.drawConsolidatedBitmap(bitmap, [0.0, 0.0, 1.0, 1.0], this.makeColor(1.0, 1.0, 1.0));
@@ -1623,7 +1574,6 @@ let Momo = new class {
 
     this.saveCanvasState();
 
-    // Move the bitmap.
     this.translateCanvas(x, y);
 
     this.drawConsolidatedBitmap(bitmap, [0.0, 0.0, 1.0, 1.0], tint);
@@ -1646,7 +1596,6 @@ let Momo = new class {
 
     this.saveCanvasState();
 
-    // Move the bitmap.
     this.translateCanvas(x, y);
 
     this.drawConsolidatedBitmap(bitmap, texture_offset, this.makeColor(1.0, 1.0, 1.0));
@@ -1658,13 +1607,10 @@ let Momo = new class {
 
     this.saveCanvasState();
 
-    // Move the origin.
     this.translateCanvas(draw_x, draw_y);
 
-    // Rotate the bitmap around the newly-moved origin.
     this.rotateCanvas(theta);
 
-    // Move the origin back.
     this.translateCanvas(-center_x, -center_y);
 
     this.drawConsolidatedBitmap(bitmap, [0.0, 0.0, 1.0, 1.0], this.makeColor(1.0, 1.0, 1.0));
@@ -2006,14 +1952,14 @@ let Momo = new class {
 
   rotateCanvas(theta) {
 
-    const SINE = Math.sin(theta);
-    const COSINE = Math.cos(theta);
+    let sine = Math.sin(theta);
+    let cosine = Math.cos(theta);
 
     let rotated_matrix = [
 
-      COSINE, SINE, 0.0,
+      cosine, sine, 0.0,
 
-      -SINE, COSINE, 0.0,
+      -sine, cosine, 0.0,
 
       0.0, 0.0, 1.0
     ];
@@ -2041,40 +1987,39 @@ let Momo = new class {
 
   multiplyMatrices(a, b) {
 
-    // The first matrix's rows and columns.
-    const A_1_1 = a[0];
-    const A_1_2 = a[3];
-    const A_1_3 = a[6];
-    const A_2_1 = a[1];
-    const A_2_2 = a[4];
-    const A_2_3 = a[7];
-    const A_3_1 = a[2];
-    const A_3_2 = a[5];
-    const A_3_3 = a[8];
+    let a_1_1 = a[0];
+    let a_1_2 = a[3];
+    let a_1_3 = a[6];
+    let a_2_1 = a[1];
+    let a_2_2 = a[4];
+    let a_2_3 = a[7];
+    let a_3_1 = a[2];
+    let a_3_2 = a[5];
+    let a_3_3 = a[8];
 
-    // The second matrix's rows and columns.
-    const B_1_1 = b[0];
-    const B_1_2 = b[3];
-    const B_1_3 = b[6];
-    const B_2_1 = b[1];
-    const B_2_2 = b[4];
-    const B_2_3 = b[7];
-    const B_3_1 = b[2];
-    const B_3_2 = b[5];
-    const B_3_3 = b[8];
+    let b_1_1 = b[0];
+    let b_1_2 = b[3];
+    let b_1_3 = b[6];
+    let b_2_1 = b[1];
+    let b_2_2 = b[4];
+    let b_2_3 = b[7];
+    let b_3_1 = b[2];
+    let b_3_2 = b[5];
+    let b_3_3 = b[8];
 
     let multiplied_matrix = this.getIdentityMatrix();
 
-    // Multiply the two matrices together.
-    multiplied_matrix[0] = A_1_1 * B_1_1 + A_1_2 * B_2_1 + A_1_3 * B_3_1;
-    multiplied_matrix[3] = A_1_1 * B_1_2 + A_1_2 * B_2_2 + A_1_3 * B_3_2;
-    multiplied_matrix[6] = A_1_1 * B_1_3 + A_1_2 * B_2_3 + A_1_3 * B_3_3;
-    multiplied_matrix[1] = A_2_1 * B_1_1 + A_2_2 * B_2_1 + A_2_3 * B_3_1;
-    multiplied_matrix[4] = A_2_1 * B_1_2 + A_2_2 * B_2_2 + A_2_3 * B_3_2;
-    multiplied_matrix[7] = A_2_1 * B_1_3 + A_2_2 * B_2_3 + A_2_3 * B_3_3;
-    multiplied_matrix[2] = A_3_1 * B_1_1 + A_3_2 * B_2_1 + A_3_3 * B_3_1;
-    multiplied_matrix[5] = A_3_1 * B_1_2 + A_3_2 * B_2_2 + A_3_3 * B_3_2;
-    multiplied_matrix[8] = A_3_1 * B_1_3 + A_3_2 * B_2_3 + A_3_3 * B_3_3;
+    multiplied_matrix[0] = a_1_1 * b_1_1 + a_1_2 * b_2_1 + a_1_3 * b_3_1;
+    multiplied_matrix[3] = a_1_1 * b_1_2 + a_1_2 * b_2_2 + a_1_3 * b_3_2;
+    multiplied_matrix[6] = a_1_1 * b_1_3 + a_1_2 * b_2_3 + a_1_3 * b_3_3;
+
+    multiplied_matrix[1] = a_2_1 * b_1_1 + a_2_2 * b_2_1 + a_2_3 * b_3_1;
+    multiplied_matrix[4] = a_2_1 * b_1_2 + a_2_2 * b_2_2 + a_2_3 * b_3_2;
+    multiplied_matrix[7] = a_2_1 * b_1_3 + a_2_2 * b_2_3 + a_2_3 * b_3_3;
+
+    multiplied_matrix[2] = a_3_1 * b_1_1 + a_3_2 * b_2_1 + a_3_3 * b_3_1;
+    multiplied_matrix[5] = a_3_1 * b_1_2 + a_3_2 * b_2_2 + a_3_3 * b_3_2;
+    multiplied_matrix[8] = a_3_1 * b_1_3 + a_3_2 * b_2_3 + a_3_3 * b_3_3;
 
     return multiplied_matrix;
   }
