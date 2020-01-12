@@ -1645,27 +1645,6 @@ let Momo = new class {
     this.restoreCanvasState();
   }
 
-  createBitmap(width, height) {
-
-    /*let canvas = document.createElement("canvas");
-
-    canvas.width = width;
-    canvas.height = height;
-
-    let context = canvas.getContext("2d");
-
-    return {
-
-      canvas: canvas,
-
-      context: context,
-
-      width: width,
-
-      height: height
-    };*/
-  }
-
   createTintedBitmap(bitmap, tint) {
 
     let tinted_bitmap = {
