@@ -304,9 +304,6 @@ let Momo = new class {
     this.context.vertexAttribPointer(this.locations.a_vertex_position, 2, this.context.FLOAT, false, 0, 0);
     this.context.enableVertexAttribArray(this.locations.a_vertex_position);
 
-    // Unbind the vertex buffer.
-    this.context.bindBuffer(this.context.ARRAY_BUFFER, null);
-
     let texture_buffer = this.context.createBuffer();
 
     // Define texture coordinates.
@@ -329,9 +326,6 @@ let Momo = new class {
 
     this.context.vertexAttribPointer(this.locations.a_texture_position, 2, this.context.FLOAT, false, 0, 0);
     this.context.enableVertexAttribArray(this.locations.a_texture_position);
-
-    // Unbind the texture buffer.
-    this.context.bindBuffer(this.context.ARRAY_BUFFER, null);
 
     // Upload the canvas' resolution.
     this.context.uniform2fv(this.locations.u_canvas_resolution, [this.canvas_width, this.canvas_height]);
@@ -1180,8 +1174,6 @@ let Momo = new class {
       // Use linear filtering.
       this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.context.LINEAR);
       this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.context.LINEAR);
-
-      this.context.bindTexture(this.context.TEXTURE_2D, null);
     }
 
     // Clear the canvas.
@@ -1219,8 +1211,6 @@ let Momo = new class {
 
     // Use the font canvas' contents as a texture.
     this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.context.RGBA, this.context.UNSIGNED_BYTE, this.font_canvas);
-
-    this.context.bindTexture(this.context.TEXTURE_2D, null);
 
     // Create a bitmap using the texture from the font canvas.
     let font_bitmap = {
@@ -1434,9 +1424,6 @@ let Momo = new class {
           // Use linear interpolation when scaling the texture by default.
           this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.texture_filtering);
           this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.texture_filtering);
-
-          // We're done with the texture for now. Unbind it.
-          this.context.bindTexture(this.context.TEXTURE_2D, null);
 
           let bitmap = {
 
