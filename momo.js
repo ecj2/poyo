@@ -38,6 +38,10 @@ let Momo = new class {
     this.font_canvas_context = undefined;
 
     this.cache = {};
+
+    this.hold_texture_switching = false;
+
+    this.texture_already_set = false;
   }
 
   initialize() {
@@ -1502,14 +1506,40 @@ let Momo = new class {
     return bitmap.height;
   }
 
+  holdTextureSwitching(value) {
+
+    this.hold_texture_switching = value;
+
+    this.texture_already_set = false;
+  }
+
   drawConsolidatedBitmap(bitmap, texture_offset, tint) {
 
     let tint_needs_updating = false;
+    let texture_needs_updating = false;
     let texture_offset_needs_updating = false;
 
     if (this.cache.tint != "" + tint.r + tint.g + tint.b + tint.a) {
 
       tint_needs_updating = true;
+    }
+
+    if (!this.hold_texture_switching) {
+
+      // Always update the texture if not holding texture switching.
+      texture_needs_updating = true;
+    }
+
+    if (this.hold_texture_switching) {
+
+      if (!this.texture_already_set) {
+
+        // Set the texture for the first call; it'll be cached for subsequent ones.
+
+        this.texture_already_set = true;
+
+        texture_needs_updating = true;
+      }
     }
 
     let i = 0;
@@ -1526,10 +1556,13 @@ let Momo = new class {
 
     this.context.useProgram(this.shader_program);
 
-    // Set the active texture.
-    this.context.activeTexture(this.context.TEXTURE0);
-    this.context.bindTexture(this.context.TEXTURE_2D, bitmap.texture);
-    this.context.uniform1i(this.locations.u_texture, 0);
+    if (texture_needs_updating) {
+
+      // Set the active texture.
+      this.context.activeTexture(this.context.TEXTURE0);
+      this.context.bindTexture(this.context.TEXTURE_2D, bitmap.texture);
+      this.context.uniform1i(this.locations.u_texture, 0);
+    }
 
     this.saveCanvasState();
 
