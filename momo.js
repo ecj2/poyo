@@ -107,15 +107,17 @@ let Momo = new class {
 
     let vertex_shader_source = `
 
-      attribute vec2 a_vertex_position;
+      #version 300 es
 
-      attribute vec2 a_texture_position;
+      in vec2 a_vertex_position;
+
+      in vec2 a_texture_position;
 
       uniform mat3 u_matrix;
 
       uniform vec2 u_canvas_resolution;
 
-      varying vec2 v_texture_position;
+      out vec2 v_texture_position;
 
       void main(void) {
 
@@ -133,15 +135,19 @@ let Momo = new class {
 
     let fragment_shader_source = `
 
+      #version 300 es
+
       precision mediump float;
 
-      varying vec2 v_texture_position;
+      in vec2 v_texture_position;
 
       uniform sampler2D u_texture;
 
       uniform vec4 u_tint;
 
       uniform vec4 u_texture_offset;
+
+      out vec4 output_color;
 
       void main(void) {
 
@@ -162,13 +168,13 @@ let Momo = new class {
           discard;
         }
 
-        gl_FragColor = texture2D(u_texture, texture_position) * u_tint;
+        output_color = texture(u_texture, texture_position) * u_tint;
       }
     `;
 
-    let vertex_shader = this.createShader(vertex_shader_source, this.context.VERTEX_SHADER);
+    let vertex_shader = this.createShader(vertex_shader_source.trim(), this.context.VERTEX_SHADER);
 
-    let fragment_shader = this.createShader(fragment_shader_source, this.context.FRAGMENT_SHADER);
+    let fragment_shader = this.createShader(fragment_shader_source.trim(), this.context.FRAGMENT_SHADER);
 
     this.shader_program = this.createProgram(vertex_shader, fragment_shader);
 
