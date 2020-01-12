@@ -1180,7 +1180,9 @@ let Momo = new class {
 
       height: this.canvas_height,
 
-      texture: this.cache.font_texture
+      texture: this.cache.font_texture,
+
+      tint: this.makeColor(-1.0, -1.0, -1.0, -1.0)
     };
 
     // Draw the font bitmap.
@@ -1392,7 +1394,9 @@ let Momo = new class {
 
             height: element.height,
 
-            texture: texture
+            texture: texture,
+
+            tint: this.makeColor(-1.0, -1.0, -1.0, -1.0)
           };
 
           resolve(bitmap);
@@ -1462,6 +1466,15 @@ let Momo = new class {
   }
 
   drawConsolidatedBitmap(bitmap, texture_offset, tint) {
+
+    if (bitmap.tint.a != -1.0) {
+
+      // Combine tints.
+      tint.r *= bitmap.tint.r;
+      tint.g *= bitmap.tint.g;
+      tint.b *= bitmap.tint.b;
+      tint.a *= bitmap.tint.a;
+    }
 
     let tint_needs_updating = false;
     let texture_needs_updating = false;
@@ -1641,29 +1654,16 @@ let Momo = new class {
 
   createTintedBitmap(bitmap, tint) {
 
-    /*let canvas = this.createBitmap(bitmap.width, bitmap.height);
+    return {
 
-    let context = canvas.context;
+      width: bitmap.width,
 
-    let old_target = this.getTargetCanvas();
+      height: bitmap.height,
 
-    this.setTargetCanvas(canvas.canvas);
+      texture: bitmap.texture,
 
-    this.drawBitmap(bitmap, 0, 0);
-
-    this.setBlendMode("multiply");
-
-    // Apply the tint.
-    this.drawFilledRectangle(0, 0, canvas.width, canvas.height, tint);
-
-    this.setBlendMode("destination-atop");
-
-    // Compensate for transparent pixels in the bitmap.
-    this.drawBitmap(bitmap, 0, 0);
-
-    this.setTargetCanvas(old_target);
-
-    return canvas;*/
+      tint: tint
+    };
   }
 
   createClippedBitmap(bitmap, start_x, start_y, width, height) {
