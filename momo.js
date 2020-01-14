@@ -29,9 +29,6 @@ let Momo = new class {
     this.matrix_stack = [];
 
     this.cache = {};
-
-    this.hold_texture_switching = false;
-    this.texture_already_set = false;
   }
 
   initialize() {
@@ -91,7 +88,9 @@ let Momo = new class {
 
       font_canvas: undefined,
 
-      font_canvas_context: undefined
+      font_canvas_context: undefined,
+
+      texture: undefined
     };
 
     this.matrix_stack[0] = this.getIdentityMatrix();
@@ -1462,13 +1461,6 @@ let Momo = new class {
     return bitmap.height;
   }
 
-  holdTextureSwitching(value) {
-
-    this.hold_texture_switching = value;
-
-    this.texture_already_set = false;
-  }
-
   drawConsolidatedBitmap(bitmap, texture_offset, tint) {
 
     if (bitmap.texture_offset[0] != -1.0) {
@@ -1494,22 +1486,9 @@ let Momo = new class {
       tint_needs_updating = true;
     }
 
-    if (!this.hold_texture_switching) {
+    if (this.cache.texture != bitmap.texture) {
 
-      // Always update the texture if not holding texture switching.
       texture_needs_updating = true;
-    }
-
-    if (this.hold_texture_switching) {
-
-      if (!this.texture_already_set) {
-
-        // Set the texture for the first call; it'll be cached for subsequent ones.
-
-        this.texture_already_set = true;
-
-        texture_needs_updating = true;
-      }
     }
 
     let i = 0;
@@ -1532,6 +1511,9 @@ let Momo = new class {
       this.context.activeTexture(this.context.TEXTURE0);
       this.context.bindTexture(this.context.TEXTURE_2D, bitmap.texture);
       this.context.uniform1i(this.locations.u_texture, 0);
+
+      // Cache the texture for next time.
+      this.cache.texture = bitmap.texture;
     }
 
     this.saveCanvasState();
