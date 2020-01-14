@@ -988,7 +988,7 @@ let Momo = new class {
 
   saveCanvasState() {
 
-    this.matrix_stack.push(this.matrix_stack[this.matrix_stack.length - 1].slice());
+    this.matrix_stack.push(this.matrix_stack[this.matrix_stack.length - 1]);
   }
 
   restoreCanvasState() {
@@ -1943,7 +1943,7 @@ let Momo = new class {
       0.0, 0.0, 1.0
     ];
 
-    let result = this.multiplyMatrices(this.matrix_stack[this.matrix_stack.length - 1].slice(), scaled_matrix);
+    let result = this.multiplyMatrices(this.matrix_stack[this.matrix_stack.length - 1], scaled_matrix);
 
     this.matrix_stack[this.matrix_stack.length - 1] = result;
   }
@@ -1962,7 +1962,7 @@ let Momo = new class {
       0.0, 0.0, 1.0
     ];
 
-    let result = this.multiplyMatrices(this.matrix_stack[this.matrix_stack.length - 1].slice(), rotated_matrix)
+    let result = this.multiplyMatrices(this.matrix_stack[this.matrix_stack.length - 1], rotated_matrix)
 
     this.matrix_stack[this.matrix_stack.length - 1] = result;
   }
@@ -1978,7 +1978,7 @@ let Momo = new class {
       translate_x, translate_y, 1.0
     ];
 
-    let result = this.multiplyMatrices(this.matrix_stack[this.matrix_stack.length - 1].slice(), translated_matrix);
+    let result = this.multiplyMatrices(this.matrix_stack[this.matrix_stack.length - 1], translated_matrix);
 
     this.matrix_stack[this.matrix_stack.length - 1] = result;
   }
