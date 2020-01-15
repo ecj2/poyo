@@ -1179,11 +1179,7 @@ let Momo = new class {
 
       height: this.canvas_height,
 
-      texture: this.cache.font_texture,
-
-      tint: this.makeColor(-1.0, -1.0, -1.0, -1.0),
-
-      texture_offset: [-1.0, -1.0, -1.0, -1.0]
+      texture: this.cache.font_texture
     };
 
     // Draw the font bitmap.
@@ -1395,11 +1391,7 @@ let Momo = new class {
 
             height: element.height,
 
-            texture: texture,
-
-            tint: this.makeColor(-1.0, -1.0, -1.0, -1.0),
-
-            texture_offset: [-1.0, -1.0, -1.0, -1.0]
+            texture: texture
           };
 
           resolve(bitmap);
@@ -1463,20 +1455,6 @@ let Momo = new class {
 
   drawConsolidatedBitmap(bitmap, texture_offset, tint) {
 
-    if (bitmap.texture_offset[0] != -1.0) {
-
-      texture_offset = bitmap.texture_offset;
-    }
-
-    if (bitmap.tint.a != -1.0) {
-
-      // Combine tints.
-      tint.r *= bitmap.tint.r;
-      tint.g *= bitmap.tint.g;
-      tint.b *= bitmap.tint.b;
-      tint.a *= bitmap.tint.a;
-    }
-
     let tint_needs_updating = false;
     let texture_needs_updating = false;
     let texture_offset_needs_updating = false;
@@ -1518,16 +1496,8 @@ let Momo = new class {
 
     this.saveCanvasState();
 
-    if (bitmap.texture_offset[0] != -1.0) {
-
-      // Scale the texture to its proper resolution.
-      this.scaleCanvas(bitmap.parent_width / this.canvas_width, bitmap.parent_height / this.canvas_height);
-    }
-    else {
-
-      // Scale the texture to its proper resolution.
-      this.scaleCanvas(bitmap.width / this.canvas_width, bitmap.height / this.canvas_height);
-    }
+    // Scale the texture to its proper resolution.
+    this.scaleCanvas(bitmap.width / this.canvas_width, bitmap.height / this.canvas_height);
 
     // Upload the transformation matrix.
     this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
@@ -1628,64 +1598,6 @@ let Momo = new class {
     this.drawConsolidatedBitmap(bitmap, [0.0, 0.0, 1.0, 1.0], this.makeColor(1.0, 1.0, 1.0));
 
     this.restoreCanvasState();
-  }
-
-  createTintedBitmap(bitmap, tint) {
-
-    let tinted_bitmap = {
-
-      width: bitmap.width,
-
-      height: bitmap.height,
-
-      texture: bitmap.texture,
-
-      tint: tint,
-
-      texture_offset: bitmap.texture_offset
-    };
-
-    if (bitmap.parent_width != undefined) {
-
-      // Create a tinted bitmap from a clipped bitmap.
-
-      tinted_bitmap.parent_width = bitmap.parent_width;
-
-      tinted_bitmap.parent_height = bitmap.parent_height;
-    }
-
-    return tinted_bitmap;
-  }
-
-  createClippedBitmap(bitmap, start_x, start_y, width, height) {
-
-    let texture_offset = [
-
-      start_x / bitmap.width,
-
-      start_y / bitmap.height,
-
-      (start_x + width) / bitmap.width,
-
-      (start_y + height) / bitmap.height
-    ];
-
-    return {
-
-      width: width,
-
-      height: height,
-
-      texture: bitmap.texture,
-
-      tint: bitmap.tint,
-
-      texture_offset: texture_offset,
-
-      parent_width: bitmap.width,
-
-      parent_height: bitmap.height
-    };
   }
 
   drawPolyline(points, color, thickness) {
