@@ -4,10 +4,8 @@ let Momo = new class {
 
   constructor() {
 
-    this.canvas = undefined;
-    this.context = undefined;
-
     this.mouse = {};
+    this.canvas = {};
     this.keyboard = {};
 
     this.time_initialized = undefined;
@@ -22,9 +20,6 @@ let Momo = new class {
     this.locations = {};
 
     this.texture_filtering = undefined;
-
-    this.canvas_width = 0;
-    this.canvas_height = 0;
 
     this.matrix_stack = [];
 
@@ -43,6 +38,17 @@ let Momo = new class {
 
     // Set the time in which the library was initialized.
     this.time_initialized = Date.now();
+
+    this.canvas = {
+
+      canvas: undefined,
+
+      context: undefined,
+
+      width: 0,
+
+      height: 0
+    };
 
     this.mouse = {
 
@@ -167,9 +173,9 @@ let Momo = new class {
       }
     `;
 
-    let vertex_shader = this.createShader(vertex_shader_source.trim(), this.context.VERTEX_SHADER);
+    let vertex_shader = this.createShader(vertex_shader_source.trim(), this.canvas.context.VERTEX_SHADER);
 
-    let fragment_shader = this.createShader(fragment_shader_source.trim(), this.context.FRAGMENT_SHADER);
+    let fragment_shader = this.createShader(fragment_shader_source.trim(), this.canvas.context.FRAGMENT_SHADER);
 
     this.shader_program = this.createProgram(vertex_shader, fragment_shader);
 
@@ -178,13 +184,13 @@ let Momo = new class {
 
   createShader(source, type) {
 
-    let shader = this.context.createShader(type);
+    let shader = this.canvas.context.createShader(type);
 
-    this.context.shaderSource(shader, source);
+    this.canvas.context.shaderSource(shader, source);
 
-    this.context.compileShader(shader);
+    this.canvas.context.compileShader(shader);
 
-    if (!this.context.getShaderParameter(shader, this.context.COMPILE_STATUS)) {
+    if (!this.canvas.context.getShaderParameter(shader, this.canvas.context.COMPILE_STATUS)) {
 
       // The shader failed to compile.
       return false;
@@ -195,36 +201,36 @@ let Momo = new class {
 
   createProgram(vertex_shader, fragment_shader) {
 
-    let program = this.context.createProgram();
+    let program = this.canvas.context.createProgram();
 
-    this.context.attachShader(program, vertex_shader);
-    this.context.attachShader(program, fragment_shader);
+    this.canvas.context.attachShader(program, vertex_shader);
+    this.canvas.context.attachShader(program, fragment_shader);
 
-    this.context.linkProgram(program);
+    this.canvas.context.linkProgram(program);
 
-    if (!this.context.getProgramParameter(program, this.context.LINK_STATUS)) {
+    if (!this.canvas.context.getProgramParameter(program, this.canvas.context.LINK_STATUS)) {
 
       // The program failed to link the two shaders.
       return false;
     }
 
     // The compiled shaders are not needed after being linked.
-    this.context.deleteShader(vertex_shader);
-    this.context.deleteShader(fragment_shader);
+    this.canvas.context.deleteShader(vertex_shader);
+    this.canvas.context.deleteShader(fragment_shader);
 
     return program;
   }
 
   getUniformAndAttributeLocations() {
 
-    this.locations.a_vertex_position = this.context.getAttribLocation(this.shader_program, "a_vertex_position");
-    this.locations.a_texture_position = this.context.getAttribLocation(this.shader_program, "a_texture_position");
+    this.locations.a_vertex_position = this.canvas.context.getAttribLocation(this.shader_program, "a_vertex_position");
+    this.locations.a_texture_position = this.canvas.context.getAttribLocation(this.shader_program, "a_texture_position");
 
-    this.locations.u_tint = this.context.getUniformLocation(this.shader_program, "u_tint");
-    this.locations.u_matrix = this.context.getUniformLocation(this.shader_program, "u_matrix");
-    this.locations.u_texture = this.context.getUniformLocation(this.shader_program, "u_texture");
-    this.locations.u_texture_offset = this.context.getUniformLocation(this.shader_program, "u_texture_offset");
-    this.locations.u_canvas_resolution = this.context.getUniformLocation(this.shader_program, "u_canvas_resolution");
+    this.locations.u_tint = this.canvas.context.getUniformLocation(this.shader_program, "u_tint");
+    this.locations.u_matrix = this.canvas.context.getUniformLocation(this.shader_program, "u_matrix");
+    this.locations.u_texture = this.canvas.context.getUniformLocation(this.shader_program, "u_texture");
+    this.locations.u_texture_offset = this.canvas.context.getUniformLocation(this.shader_program, "u_texture_offset");
+    this.locations.u_canvas_resolution = this.canvas.context.getUniformLocation(this.shader_program, "u_canvas_resolution");
 
     let key = undefined;
 
@@ -242,9 +248,9 @@ let Momo = new class {
 
   setUniformsAndAttributes() {
 
-    this.context.useProgram(this.shader_program);
+    this.canvas.context.useProgram(this.shader_program);
 
-    let vertex_buffer = this.context.createBuffer();
+    let vertex_buffer = this.canvas.context.createBuffer();
 
     let vertex_buffer_data = new Float32Array(
 
@@ -252,21 +258,21 @@ let Momo = new class {
 
         0.0, 0.0,
 
-        this.canvas_width, 0.0,
+        this.canvas.width, 0.0,
 
-        this.canvas_width, this.canvas_height,
+        this.canvas.width, this.canvas.height,
 
-        0.0, this.canvas_height
+        0.0, this.canvas.height
       ]
     );
 
-    this.context.bindBuffer(this.context.ARRAY_BUFFER, vertex_buffer);
-    this.context.bufferData(this.context.ARRAY_BUFFER, vertex_buffer_data, this.context.STATIC_DRAW);
+    this.canvas.context.bindBuffer(this.canvas.context.ARRAY_BUFFER, vertex_buffer);
+    this.canvas.context.bufferData(this.canvas.context.ARRAY_BUFFER, vertex_buffer_data, this.canvas.context.STATIC_DRAW);
 
-    this.context.vertexAttribPointer(this.locations.a_vertex_position, 2, this.context.FLOAT, false, 0, 0);
-    this.context.enableVertexAttribArray(this.locations.a_vertex_position);
+    this.canvas.context.vertexAttribPointer(this.locations.a_vertex_position, 2, this.canvas.context.FLOAT, false, 0, 0);
+    this.canvas.context.enableVertexAttribArray(this.locations.a_vertex_position);
 
-    let texture_buffer = this.context.createBuffer();
+    let texture_buffer = this.canvas.context.createBuffer();
 
     let texture_buffer_data = new Float32Array(
 
@@ -282,14 +288,14 @@ let Momo = new class {
       ]
     );
 
-    this.context.bindBuffer(this.context.ARRAY_BUFFER, texture_buffer);
-    this.context.bufferData(this.context.ARRAY_BUFFER, texture_buffer_data, this.context.STATIC_DRAW);
+    this.canvas.context.bindBuffer(this.canvas.context.ARRAY_BUFFER, texture_buffer);
+    this.canvas.context.bufferData(this.canvas.context.ARRAY_BUFFER, texture_buffer_data, this.canvas.context.STATIC_DRAW);
 
-    this.context.vertexAttribPointer(this.locations.a_texture_position, 2, this.context.FLOAT, false, 0, 0);
-    this.context.enableVertexAttribArray(this.locations.a_texture_position);
+    this.canvas.context.vertexAttribPointer(this.locations.a_texture_position, 2, this.canvas.context.FLOAT, false, 0, 0);
+    this.canvas.context.enableVertexAttribArray(this.locations.a_texture_position);
 
     // Upload the canvas' resolution.
-    this.context.uniform2fv(this.locations.u_canvas_resolution, [this.canvas_width, this.canvas_height]);
+    this.canvas.context.uniform2fv(this.locations.u_canvas_resolution, [this.canvas.width, this.canvas.height]);
   }
 
   getTime() {
@@ -573,23 +579,23 @@ let Momo = new class {
 
     if (use_mouse) {
 
-      this.canvas.addEventListener("wheel", this.mouse.method);
-      this.canvas.addEventListener("mouseup", this.mouse.method);
-      this.canvas.addEventListener("mouseout", this.mouse.method);
-      this.canvas.addEventListener("mouseover", this.mouse.method);
-      this.canvas.addEventListener("mousedown", this.mouse.method);
-      this.canvas.addEventListener("mousemove", this.mouse.method);
-      this.canvas.addEventListener("contextmenu", this.mouse.method);
+      this.canvas.canvas.addEventListener("wheel", this.mouse.method);
+      this.canvas.canvas.addEventListener("mouseup", this.mouse.method);
+      this.canvas.canvas.addEventListener("mouseout", this.mouse.method);
+      this.canvas.canvas.addEventListener("mouseover", this.mouse.method);
+      this.canvas.canvas.addEventListener("mousedown", this.mouse.method);
+      this.canvas.canvas.addEventListener("mousemove", this.mouse.method);
+      this.canvas.canvas.addEventListener("contextmenu", this.mouse.method);
     }
     else {
 
-      this.canvas.removeEventListener("wheel", this.mouse.method);
-      this.canvas.removeEventListener("mouseup", this.mouse.method);
-      this.canvas.removeEventListener("mouseout", this.mouse.method);
-      this.canvas.removeEventListener("mouseover", this.mouse.method);
-      this.canvas.removeEventListener("mousedown", this.mouse.method);
-      this.canvas.removeEventListener("mousemove", this.mouse.method);
-      this.canvas.removeEventListener("contextmenu", this.mouse.method);
+      this.canvas.canvas.removeEventListener("wheel", this.mouse.method);
+      this.canvas.canvas.removeEventListener("mouseup", this.mouse.method);
+      this.canvas.canvas.removeEventListener("mouseout", this.mouse.method);
+      this.canvas.canvas.removeEventListener("mouseover", this.mouse.method);
+      this.canvas.canvas.removeEventListener("mousedown", this.mouse.method);
+      this.canvas.canvas.removeEventListener("mousemove", this.mouse.method);
+      this.canvas.canvas.removeEventListener("contextmenu", this.mouse.method);
     }
   }
 
@@ -871,9 +877,9 @@ let Momo = new class {
     canvas.width = canvas_width;
     canvas.height = canvas_height;
 
-    this.canvas = canvas;
+    this.canvas.canvas = canvas;
 
-    this.context = canvas.getContext(
+    this.canvas.context = canvas.getContext(
 
       "webgl2",
 
@@ -891,13 +897,13 @@ let Momo = new class {
       }
     );
 
-    this.canvas_width = canvas_width;
-    this.canvas_height = canvas_height;
+    this.canvas.width = canvas_width;
+    this.canvas.height = canvas_height;
 
     // Set default blend mode.
-    this.context.enable(this.context.BLEND);
-    this.context.blendFunc(this.context.SRC_ALPHA, this.context.ONE_MINUS_SRC_ALPHA);
-    this.context.blendEquation(this.context.FUNC_ADD);
+    this.canvas.context.enable(this.canvas.context.BLEND);
+    this.canvas.context.blendFunc(this.canvas.context.SRC_ALPHA, this.canvas.context.ONE_MINUS_SRC_ALPHA);
+    this.canvas.context.blendEquation(this.canvas.context.FUNC_ADD);
 
     if (!this.createShadersAndPrograms()) {
 
@@ -913,10 +919,10 @@ let Momo = new class {
 
     this.setUniformsAndAttributes();
 
-    this.context.viewport(0, 0, canvas_width, canvas_height);
+    this.canvas.context.viewport(0, 0, canvas_width, canvas_height);
 
     // Use linear texture filtering by default.
-    this.texture_filtering = this.context.LINEAR;
+    this.texture_filtering = this.canvas.context.LINEAR;
 
     return true;
   }
@@ -928,7 +934,7 @@ let Momo = new class {
 
   getCanvasContext() {
 
-    return this.context;
+    return this.canvas.context;
   }
 
   getBackBuffer() {
@@ -941,9 +947,9 @@ let Momo = new class {
 
   clearCanvas(color) {
 
-    this.context.clearColor(color.r, color.g, color.b, color.a);
+    this.canvas.context.clearColor(color.r, color.g, color.b, color.a);
 
-    this.context.clear(this.context.COLOR_BUFFER_BIT);
+    this.canvas.context.clear(this.canvas.context.COLOR_BUFFER_BIT);
   }
 
   resizeCanvas(width, height) {
@@ -954,36 +960,36 @@ let Momo = new class {
 
   setCanvasWidth(width) {
 
+    this.canvas.canvas.width = width;
     this.canvas.width = width;
-    this.canvas_width = width;
 
     // Update the vertex buffer.
     this.setUniformsAndAttributes();
 
     // Update the viewport to reflect the new canvas size.
-    this.context.viewport(0, 0, this.canvas_width, this.canvas_height);
+    this.canvas.context.viewport(0, 0, this.canvas.width, this.canvas.height);
   }
 
   setCanvasHeight(height) {
 
+    this.canvas.canvas.height = height;
     this.canvas.height = height;
-    this.canvas_height = height;
 
     // Update the vertex buffer.
     this.setUniformsAndAttributes();
 
     // Update the viewport to reflect the new canvas size.
-    this.context.viewport(0, 0, this.canvas_width, this.canvas_height);
+    this.canvas.context.viewport(0, 0, this.canvas.width, this.canvas.height);
   }
 
   getCanvasWidth() {
 
-    return this.canvas_width;
+    return this.canvas.width;
   }
 
   getCanvasHeight() {
 
-    return this.canvas_height;
+    return this.canvas.height;
   }
 
   saveCanvasState() {
@@ -1115,29 +1121,29 @@ let Momo = new class {
       // @TODO: Update this whenever the main canvas' dimensions change.
 
       // Match the canvas for text-drawing to that of the main canvas' dimensions.
-      this.cache.font_canvas.width = this.canvas_width;
-      this.cache.font_canvas.height = this.canvas_height;
+      this.cache.font_canvas.width = this.canvas.width;
+      this.cache.font_canvas.height = this.canvas.height;
 
       // Use the Canvas 2D context to handle drawing text.
       this.cache.font_canvas_context = this.cache.font_canvas.getContext("2d");
 
-      this.cache.font_texture = this.context.createTexture();
+      this.cache.font_texture = this.canvas.context.createTexture();
 
-      this.context.bindTexture(this.context.TEXTURE_2D, this.cache.font_texture);
+      this.canvas.context.bindTexture(this.canvas.context.TEXTURE_2D, this.cache.font_texture);
 
-      this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.context.RGBA, this.context.UNSIGNED_BYTE, this.cache.font_canvas);
+      this.canvas.context.texImage2D(this.canvas.context.TEXTURE_2D, 0, this.canvas.context.RGBA, this.canvas.context.RGBA, this.canvas.context.UNSIGNED_BYTE, this.cache.font_canvas);
 
       // Clamp the texture to the edges if it bleeds beyond its boundaries.
-      this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_S, this.context.CLAMP_TO_EDGE);
-      this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_T, this.context.CLAMP_TO_EDGE);
+      this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_WRAP_S, this.canvas.context.CLAMP_TO_EDGE);
+      this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_WRAP_T, this.canvas.context.CLAMP_TO_EDGE);
 
       // Use linear filtering.
-      this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.context.LINEAR);
-      this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.context.LINEAR);
+      this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MIN_FILTER, this.canvas.context.LINEAR);
+      this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MAG_FILTER, this.canvas.context.LINEAR);
     }
 
     // Clear the canvas.
-    this.cache.font_canvas_context.clearRect(0, 0, this.canvas_width, this.canvas_height);
+    this.cache.font_canvas_context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     let r = fill_color.r * 255.0;
     let g = fill_color.g * 255.0;
@@ -1167,17 +1173,17 @@ let Momo = new class {
       this.cache.font_canvas_context.strokeText(text, x, y + size);
     }
 
-    this.context.bindTexture(this.context.TEXTURE_2D, this.cache.font_texture);
+    this.canvas.context.bindTexture(this.canvas.context.TEXTURE_2D, this.cache.font_texture);
 
     // Use the font canvas' contents as a texture.
-    this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.context.RGBA, this.context.UNSIGNED_BYTE, this.cache.font_canvas);
+    this.canvas.context.texImage2D(this.canvas.context.TEXTURE_2D, 0, this.canvas.context.RGBA, this.canvas.context.RGBA, this.canvas.context.UNSIGNED_BYTE, this.cache.font_canvas);
 
     // Create a bitmap using the texture from the font canvas.
     let font_bitmap = {
 
-      width: this.canvas_width,
+      width: this.canvas.width,
 
-      height: this.canvas_height,
+      height: this.canvas.height,
 
       texture: this.cache.font_texture
     };
@@ -1370,20 +1376,20 @@ let Momo = new class {
 
         resolve_function = () => {
 
-          let texture = this.context.createTexture();
+          let texture = this.canvas.context.createTexture();
 
-          this.context.bindTexture(this.context.TEXTURE_2D, texture);
+          this.canvas.context.bindTexture(this.canvas.context.TEXTURE_2D, texture);
 
           // Use the image's contents as a texture.
-          this.context.texImage2D(this.context.TEXTURE_2D, 0, this.context.RGBA, this.context.RGBA, this.context.UNSIGNED_BYTE, element);
+          this.canvas.context.texImage2D(this.canvas.context.TEXTURE_2D, 0, this.canvas.context.RGBA, this.canvas.context.RGBA, this.canvas.context.UNSIGNED_BYTE, element);
 
           // Clamp the texture to the edges if it bleeds beyond its boundaries.
-          this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_S, this.context.CLAMP_TO_EDGE);
-          this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_WRAP_T, this.context.CLAMP_TO_EDGE);
+          this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_WRAP_S, this.canvas.context.CLAMP_TO_EDGE);
+          this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_WRAP_T, this.canvas.context.CLAMP_TO_EDGE);
 
           // Specify texture filtering.
-          this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MIN_FILTER, this.texture_filtering);
-          this.context.texParameteri(this.context.TEXTURE_2D, this.context.TEXTURE_MAG_FILTER, this.texture_filtering);
+          this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MIN_FILTER, this.texture_filtering);
+          this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MAG_FILTER, this.texture_filtering);
 
           let bitmap = {
 
@@ -1433,11 +1439,11 @@ let Momo = new class {
 
         if (value == "linear") {
 
-          this.texture_filtering = this.context.LINEAR;
+          this.texture_filtering = this.canvas.context.LINEAR;
         }
         else if (value == "nearest") {
 
-          this.texture_filtering = this.context.NEAREST;
+          this.texture_filtering = this.canvas.context.NEAREST;
         }
       break;
     }
@@ -1481,14 +1487,14 @@ let Momo = new class {
       }
     }
 
-    this.context.useProgram(this.shader_program);
+    this.canvas.context.useProgram(this.shader_program);
 
     if (texture_needs_updating) {
 
       // Set the active texture.
-      this.context.activeTexture(this.context.TEXTURE0);
-      this.context.bindTexture(this.context.TEXTURE_2D, bitmap.texture);
-      this.context.uniform1i(this.locations.u_texture, 0);
+      this.canvas.context.activeTexture(this.canvas.context.TEXTURE0);
+      this.canvas.context.bindTexture(this.canvas.context.TEXTURE_2D, bitmap.texture);
+      this.canvas.context.uniform1i(this.locations.u_texture, 0);
 
       // Cache the texture for next time.
       this.cache.texture = bitmap.texture;
@@ -1497,17 +1503,17 @@ let Momo = new class {
     this.saveCanvasState();
 
     // Scale the texture to its proper resolution.
-    this.scaleCanvas(bitmap.width / this.canvas_width, bitmap.height / this.canvas_height);
+    this.scaleCanvas(bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
 
     // Upload the transformation matrix.
-    this.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
+    this.canvas.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
 
     this.restoreCanvasState();
 
     if (tint_needs_updating) {
 
       // Upload the tint.
-      this.context.uniform4fv(this.locations.u_tint, [tint.r, tint.g, tint.b, tint.a]);
+      this.canvas.context.uniform4fv(this.locations.u_tint, [tint.r, tint.g, tint.b, tint.a]);
 
       // Cache the tint for next time.
       this.cache.tint = "" + tint.r + tint.g + tint.b + tint.a;
@@ -1516,14 +1522,14 @@ let Momo = new class {
     if (texture_offset_needs_updating) {
 
       // Upload the texture offset.
-      this.context.uniform4fv(this.locations.u_texture_offset, texture_offset);
+      this.canvas.context.uniform4fv(this.locations.u_texture_offset, texture_offset);
 
       // Cache the texture offset for next time.
       this.cache.texture_offset = texture_offset;
     }
 
     // Draw the bitmap.
-    this.context.drawArrays(this.context.TRIANGLE_FAN, 0, 4);
+    this.canvas.context.drawArrays(this.canvas.context.TRIANGLE_FAN, 0, 4);
   }
 
   drawBitmap(bitmap, x, y) {
