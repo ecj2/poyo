@@ -19,7 +19,7 @@ let Momo = new class {
     this.shader_program = undefined;
     this.locations = {};
 
-    this.texture_filtering = undefined;
+    this.bitmap_flags = {};
 
     this.matrix_stack = [];
 
@@ -921,8 +921,10 @@ let Momo = new class {
 
     this.canvas.context.viewport(0, 0, canvas_width, canvas_height);
 
-    // Use linear texture filtering by default.
-    this.texture_filtering = this.canvas.context.LINEAR;
+    this.bitmap_flags = {
+
+      filtering: this.canvas.context.LINEAR
+    };
 
     return true;
   }
@@ -1388,8 +1390,8 @@ let Momo = new class {
           this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_WRAP_T, this.canvas.context.CLAMP_TO_EDGE);
 
           // Specify texture filtering.
-          this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MIN_FILTER, this.texture_filtering);
-          this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MAG_FILTER, this.texture_filtering);
+          this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MIN_FILTER, this.bitmap_flags.filtering);
+          this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MAG_FILTER, this.bitmap_flags.filtering);
 
           let bitmap = {
 
@@ -1439,11 +1441,11 @@ let Momo = new class {
 
         if (value == "linear") {
 
-          this.texture_filtering = this.canvas.context.LINEAR;
+          this.bitmap_flags.filtering = this.canvas.context.LINEAR;
         }
         else if (value == "nearest") {
 
-          this.texture_filtering = this.canvas.context.NEAREST;
+          this.bitmap_flags.filtering = this.canvas.context.NEAREST;
         }
       break;
     }
