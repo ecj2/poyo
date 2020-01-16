@@ -39,17 +39,6 @@ let Momo = new class {
     // Set the time in which the library was initialized.
     this.time_initialized = Date.now();
 
-    this.canvas = {
-
-      canvas: undefined,
-
-      context: undefined,
-
-      width: 0,
-
-      height: 0
-    };
-
     this.mouse = {
 
       x: 0,
@@ -877,28 +866,32 @@ let Momo = new class {
     canvas.width = canvas_width;
     canvas.height = canvas_height;
 
-    this.canvas.canvas = canvas;
+    this.canvas = {
 
-    this.canvas.context = canvas.getContext(
+      canvas: canvas,
 
-      "webgl2",
+      context: canvas.getContext(
 
-      {
+        "webgl2",
 
-        alpha: false,
+        {
 
-        depth: false,
+          alpha: false,
 
-        antialias: false,
+          depth: false,
 
-        powerPreference: "high-performance",
+          antialias: false,
 
-        failIfMajorPerformanceCaveat: true
-      }
-    );
+          powerPreference: "high-performance",
 
-    this.canvas.width = canvas_width;
-    this.canvas.height = canvas_height;
+          failIfMajorPerformanceCaveat: true
+        }
+      ),
+
+      width: canvas_width,
+
+      height: canvas_height
+    };
 
     // Set default blend mode.
     this.canvas.context.enable(this.canvas.context.BLEND);
