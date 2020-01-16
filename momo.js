@@ -1453,7 +1453,7 @@ let Momo = new class {
     return bitmap.height;
   }
 
-  drawConsolidatedBitmap(bitmap, texture_offset, tint) {
+  drawConsolidatedBitmap(bitmap, texture_offset = [0.0, 0.0, 1.0, 1.0], tint = this.makeColor(1.0, 1.0, 1.0)) {
 
     let tint_needs_updating = false;
     let texture_needs_updating = false;
@@ -1532,7 +1532,7 @@ let Momo = new class {
 
     this.translateCanvas(x, y);
 
-    this.drawConsolidatedBitmap(bitmap, [0.0, 0.0, 1.0, 1.0], this.makeColor(1.0, 1.0, 1.0));
+    this.drawConsolidatedBitmap(bitmap, undefined, undefined);
 
     this.restoreCanvasState();
   }
@@ -1547,7 +1547,7 @@ let Momo = new class {
 
     this.translateCanvas(-origin_x, -origin_y);
 
-    this.drawConsolidatedBitmap(bitmap, [0.0, 0.0, 1.0, 1.0], this.makeColor(1.0, 1.0, 1.0));
+    this.drawConsolidatedBitmap(bitmap, undefined, undefined);
 
     this.restoreCanvasState();
   }
@@ -1558,7 +1558,7 @@ let Momo = new class {
 
     this.translateCanvas(x, y);
 
-    this.drawConsolidatedBitmap(bitmap, [0.0, 0.0, 1.0, 1.0], tint);
+    this.drawConsolidatedBitmap(bitmap, undefined, tint);
 
     this.restoreCanvasState();
   }
@@ -1580,7 +1580,7 @@ let Momo = new class {
 
     this.translateCanvas(x, y);
 
-    this.drawConsolidatedBitmap(bitmap, texture_offset, this.makeColor(1.0, 1.0, 1.0));
+    this.drawConsolidatedBitmap(bitmap, texture_offset, undefined);
 
     this.restoreCanvasState();
   }
@@ -1595,7 +1595,7 @@ let Momo = new class {
 
     this.translateCanvas(-center_x, -center_y);
 
-    this.drawConsolidatedBitmap(bitmap, [0.0, 0.0, 1.0, 1.0], this.makeColor(1.0, 1.0, 1.0));
+    this.drawConsolidatedBitmap(bitmap, undefined, undefined);
 
     this.restoreCanvasState();
   }
