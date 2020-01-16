@@ -569,26 +569,28 @@ let Momo = new class {
     };
   }
 
-  installMouse() {
+  useMouse(use_mouse = true) {
 
-    this.canvas.addEventListener("wheel", this.mouse.method);
-    this.canvas.addEventListener("mouseup", this.mouse.method);
-    this.canvas.addEventListener("mouseout", this.mouse.method);
-    this.canvas.addEventListener("mouseover", this.mouse.method);
-    this.canvas.addEventListener("mousedown", this.mouse.method);
-    this.canvas.addEventListener("mousemove", this.mouse.method);
-    this.canvas.addEventListener("contextmenu", this.mouse.method);
-  }
+    if (use_mouse) {
 
-  uninstallMouse() {
+      this.canvas.addEventListener("wheel", this.mouse.method);
+      this.canvas.addEventListener("mouseup", this.mouse.method);
+      this.canvas.addEventListener("mouseout", this.mouse.method);
+      this.canvas.addEventListener("mouseover", this.mouse.method);
+      this.canvas.addEventListener("mousedown", this.mouse.method);
+      this.canvas.addEventListener("mousemove", this.mouse.method);
+      this.canvas.addEventListener("contextmenu", this.mouse.method);
+    }
+    else {
 
-    this.canvas.removeEventListener("wheel", this.mouse.method);
-    this.canvas.removeEventListener("mouseup", this.mouse.method);
-    this.canvas.removeEventListener("mouseout", this.mouse.method);
-    this.canvas.removeEventListener("mouseover", this.mouse.method);
-    this.canvas.removeEventListener("mousedown", this.mouse.method);
-    this.canvas.removeEventListener("mousemove", this.mouse.method);
-    this.canvas.removeEventListener("contextmenu", this.mouse.method);
+      this.canvas.removeEventListener("wheel", this.mouse.method);
+      this.canvas.removeEventListener("mouseup", this.mouse.method);
+      this.canvas.removeEventListener("mouseout", this.mouse.method);
+      this.canvas.removeEventListener("mouseover", this.mouse.method);
+      this.canvas.removeEventListener("mousedown", this.mouse.method);
+      this.canvas.removeEventListener("mousemove", this.mouse.method);
+      this.canvas.removeEventListener("contextmenu", this.mouse.method);
+    }
   }
 
   isMouseFocused() {
@@ -748,16 +750,18 @@ let Momo = new class {
     event.preventDefault();
   }
 
-  installKeyboard() {
+  useKeyboard(use_keyboard = true) {
 
-    document.addEventListener("keyup", this.keyboard.method);
-    document.addEventListener("keydown", this.keyboard.method);
-  }
+    if (use_keyboard) {
 
-  uninstallKeyboard() {
+      document.addEventListener("keyup", this.keyboard.method);
+      document.addEventListener("keydown", this.keyboard.method);
+    }
+    else {
 
-    document.removeEventListener("keyup", this.keyboard.method);
-    document.removeEventListener("keydown", this.keyboard.method);
+      document.removeEventListener("keyup", this.keyboard.method);
+      document.removeEventListener("keydown", this.keyboard.method);
+    }
   }
 
   isKeyUp(key_code) {
