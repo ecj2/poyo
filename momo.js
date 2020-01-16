@@ -895,10 +895,6 @@ let Momo = new class {
     this.context.blendFunc(this.context.SRC_ALPHA, this.context.ONE_MINUS_SRC_ALPHA);
     this.context.blendEquation(this.context.FUNC_ADD);
 
-    // Listen for mouse and keyboard events on the canvas by default.
-    this.installMouse();
-    this.installKeyboard();
-
     if (!this.createShadersAndPrograms()) {
 
       // Failed to create shaders and programs.
