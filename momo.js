@@ -987,12 +987,12 @@ let Momo = new class {
     return this.canvas.height;
   }
 
-  saveCanvasState() {
+  saveTransform() {
 
     this.matrix_stack.push(this.matrix_stack[this.matrix_stack.length - 1]);
   }
 
-  restoreCanvasState() {
+  restoreTransform() {
 
     this.matrix_stack.pop();
 
@@ -1495,15 +1495,15 @@ let Momo = new class {
       this.cache.texture = bitmap.texture;
     }
 
-    this.saveCanvasState();
+    this.saveTransform();
 
     // Scale the texture to its proper resolution.
-    this.scaleCanvas(bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
+    this.scaleTransform(bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
 
     // Upload the transformation matrix.
     this.canvas.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
 
-    this.restoreCanvasState();
+    this.restoreTransform();
 
     if (tint_needs_updating) {
 
@@ -1529,39 +1529,39 @@ let Momo = new class {
 
   drawBitmap(bitmap, x, y) {
 
-    this.saveCanvasState();
+    this.saveTransform();
 
-    this.translateCanvas(x, y);
+    this.translateTransform(x, y);
 
     this.drawConsolidatedBitmap(bitmap, undefined, undefined);
 
-    this.restoreCanvasState();
+    this.restoreTransform();
   }
 
   drawScaledBitmap(bitmap, origin_x, origin_y, scale_width, scale_height, draw_x, draw_y) {
 
-    this.saveCanvasState();
+    this.saveTransform();
 
-    this.translateCanvas(draw_x, draw_y);
+    this.translateTransform(draw_x, draw_y);
 
-    this.scaleCanvas(scale_width, scale_height);
+    this.scaleTransform(scale_width, scale_height);
 
-    this.translateCanvas(-origin_x, -origin_y);
+    this.translateTransform(-origin_x, -origin_y);
 
     this.drawConsolidatedBitmap(bitmap, undefined, undefined);
 
-    this.restoreCanvasState();
+    this.restoreTransform();
   }
 
   drawTintedBitmap(bitmap, tint, x, y) {
 
-    this.saveCanvasState();
+    this.saveTransform();
 
-    this.translateCanvas(x, y);
+    this.translateTransform(x, y);
 
     this.drawConsolidatedBitmap(bitmap, undefined, tint);
 
-    this.restoreCanvasState();
+    this.restoreTransform();
   }
 
   drawClippedBitmap(bitmap, start_x, start_y, width, height, x, y) {
@@ -1577,28 +1577,28 @@ let Momo = new class {
       (start_y + height) / bitmap.height
     ];
 
-    this.saveCanvasState();
+    this.saveTransform();
 
-    this.translateCanvas(x, y);
+    this.translateTransform(x, y);
 
     this.drawConsolidatedBitmap(bitmap, texture_offset, undefined);
 
-    this.restoreCanvasState();
+    this.restoreTransform();
   }
 
   drawRotatedBitmap(bitmap, center_x, center_y, draw_x, draw_y, theta) {
 
-    this.saveCanvasState();
+    this.saveTransform();
 
-    this.translateCanvas(draw_x, draw_y);
+    this.translateTransform(draw_x, draw_y);
 
-    this.rotateCanvas(theta);
+    this.rotateTransform(theta);
 
-    this.translateCanvas(-center_x, -center_y);
+    this.translateTransform(-center_x, -center_y);
 
     this.drawConsolidatedBitmap(bitmap, undefined, undefined);
 
-    this.restoreCanvasState();
+    this.restoreTransform();
   }
 
   drawPolyline(points, color, thickness) {
@@ -1845,7 +1845,7 @@ let Momo = new class {
     ]
   }
 
-  scaleCanvas(scale_x, scale_y) {
+  scaleTransform(scale_x, scale_y) {
 
     let scaled_matrix = [
 
@@ -1861,7 +1861,7 @@ let Momo = new class {
     this.matrix_stack[this.matrix_stack.length - 1] = result;
   }
 
-  rotateCanvas(theta) {
+  rotateTransform(theta) {
 
     let sine = Math.sin(theta);
     let cosine = Math.cos(theta);
@@ -1880,7 +1880,7 @@ let Momo = new class {
     this.matrix_stack[this.matrix_stack.length - 1] = result;
   }
 
-  translateCanvas(translate_x, translate_y) {
+  translateTransform(translate_x, translate_y) {
 
     let translated_matrix = [
 
