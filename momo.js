@@ -940,7 +940,7 @@ let Momo = new class {
     return this.back_buffer;*/
   }
 
-  clearCanvas(color) {
+  clearToColor(color) {
 
     this.canvas.context.clearColor(color.r, color.g, color.b, color.a);
 
