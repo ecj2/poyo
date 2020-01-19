@@ -1075,8 +1075,8 @@ let Momo = new class {
 
             @font-face {
 
-              font-family: "` + font_name + `";
-              src: url("` + file_name + `");
+              font-family: "${font_name}";
+              src: url("${file_name}");
             }
           `;
 
