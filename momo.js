@@ -19,7 +19,7 @@ let Momo = new class {
     this.shader_program = undefined;
     this.locations = {};
 
-    this.bitmap_flags = {};
+    this.texture_flags = {};
 
     this.matrix_stack = [];
 
@@ -143,7 +143,7 @@ let Momo = new class {
 
         vec2 texture_position = v_texture_position;
 
-        // Offset the texture back to the top left origin of the bitmap.
+        // Move the texture back to the top-left origin to compensate for the offset.
         texture_position += vec2(u_texture_offset[0], u_texture_offset[1]);
 
         if (texture_position.x < u_texture_offset[0] || texture_position.y < u_texture_offset[1]) {
@@ -914,7 +914,7 @@ let Momo = new class {
 
     this.canvas.context.viewport(0, 0, canvas_width, canvas_height);
 
-    this.bitmap_flags = {
+    this.texture_flags = {
 
       filtering: this.canvas.context.LINEAR
     };
@@ -1173,8 +1173,8 @@ let Momo = new class {
     // Use the font canvas' contents as a texture.
     this.canvas.context.texImage2D(this.canvas.context.TEXTURE_2D, 0, this.canvas.context.RGBA, this.canvas.context.RGBA, this.canvas.context.UNSIGNED_BYTE, this.cache.font_canvas);
 
-    // Create a bitmap using the texture from the font canvas.
-    let font_bitmap = {
+    // Create a texture object using the texture from the font canvas.
+    let font_texture_object = {
 
       width: this.canvas.width,
 
@@ -1183,8 +1183,8 @@ let Momo = new class {
       texture: this.cache.font_texture
     };
 
-    // Draw the font bitmap.
-    this.drawBitmap(font_bitmap, 0, 0);
+    // Draw the font texture.
+    this.drawTexture(font_texture_object, 0, 0);
   }
 
   loadSample(file_name) {
@@ -1356,7 +1356,7 @@ let Momo = new class {
     }
   }
 
-  loadBitmap(file_name) {
+  loadTexture(file_name) {
 
     let element = new Image();
 
@@ -1383,10 +1383,10 @@ let Momo = new class {
           this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_WRAP_T, this.canvas.context.CLAMP_TO_EDGE);
 
           // Specify texture filtering.
-          this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MIN_FILTER, this.bitmap_flags.filtering);
-          this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MAG_FILTER, this.bitmap_flags.filtering);
+          this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MIN_FILTER, this.texture_flags.filtering);
+          this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MAG_FILTER, this.texture_flags.filtering);
 
-          let bitmap = {
+          let texture_object = {
 
             width: element.width,
 
@@ -1395,7 +1395,7 @@ let Momo = new class {
             texture: texture
           };
 
-          resolve(bitmap);
+          resolve(texture_object);
         };
 
         reject_function = () => {
@@ -1426,7 +1426,7 @@ let Momo = new class {
     );
   }
 
-  setNewBitmapFlags(flag, value) {
+  setNewTextureFlags(flag, value) {
 
     switch (flag) {
 
@@ -1434,27 +1434,27 @@ let Momo = new class {
 
         if (value == "linear") {
 
-          this.bitmap_flags.filtering = this.canvas.context.LINEAR;
+          this.texture_flags.filtering = this.canvas.context.LINEAR;
         }
         else if (value == "nearest") {
 
-          this.bitmap_flags.filtering = this.canvas.context.NEAREST;
+          this.texture_flags.filtering = this.canvas.context.NEAREST;
         }
       break;
     }
   }
 
-  getBitmapWidth(bitmap) {
+  getTextureWidth(texture) {
 
-    return bitmap.width;
+    return texture.width;
   }
 
-  getBitmapHeight(bitmap) {
+  getTextureHeight(texture) {
 
-    return bitmap.height;
+    return texture.height;
   }
 
-  drawConsolidatedBitmap(bitmap, texture_offset = [0.0, 0.0, 1.0, 1.0], tint = this.makeColor(1.0, 1.0, 1.0)) {
+  drawConsolidatedTexture(texture, texture_offset = [0.0, 0.0, 1.0, 1.0], tint = this.makeColor(1.0, 1.0, 1.0)) {
 
     let tint_needs_updating = false;
     let texture_needs_updating = false;
@@ -1465,7 +1465,7 @@ let Momo = new class {
       tint_needs_updating = true;
     }
 
-    if (this.cache.texture != bitmap.texture) {
+    if (this.cache.texture != texture.texture) {
 
       texture_needs_updating = true;
     }
@@ -1488,17 +1488,17 @@ let Momo = new class {
 
       // Set the active texture.
       this.canvas.context.activeTexture(this.canvas.context.TEXTURE0);
-      this.canvas.context.bindTexture(this.canvas.context.TEXTURE_2D, bitmap.texture);
+      this.canvas.context.bindTexture(this.canvas.context.TEXTURE_2D, texture.texture);
       this.canvas.context.uniform1i(this.locations.u_texture, 0);
 
       // Cache the texture for next time.
-      this.cache.texture = bitmap.texture;
+      this.cache.texture = texture.texture;
     }
 
     this.saveTransform();
 
     // Scale the texture to its proper resolution.
-    this.scaleTransform(bitmap.width / this.canvas.width, bitmap.height / this.canvas.height);
+    this.scaleTransform(texture.width / this.canvas.width, texture.height / this.canvas.height);
 
     // Upload the transformation matrix.
     this.canvas.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
@@ -1523,22 +1523,22 @@ let Momo = new class {
       this.cache.texture_offset = texture_offset;
     }
 
-    // Draw the bitmap.
+    // Draw the texture.
     this.canvas.context.drawArrays(this.canvas.context.TRIANGLE_FAN, 0, 4);
   }
 
-  drawBitmap(bitmap, x, y) {
+  drawTexture(texture, x, y) {
 
     this.saveTransform();
 
     this.translateTransform(x, y);
 
-    this.drawConsolidatedBitmap(bitmap, undefined, undefined);
+    this.drawConsolidatedTexture(texture, undefined, undefined);
 
     this.restoreTransform();
   }
 
-  drawScaledBitmap(bitmap, origin_x, origin_y, scale_width, scale_height, draw_x, draw_y) {
+  drawScaledTexture(texture, origin_x, origin_y, scale_width, scale_height, draw_x, draw_y) {
 
     this.saveTransform();
 
@@ -1548,45 +1548,45 @@ let Momo = new class {
 
     this.translateTransform(-origin_x, -origin_y);
 
-    this.drawConsolidatedBitmap(bitmap, undefined, undefined);
+    this.drawConsolidatedTexture(texture, undefined, undefined);
 
     this.restoreTransform();
   }
 
-  drawTintedBitmap(bitmap, tint, x, y) {
+  drawTintedTexture(texture, tint, x, y) {
 
     this.saveTransform();
 
     this.translateTransform(x, y);
 
-    this.drawConsolidatedBitmap(bitmap, undefined, tint);
+    this.drawConsolidatedTexture(texture, undefined, tint);
 
     this.restoreTransform();
   }
 
-  drawClippedBitmap(bitmap, start_x, start_y, width, height, x, y) {
+  drawClippedTexture(texture, start_x, start_y, width, height, x, y) {
 
     let texture_offset = [
 
-      start_x / bitmap.width,
+      start_x / texture.width,
 
-      start_y / bitmap.height,
+      start_y / texture.height,
 
-      (start_x + width) / bitmap.width,
+      (start_x + width) / texture.width,
 
-      (start_y + height) / bitmap.height
+      (start_y + height) / texture.height
     ];
 
     this.saveTransform();
 
     this.translateTransform(x, y);
 
-    this.drawConsolidatedBitmap(bitmap, texture_offset, undefined);
+    this.drawConsolidatedTexture(texture, texture_offset, undefined);
 
     this.restoreTransform();
   }
 
-  drawRotatedBitmap(bitmap, center_x, center_y, draw_x, draw_y, theta) {
+  drawRotatedTexture(texture, center_x, center_y, draw_x, draw_y, theta) {
 
     this.saveTransform();
 
@@ -1596,7 +1596,7 @@ let Momo = new class {
 
     this.translateTransform(-center_x, -center_y);
 
-    this.drawConsolidatedBitmap(bitmap, undefined, undefined);
+    this.drawConsolidatedTexture(texture, undefined, undefined);
 
     this.restoreTransform();
   }
