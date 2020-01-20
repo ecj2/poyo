@@ -24,6 +24,8 @@ let Momo = new class {
     this.matrix_stack = [];
 
     this.cache = {};
+
+    this.target = {};
   }
 
   initialize() {
@@ -247,11 +249,11 @@ let Momo = new class {
 
         0.0, 0.0,
 
-        this.canvas.width, 0.0,
+        this.target.width, 0.0,
 
-        this.canvas.width, this.canvas.height,
+        this.target.width, this.target.height,
 
-        0.0, this.canvas.height
+        0.0, this.target.height
       ]
     );
 
@@ -283,8 +285,8 @@ let Momo = new class {
     this.canvas.context.vertexAttribPointer(this.locations.a_texture_position, 2, this.canvas.context.FLOAT, false, 0, 0);
     this.canvas.context.enableVertexAttribArray(this.locations.a_texture_position);
 
-    // Upload the canvas' resolution.
-    this.canvas.context.uniform2fv(this.locations.u_canvas_resolution, [this.canvas.width, this.canvas.height]);
+    // Upload the target's resolution.
+    this.canvas.context.uniform2fv(this.locations.u_canvas_resolution, [this.target.width, this.target.height]);
   }
 
   getTime() {
@@ -910,14 +912,21 @@ let Momo = new class {
       return false;
     }
 
-    this.setUniformsAndAttributes();
-
-    this.canvas.context.viewport(0, 0, canvas_width, canvas_height);
-
     this.texture_flags = {
 
       filtering: this.canvas.context.LINEAR
     };
+
+    this.target = {
+
+      width: canvas_width,
+
+      height: canvas_height
+    };
+
+    this.setUniformsAndAttributes();
+
+    this.canvas.context.viewport(0, 0, this.target.width, this.target.height);
 
     return true;
   }
@@ -1497,8 +1506,15 @@ let Momo = new class {
 
     this.saveTransform();
 
+    if (texture.flip) {
+
+      // Flip frame-buffer textures, as they are drawn upside down.
+      this.scaleTransform(1.0, -1.0);
+      this.translateTransform(0.0, -texture.height);
+    }
+
     // Scale the texture to its proper resolution.
-    this.scaleTransform(texture.width / this.canvas.width, texture.height / this.canvas.height);
+    this.scaleTransform(texture.width / this.target.width, texture.height / this.target.height);
 
     // Upload the transformation matrix.
     this.canvas.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
@@ -1933,5 +1949,89 @@ let Momo = new class {
     multiplied_matrix[8] = a_3_1 * b_1_3 + a_3_2 * b_2_3 + a_3_3 * b_3_3;
 
     return multiplied_matrix;
+  }
+
+  createFrameBuffer(width, height) {
+
+    let frame_buffer = this.canvas.context.createFramebuffer();
+
+    let texture = this.canvas.context.createTexture();
+
+    this.canvas.context.bindTexture(this.canvas.context.TEXTURE_2D, texture);
+
+    this.canvas.context.texImage2D(this.canvas.context.TEXTURE_2D, 0, this.canvas.context.RGBA, width, height, 0, this.canvas.context.RGBA, this.canvas.context.UNSIGNED_BYTE, null);
+
+    this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_WRAP_S, this.canvas.context.CLAMP_TO_EDGE);
+    this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_WRAP_T, this.canvas.context.CLAMP_TO_EDGE);
+
+    this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MIN_FILTER, this.texture_flags.filtering);
+    this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MAG_FILTER, this.texture_flags.filtering);
+
+    this.canvas.context.bindFramebuffer(this.canvas.context.FRAMEBUFFER, frame_buffer);
+
+    this.canvas.context.framebufferTexture2D(this.canvas.context.FRAMEBUFFER, this.canvas.context.COLOR_ATTACHMENT0, this.canvas.context.TEXTURE_2D, texture, 0);
+
+    this.canvas.context.bindFramebuffer(this.canvas.context.FRAMEBUFFER, null);
+
+    return {
+
+      width: width,
+
+      height: height,
+
+      texture: texture,
+
+      frame_buffer: frame_buffer
+    };
+  }
+
+  setFrameBuffer(frame_buffer) {
+
+    this.canvas.context.bindFramebuffer(this.canvas.context.FRAMEBUFFER, frame_buffer.frame_buffer);
+
+    if (frame_buffer.frame_buffer == null) {
+
+      this.target.width = this.canvas.width;
+      this.target.height = this.canvas.height;
+    }
+    else {
+
+      this.target.width = frame_buffer.width;
+      this.target.height = frame_buffer.height;
+    }
+
+    // Update the vertex buffer.
+    this.setUniformsAndAttributes();
+
+    // Update the viewport to reflect the new target size.
+    this.canvas.context.viewport(0, 0, this.target.width, this.target.height);
+  }
+
+  getDefaultFrameBuffer() {
+
+    return {
+
+      width: 0,
+
+      height: 0,
+
+      texture: null,
+
+      frame_buffer: null
+    };
+  }
+
+  getFrameBufferTexture(frame_buffer) {
+
+    return {
+
+      flip: true,
+
+      width: frame_buffer.width,
+
+      height: frame_buffer.height,
+
+      texture: frame_buffer.texture
+    };
   }
 };
