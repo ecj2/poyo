@@ -941,14 +941,6 @@ let Momo = new class {
     return this.canvas.context;
   }
 
-  getBackBuffer() {
-
-    // Draw the contents of the main canvas to the back-buffer bitmap.
-    /*this.back_buffer.context.drawImage(this.main_canvas.canvas, 0, 0);
-
-    return this.back_buffer;*/
-  }
-
   clearToColor(color) {
 
     this.canvas.context.clearColor(color.r, color.g, color.b, color.a);
