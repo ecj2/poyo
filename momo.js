@@ -690,17 +690,17 @@ let Momo = new class {
     return this.mouse.z;
   }
 
-  hideMouseCursor() {
+  hideMouse() {
 
     this.canvas.canvas.style.cursor = "none";
   }
 
-  showMouseCursor() {
+  showMouse() {
 
     this.canvas.canvas.style.cursor = "auto";
   }
 
-  isMouseCursorHidden() {
+  isMouseHidden() {
 
     return this.canvas.canvas.style.cursor == "none";
   }
