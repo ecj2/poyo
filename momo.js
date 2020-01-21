@@ -933,7 +933,7 @@ let Momo = new class {
 
   getCanvas() {
 
-    return this.canvas;
+    return this.canvas.canvas;
   }
 
   getCanvasContext() {
