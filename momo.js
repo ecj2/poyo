@@ -692,22 +692,22 @@ let Momo = new class {
 
   hideMouseCursor() {
 
-    this.canvas.style.cursor = "none";
+    this.canvas.canvas.style.cursor = "none";
   }
 
   showMouseCursor() {
 
-    this.canvas.style.cursor = "auto";
+    this.canvas.canvas.style.cursor = "auto";
   }
 
   isMouseCursorHidden() {
 
-    return this.canvas.style.cursor == "none";
+    return this.canvas.canvas.style.cursor == "none";
   }
 
   lockMouse() {
 
-    this.canvas.requestPointerLock();
+    this.canvas.canvas.requestPointerLock();
   }
 
   unlockMouse() {
