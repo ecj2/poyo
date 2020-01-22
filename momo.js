@@ -2028,4 +2028,14 @@ let Momo = new class {
       texture: frame_buffer.texture
     };
   }
+
+  getFrameBufferWidth(frame_buffer) {
+
+    return frame_buffer.width;
+  }
+
+  getFrameBufferHeight(frame_buffer) {
+
+    return frame_buffer.height;
+  }
 };
