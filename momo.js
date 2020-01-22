@@ -26,7 +26,7 @@ let Momo = new class {
     this.default_frame_buffer = {};
   }
 
-  initialize() {
+  initialize(canvas_identifier, canvas_width, canvas_height) {
 
     let canvas = document.createElement("canvas");
 
@@ -89,6 +89,79 @@ let Momo = new class {
     };
 
     this.matrix_stack[0] = this.getIdentityMatrix();
+
+    canvas = document.getElementById(canvas_identifier);
+
+    if (!!!canvas) {
+
+      // The specified canvas element does not exist.
+      return false;
+    }
+
+    canvas.width = canvas_width;
+    canvas.height = canvas_height;
+
+    this.canvas = {
+
+      canvas: canvas,
+
+      context: canvas.getContext(
+
+        "webgl2",
+
+        {
+
+          alpha: false,
+
+          depth: false,
+
+          antialias: false,
+
+          powerPreference: "high-performance",
+
+          failIfMajorPerformanceCaveat: true
+        }
+      ),
+
+      width: canvas_width,
+
+      height: canvas_height
+    };
+
+    // Set default blend mode.
+    this.canvas.context.enable(this.canvas.context.BLEND);
+    this.canvas.context.blendFunc(this.canvas.context.SRC_ALPHA, this.canvas.context.ONE_MINUS_SRC_ALPHA);
+    this.canvas.context.blendEquation(this.canvas.context.FUNC_ADD);
+
+    if (!this.createShadersAndPrograms()) {
+
+      // Failed to create shaders and programs.
+      return false;
+    }
+
+    if (!this.getUniformAndAttributeLocations()) {
+
+      // Failed to get uniform and attribute locations.
+      return false;
+    }
+
+    this.texture_flags = {
+
+      filtering: this.canvas.context.LINEAR
+    };
+
+    this.target = {
+
+      width: canvas_width,
+
+      height: canvas_height
+    };
+
+    this.default_frame_buffer = this.createFrameBuffer(canvas_width, canvas_height);
+
+    this.setUniformsAndAttributes();
+
+    this.canvas.context.viewport(0, 0, this.target.width, this.target.height);
 
     return true;
   }
@@ -851,84 +924,6 @@ let Momo = new class {
     }
 
     return this.keyboard.released[this.keyboard.codes[key_code]];
-  }
-
-  setCanvas(canvas_identifier, canvas_width, canvas_height) {
-
-    let canvas = document.getElementById(canvas_identifier);
-
-    if (!!!canvas) {
-
-      // The specified canvas element does not exist.
-      return false;
-    }
-
-    canvas.width = canvas_width;
-    canvas.height = canvas_height;
-
-    this.canvas = {
-
-      canvas: canvas,
-
-      context: canvas.getContext(
-
-        "webgl2",
-
-        {
-
-          alpha: false,
-
-          depth: false,
-
-          antialias: false,
-
-          powerPreference: "high-performance",
-
-          failIfMajorPerformanceCaveat: true
-        }
-      ),
-
-      width: canvas_width,
-
-      height: canvas_height
-    };
-
-    // Set default blend mode.
-    this.canvas.context.enable(this.canvas.context.BLEND);
-    this.canvas.context.blendFunc(this.canvas.context.SRC_ALPHA, this.canvas.context.ONE_MINUS_SRC_ALPHA);
-    this.canvas.context.blendEquation(this.canvas.context.FUNC_ADD);
-
-    if (!this.createShadersAndPrograms()) {
-
-      // Failed to create shaders and programs.
-      return false;
-    }
-
-    if (!this.getUniformAndAttributeLocations()) {
-
-      // Failed to get uniform and attribute locations.
-      return false;
-    }
-
-    this.texture_flags = {
-
-      filtering: this.canvas.context.LINEAR
-    };
-
-    this.target = {
-
-      width: canvas_width,
-
-      height: canvas_height
-    };
-
-    this.default_frame_buffer = this.createFrameBuffer(canvas_width, canvas_height);
-
-    this.setUniformsAndAttributes();
-
-    this.canvas.context.viewport(0, 0, this.target.width, this.target.height);
-
-    return true;
   }
 
   getCanvas() {
