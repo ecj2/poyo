@@ -1908,39 +1908,19 @@ let Momo = new class {
 
   multiplyMatrices(a, b) {
 
-    let a_1_1 = a[0];
-    let a_1_2 = a[3];
-    let a_1_3 = a[6];
-    let a_2_1 = a[1];
-    let a_2_2 = a[4];
-    let a_2_3 = a[7];
-    let a_3_1 = a[2];
-    let a_3_2 = a[5];
-    let a_3_3 = a[8];
-
-    let b_1_1 = b[0];
-    let b_1_2 = b[3];
-    let b_1_3 = b[6];
-    let b_2_1 = b[1];
-    let b_2_2 = b[4];
-    let b_2_3 = b[7];
-    let b_3_1 = b[2];
-    let b_3_2 = b[5];
-    let b_3_3 = b[8];
-
     let multiplied_matrix = this.getIdentityMatrix();
 
-    multiplied_matrix[0] = a_1_1 * b_1_1 + a_1_2 * b_2_1 + a_1_3 * b_3_1;
-    multiplied_matrix[3] = a_1_1 * b_1_2 + a_1_2 * b_2_2 + a_1_3 * b_3_2;
-    multiplied_matrix[6] = a_1_1 * b_1_3 + a_1_2 * b_2_3 + a_1_3 * b_3_3;
+    multiplied_matrix[0] = a[0] * b[0] + a[3] * b[1] + a[6] * b[2];
+    multiplied_matrix[3] = a[0] * b[3] + a[3] * b[4] + a[6] * b[5];
+    multiplied_matrix[6] = a[0] * b[6] + a[3] * b[7] + a[6] * b[8];
 
-    multiplied_matrix[1] = a_2_1 * b_1_1 + a_2_2 * b_2_1 + a_2_3 * b_3_1;
-    multiplied_matrix[4] = a_2_1 * b_1_2 + a_2_2 * b_2_2 + a_2_3 * b_3_2;
-    multiplied_matrix[7] = a_2_1 * b_1_3 + a_2_2 * b_2_3 + a_2_3 * b_3_3;
+    multiplied_matrix[1] = a[1] * b[0] + a[4] * b[1] + a[7] * b[2];
+    multiplied_matrix[4] = a[1] * b[3] + a[4] * b[4] + a[7] * b[5];
+    multiplied_matrix[7] = a[1] * b[6] + a[4] * b[7] + a[7] * b[8];
 
-    multiplied_matrix[2] = a_3_1 * b_1_1 + a_3_2 * b_2_1 + a_3_3 * b_3_1;
-    multiplied_matrix[5] = a_3_1 * b_1_2 + a_3_2 * b_2_2 + a_3_3 * b_3_2;
-    multiplied_matrix[8] = a_3_1 * b_1_3 + a_3_2 * b_2_3 + a_3_3 * b_3_3;
+    multiplied_matrix[2] = a[2] * b[0] + a[5] * b[1] + a[8] * b[2];
+    multiplied_matrix[5] = a[2] * b[3] + a[5] * b[4] + a[8] * b[5];
+    multiplied_matrix[8] = a[2] * b[6] + a[5] * b[7] + a[8] * b[8];
 
     return multiplied_matrix;
   }
