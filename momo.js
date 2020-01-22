@@ -956,30 +956,28 @@ let Momo = new class {
 
   setCanvasWidth(width) {
 
-    this.canvas.canvas.width = width;
     this.canvas.width = width;
+    this.target.width = width;
+    this.canvas.canvas.width = width;
 
     // Update the vertex buffer.
     this.setUniformsAndAttributes();
 
     // Update the viewport to reflect the new canvas size.
-    this.canvas.context.viewport(0, 0, this.canvas.width, this.canvas.height);
-
-    this.target.width = width;
+    this.canvas.context.viewport(0, 0, this.target.width, this.target.height);
   }
 
   setCanvasHeight(height) {
 
-    this.canvas.canvas.height = height;
     this.canvas.height = height;
+    this.target.height = height;
+    this.canvas.canvas.height = height;
 
     // Update the vertex buffer.
     this.setUniformsAndAttributes();
 
     // Update the viewport to reflect the new canvas size.
-    this.canvas.context.viewport(0, 0, this.canvas.width, this.canvas.height);
-
-    this.target.height = height;
+    this.canvas.context.viewport(0, 0, this.target.width, this.target.height);
   }
 
   getCanvasWidth() {
