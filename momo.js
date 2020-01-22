@@ -964,6 +964,8 @@ let Momo = new class {
 
     // Update the viewport to reflect the new canvas size.
     this.canvas.context.viewport(0, 0, this.canvas.width, this.canvas.height);
+
+    this.target.width = width;
   }
 
   setCanvasHeight(height) {
@@ -976,6 +978,8 @@ let Momo = new class {
 
     // Update the viewport to reflect the new canvas size.
     this.canvas.context.viewport(0, 0, this.canvas.width, this.canvas.height);
+
+    this.target.height = height;
   }
 
   getCanvasWidth() {
