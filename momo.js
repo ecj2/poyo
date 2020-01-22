@@ -22,6 +22,8 @@ let Momo = new class {
     this.texture_flags = {};
 
     this.matrix_stack = [];
+
+    this.default_frame_buffer = {};
   }
 
   initialize() {
@@ -920,6 +922,8 @@ let Momo = new class {
       height: canvas_height
     };
 
+    this.default_frame_buffer = this.createFrameBuffer(canvas_width, canvas_height);
+
     this.setUniformsAndAttributes();
 
     this.canvas.context.viewport(0, 0, this.target.width, this.target.height);
@@ -1042,7 +1046,13 @@ let Momo = new class {
 
       window.requestAnimationFrame(animation_request);
 
+      this.setFrameBuffer(this.default_frame_buffer);
+
       render_function();
+
+      this.setFrameBuffer({frame_buffer: null});
+
+      this.drawTexture(this.getFrameBufferTexture(this.default_frame_buffer), 0, 0);
     };
 
     window.requestAnimationFrame(animation_request);
@@ -1987,6 +1997,8 @@ let Momo = new class {
 
   setFrameBuffer(frame_buffer) {
 
+    // @TODO: Cache this.
+
     this.canvas.context.bindFramebuffer(this.canvas.context.FRAMEBUFFER, frame_buffer.frame_buffer);
 
     if (frame_buffer.frame_buffer == null) {
@@ -2009,16 +2021,7 @@ let Momo = new class {
 
   getDefaultFrameBuffer() {
 
-    return {
-
-      width: 0,
-
-      height: 0,
-
-      texture: null,
-
-      frame_buffer: null
-    };
+    return this.default_frame_buffer;
   }
 
   getFrameBufferTexture(frame_buffer) {
