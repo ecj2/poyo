@@ -4,15 +4,15 @@ let Momo = new class {
 
   constructor() {
 
+    this.cache = {};
     this.mouse = {};
     this.canvas = {};
+    this.target = {};
     this.keyboard = {};
 
     this.time_initialized = undefined;
 
     this.sample_instances = [];
-
-    this.back_buffer = undefined;
 
     this.version = 2;
 
@@ -22,10 +22,6 @@ let Momo = new class {
     this.texture_flags = {};
 
     this.matrix_stack = [];
-
-    this.cache = {};
-
-    this.target = {};
   }
 
   initialize() {
@@ -1010,13 +1006,13 @@ let Momo = new class {
     return this.version;
   }
 
-  createGameLoop(update_procedure, render_procedure, update_interval) {
+  createGameLoop(update_function, render_function, update_interval) {
 
     setInterval(
 
       (() => {
 
-        update_procedure();
+        update_function();
 
         let i = 0;
 
@@ -1046,7 +1042,7 @@ let Momo = new class {
 
       window.requestAnimationFrame(animation_request);
 
-      render_procedure();
+      render_function();
     };
 
     window.requestAnimationFrame(animation_request);
@@ -1247,7 +1243,7 @@ let Momo = new class {
     );
   }
 
-  playSample(sample, volume, speed, loop, identifier) {
+  playSample(sample, volume, speed, repeat, identifier) {
 
     if (this.sample_instances[identifier] == undefined) {
 
@@ -1257,17 +1253,17 @@ let Momo = new class {
 
     if (!this.isSamplePlaying(identifier)) {
 
-      this.adjustSample(identifier, volume, speed, loop);
+      this.adjustSample(identifier, volume, speed, repeat);
 
       this.sample_instances[identifier].play();
     }
   }
 
-  adjustSample(identifier, volume, speed, loop) {
+  adjustSample(identifier, volume, speed, repeat) {
 
     if (this.sample_instances[identifier] != undefined) {
 
-      this.sample_instances[identifier].loop = loop;
+      this.sample_instances[identifier].loop = repeat;
       this.sample_instances[identifier].volume = volume;
       this.sample_instances[identifier].playbackRate = speed;
     }
@@ -1349,9 +1345,9 @@ let Momo = new class {
 
     return {
 
-      "loop": properties.loop,
-
       "speed": properties.playbackRate,
+
+      "repeat": properties.loop,
 
       "volume": properties.volume
     };
@@ -1977,6 +1973,8 @@ let Momo = new class {
 
     return {
 
+      flip: true,
+
       width: width,
 
       height: height,
@@ -2025,16 +2023,7 @@ let Momo = new class {
 
   getFrameBufferTexture(frame_buffer) {
 
-    return {
-
-      flip: true,
-
-      width: frame_buffer.width,
-
-      height: frame_buffer.height,
-
-      texture: frame_buffer.texture
-    };
+    return frame_buffer;
   }
 
   getFrameBufferWidth(frame_buffer) {
