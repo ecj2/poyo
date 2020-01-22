@@ -1346,16 +1346,44 @@ let Momo = new class {
       // There does not exist a sample instance with this identifier.
       return undefined;
     }
-    else {
 
-      return {
+    return {
 
-        "loop": properties.loop,
+      "loop": properties.loop,
 
-        "speed": properties.playbackRate,
+      "speed": properties.playbackRate,
 
-        "volume": properties.volume
-      };
+      "volume": properties.volume
+    };
+  }
+
+  getSampleDuration(sample) {
+
+    if (sample == undefined) {
+
+      // Invalid sample.
+      return 0;
+    }
+
+    return sample.element.duration;
+  }
+
+  getSampleSeek(identifier) {
+
+    if (this.sample_instances[identifier] == undefined) {
+
+      // Invalid sample.
+      return 0;
+    }
+
+    return this.sample_instances[identifier].currentTime;
+  }
+
+  setSampleSeek(identifier, seek) {
+
+    if (this.sample_instances[identifier] != undefined) {
+
+      this.sample_instances[identifier].currentTime = seek;
     }
   }
 
