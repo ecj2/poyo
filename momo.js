@@ -219,13 +219,13 @@ let Momo = new class {
         // Move the texture back to the top-left origin to compensate for the offset.
         texture_position += vec2(u_texture_offset[0], u_texture_offset[1]);
 
-        if (texture_position.x < u_texture_offset[0] || texture_position.y < u_texture_offset[1]) {
+        if (texture_position.s < u_texture_offset[0] || texture_position.t < u_texture_offset[1]) {
 
           // Don't draw texels outside of the beginning offset.
           discard;
         }
 
-        if (texture_position.x > u_texture_offset[2] || texture_position.y > u_texture_offset[3]) {
+        if (texture_position.s > u_texture_offset[2] || texture_position.t > u_texture_offset[3]) {
 
           // Don't draw texels outside of the ending offset.
           discard;
