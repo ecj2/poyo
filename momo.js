@@ -1529,9 +1529,9 @@ let Momo = new class {
 
     this.saveTransform();
 
-    if (texture.flip) {
+    if (texture.frame_buffer != undefined) {
 
-      // Flip frame-buffer textures, as they are drawn upside down.
+      // Flip frame-buffer textures right-side up.
       this.scaleTransform(1.0, -1.0);
       this.translateTransform(0.0, -texture.height);
     }
@@ -1977,8 +1977,6 @@ let Momo = new class {
     this.canvas.context.bindFramebuffer(this.canvas.context.FRAMEBUFFER, null);
 
     return {
-
-      flip: true,
 
       width: width,
 
