@@ -1151,9 +1151,9 @@ let Momo = new class {
 
     this.cache.font_canvas_context.textAlign = alignment;
 
-    this.cache.font_canvas_context.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
+    this.cache.font_canvas_context.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
 
-    this.cache.font_canvas_context.font = font.style + " " + size + "px " + font.name;
+    this.cache.font_canvas_context.font = `${font.style} ${size}px ${font.name}`;
 
     // Draw the text to the canvas.
     this.cache.font_canvas_context.fillText(text, x, y + size);
@@ -1166,7 +1166,7 @@ let Momo = new class {
       a = outline_color.a;
 
       this.cache.font_canvas_context.lineWidth = outline_width;
-      this.cache.font_canvas_context.strokeStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
+      this.cache.font_canvas_context.strokeStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
 
       // Draw the outline.
       this.cache.font_canvas_context.strokeText(text, x, y + size);
