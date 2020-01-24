@@ -22,8 +22,6 @@ let Momo = new class {
     this.texture_flags = {};
 
     this.matrix_stack = [];
-
-    this.default_frame_buffer = {};
   }
 
   initialize(canvas_identifier, canvas_width, canvas_height) {
@@ -119,6 +117,8 @@ let Momo = new class {
 
           powerPreference: "high-performance",
 
+          preserveDrawingBuffer: true,
+
           failIfMajorPerformanceCaveat: true
         }
       ),
@@ -156,8 +156,6 @@ let Momo = new class {
 
       height: canvas_height
     };
-
-    this.default_frame_buffer = this.createFrameBuffer(canvas_width, canvas_height);
 
     this.setUniformsAndAttributes();
 
@@ -1041,13 +1039,7 @@ let Momo = new class {
 
       window.requestAnimationFrame(animation_request);
 
-      this.setFrameBuffer(this.default_frame_buffer);
-
       render_function();
-
-      this.setFrameBuffer({frame_buffer: null});
-
-      this.drawTexture(this.getFrameBufferTexture(this.default_frame_buffer), 0, 0);
     };
 
     window.requestAnimationFrame(animation_request);
@@ -2014,7 +2006,16 @@ let Momo = new class {
 
   getDefaultFrameBuffer() {
 
-    return this.default_frame_buffer;
+    return {
+
+      width: 0,
+
+      height: 0,
+
+      texture: null,
+
+      frame_buffer: null
+    };
   }
 
   getFrameBufferTexture(frame_buffer) {
