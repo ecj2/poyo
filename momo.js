@@ -1118,19 +1118,9 @@ let Momo = new class {
       // Use the Canvas 2D context to handle drawing text.
       this.cache.font_canvas_context = this.cache.font_canvas.getContext("2d");
 
-      this.cache.font_texture = this.canvas.context.createTexture();
+      this.cache.font_texture = this.createTexture(this.canvas.width, this.canvas.height);
 
-      this.canvas.context.bindTexture(this.canvas.context.TEXTURE_2D, this.cache.font_texture);
-
-      this.canvas.context.texImage2D(this.canvas.context.TEXTURE_2D, 0, this.canvas.context.RGBA, this.canvas.context.RGBA, this.canvas.context.UNSIGNED_BYTE, this.cache.font_canvas);
-
-      // Clamp the texture to the edges if it bleeds beyond its boundaries.
-      this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_WRAP_S, this.canvas.context.CLAMP_TO_EDGE);
-      this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_WRAP_T, this.canvas.context.CLAMP_TO_EDGE);
-
-      // Use linear filtering.
-      this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MIN_FILTER, this.canvas.context.LINEAR);
-      this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MAG_FILTER, this.canvas.context.LINEAR);
+      this.cache.font_texture.must_be_flipped = false;
     }
 
     // Clear the canvas.
@@ -1164,23 +1154,12 @@ let Momo = new class {
       this.cache.font_canvas_context.strokeText(text, x, y + size);
     }
 
-    this.canvas.context.bindTexture(this.canvas.context.TEXTURE_2D, this.cache.font_texture);
-
     // Use the font canvas' contents as a texture.
+    this.canvas.context.bindTexture(this.canvas.context.TEXTURE_2D, this.cache.font_texture.texture);
     this.canvas.context.texImage2D(this.canvas.context.TEXTURE_2D, 0, this.canvas.context.RGBA, this.canvas.context.RGBA, this.canvas.context.UNSIGNED_BYTE, this.cache.font_canvas);
 
-    // Create a texture object using the texture from the font canvas.
-    let font_texture_object = {
-
-      width: this.canvas.width,
-
-      height: this.canvas.height,
-
-      texture: this.cache.font_texture
-    };
-
     // Draw the font texture.
-    this.drawTexture(font_texture_object, 0, 0);
+    this.drawTexture(this.cache.font_texture, 0, 0);
   }
 
   loadSample(file_name) {
@@ -1395,31 +1374,15 @@ let Momo = new class {
 
         resolve_function = () => {
 
-          let texture = this.canvas.context.createTexture();
-
-          this.canvas.context.bindTexture(this.canvas.context.TEXTURE_2D, texture);
+          let texture = this.createTexture(element.width, element.height);
 
           // Use the image's contents as a texture.
+          this.canvas.context.bindTexture(this.canvas.context.TEXTURE_2D, texture.texture);
           this.canvas.context.texImage2D(this.canvas.context.TEXTURE_2D, 0, this.canvas.context.RGBA, this.canvas.context.RGBA, this.canvas.context.UNSIGNED_BYTE, element);
 
-          // Clamp the texture to the edges if it bleeds beyond its boundaries.
-          this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_WRAP_S, this.canvas.context.CLAMP_TO_EDGE);
-          this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_WRAP_T, this.canvas.context.CLAMP_TO_EDGE);
+          texture.must_be_flipped = false;
 
-          // Specify texture filtering.
-          this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MIN_FILTER, this.texture_flags.filtering);
-          this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MAG_FILTER, this.texture_flags.filtering);
-
-          let texture_object = {
-
-            width: element.width,
-
-            height: element.height,
-
-            texture: texture
-          };
-
-          resolve(texture_object);
+          resolve(texture);
         };
 
         reject_function = () => {
@@ -1521,7 +1484,7 @@ let Momo = new class {
 
     this.saveTransform();
 
-    if (texture.frame_buffer != undefined) {
+    if (texture.must_be_flipped) {
 
       // Flip frame-buffer textures right-side up.
       this.scaleTransform(1.0, -1.0);
@@ -1946,7 +1909,7 @@ let Momo = new class {
     return multiplied_matrix;
   }
 
-  createFrameBuffer(width, height) {
+  createTexture(width, height) {
 
     let frame_buffer = this.canvas.context.createFramebuffer();
 
@@ -1976,11 +1939,13 @@ let Momo = new class {
 
       texture: texture,
 
-      frame_buffer: frame_buffer
+      frame_buffer: frame_buffer,
+
+      must_be_flipped: true
     };
   }
 
-  setFrameBuffer(frame_buffer) {
+  setTargetTexture(frame_buffer) {
 
     // @TODO: Cache this.
 
@@ -2004,7 +1969,7 @@ let Momo = new class {
     this.canvas.context.viewport(0, 0, this.target.width, this.target.height);
   }
 
-  getDefaultFrameBuffer() {
+  getDefaultTexture() {
 
     return {
 
