@@ -1982,19 +1982,4 @@ let Momo = new class {
       frame_buffer: null
     };
   }
-
-  getFrameBufferTexture(frame_buffer) {
-
-    return frame_buffer;
-  }
-
-  getFrameBufferWidth(frame_buffer) {
-
-    return frame_buffer.width;
-  }
-
-  getFrameBufferHeight(frame_buffer) {
-
-    return frame_buffer.height;
-  }
 };
