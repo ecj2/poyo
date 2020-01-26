@@ -1005,12 +1005,12 @@ let Momo = new class {
     return this.canvas.height;
   }
 
-  saveTransform() {
+  saveMatrix() {
 
     this.matrix_stack.push(this.matrix_stack[this.matrix_stack.length - 1]);
   }
 
-  restoreTransform() {
+  restoreMatrix() {
 
     this.matrix_stack.pop();
 
@@ -1510,22 +1510,22 @@ let Momo = new class {
       this.cache.texture = texture.texture;
     }
 
-    this.saveTransform();
+    this.saveMatrix();
 
     if (texture.must_be_flipped) {
 
       // Flip frame-buffer textures right-side up.
-      this.scaleTransform(1.0, -1.0);
-      this.translateTransform(0.0, -texture.height);
+      this.scaleMatrix(1.0, -1.0);
+      this.translateMatrix(0.0, -texture.height);
     }
 
     // Scale the texture to its proper resolution.
-    this.scaleTransform(texture.width / this.target.width, texture.height / this.target.height);
+    this.scaleMatrix(texture.width / this.target.width, texture.height / this.target.height);
 
     // Upload the transformation matrix.
     this.canvas.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
 
-    this.restoreTransform();
+    this.restoreMatrix();
 
     if (tint_needs_updating) {
 
@@ -1560,39 +1560,39 @@ let Momo = new class {
 
   drawTexture(texture, x, y) {
 
-    this.saveTransform();
+    this.saveMatrix();
 
-    this.translateTransform(x, y);
+    this.translateMatrix(x, y);
 
     this.drawConsolidatedTexture(texture, undefined, undefined);
 
-    this.restoreTransform();
+    this.restoreMatrix();
   }
 
   drawScaledTexture(texture, origin_x, origin_y, scale_width, scale_height, draw_x, draw_y) {
 
-    this.saveTransform();
+    this.saveMatrix();
 
-    this.translateTransform(draw_x, draw_y);
+    this.translateMatrix(draw_x, draw_y);
 
-    this.scaleTransform(scale_width, scale_height);
+    this.scaleMatrix(scale_width, scale_height);
 
-    this.translateTransform(-origin_x, -origin_y);
+    this.translateMatrix(-origin_x, -origin_y);
 
     this.drawConsolidatedTexture(texture, undefined, undefined);
 
-    this.restoreTransform();
+    this.restoreMatrix();
   }
 
   drawTintedTexture(texture, tint, x, y) {
 
-    this.saveTransform();
+    this.saveMatrix();
 
-    this.translateTransform(x, y);
+    this.translateMatrix(x, y);
 
     this.drawConsolidatedTexture(texture, undefined, tint);
 
-    this.restoreTransform();
+    this.restoreMatrix();
   }
 
   drawClippedTexture(texture, start_x, start_y, width, height, x, y) {
@@ -1608,9 +1608,9 @@ let Momo = new class {
       (start_y + height) / texture.height
     ];
 
-    this.saveTransform();
+    this.saveMatrix();
 
-    this.translateTransform(x, y);
+    this.translateMatrix(x, y);
 
     if (texture.must_be_flipped) {
 
@@ -1625,22 +1625,22 @@ let Momo = new class {
       this.drawConsolidatedTexture(texture, texture_offset, undefined, false);
     }
 
-    this.restoreTransform();
+    this.restoreMatrix();
   }
 
   drawRotatedTexture(texture, center_x, center_y, draw_x, draw_y, theta) {
 
-    this.saveTransform();
+    this.saveMatrix();
 
-    this.translateTransform(draw_x, draw_y);
+    this.translateMatrix(draw_x, draw_y);
 
-    this.rotateTransform(theta);
+    this.rotateMatrix(theta);
 
-    this.translateTransform(-center_x, -center_y);
+    this.translateMatrix(-center_x, -center_y);
 
     this.drawConsolidatedTexture(texture, undefined, undefined);
 
-    this.restoreTransform();
+    this.restoreMatrix();
   }
 
   drawPolyline(points, color, thickness) {
@@ -1887,7 +1887,7 @@ let Momo = new class {
     ]
   }
 
-  scaleTransform(scale_x, scale_y) {
+  scaleMatrix(scale_x, scale_y) {
 
     let scaled_matrix = [
 
@@ -1903,7 +1903,7 @@ let Momo = new class {
     this.matrix_stack[this.matrix_stack.length - 1] = result;
   }
 
-  rotateTransform(theta) {
+  rotateMatrix(theta) {
 
     let sine = Math.sin(theta);
     let cosine = Math.cos(theta);
@@ -1922,7 +1922,7 @@ let Momo = new class {
     this.matrix_stack[this.matrix_stack.length - 1] = result;
   }
 
-  translateTransform(translate_x, translate_y) {
+  translateMatrix(translate_x, translate_y) {
 
     let translated_matrix = [
 
