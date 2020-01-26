@@ -184,8 +184,8 @@ let Momo = new class {
 
       void main(void) {
 
-        // Convert from pixel space to clip space.
-        vec2 clip_space_position = vec2((u_matrix * vec3(a_vertex_position, 1.0)).xy / u_canvas_resolution) * 2.0 - 1.0;
+        // Convert from pixel coordinates to normalized device coordinates.
+        vec2 clip_space_position = vec2(u_matrix * vec3(a_vertex_position, 1.0)).xy / u_canvas_resolution * 2.0 - 1.0;
 
         // Flip the Y axis.
         clip_space_position.y *= -1.0;
@@ -204,9 +204,9 @@ let Momo = new class {
 
       in vec2 v_texture_position;
 
-      uniform sampler2D u_texture;
-
       uniform vec4 u_tint;
+
+      uniform sampler2D u_texture;
 
       uniform vec4 u_texture_offset;
 
@@ -218,33 +218,27 @@ let Momo = new class {
 
         vec2 texture_position = v_texture_position;
 
-        float start_x = u_texture_offset[0];
-        float start_y = u_texture_offset[1];
-
-        float stop_x = u_texture_offset[2];
-        float stop_y = u_texture_offset[3];
-
-        bool starting_condition = false;
-        bool stopping_condition = false;
+        bool discard_condition = false;
 
         if (u_flip_texture_offset) {
 
           texture_position.t = texture_position.t * -1.0 + 1.0;
 
-          texture_position += vec2(start_x, -start_y);
+          texture_position += vec2(u_texture_offset[0], -u_texture_offset[1]);
 
-          starting_condition = texture_position.s < 0.0 || texture_position.s > stop_x || texture_position.s > 1.0;
-          stopping_condition = texture_position.t < 0.0 || texture_position.t < stop_y * -1.0 + 1.0 || texture_position.t > 1.0;
+          discard_condition = discard_condition || texture_position.t < u_texture_offset[3] * -1.0 + 1.0;
         }
         else {
 
-          texture_position += vec2(start_x, start_y);
+          texture_position += vec2(u_texture_offset[0], u_texture_offset[1]);
 
-          starting_condition = texture_position.s < 0.0 || texture_position.s > stop_x || texture_position.s > 1.0;
-          stopping_condition = texture_position.t < 0.0 || texture_position.t > stop_y || texture_position.t > 1.0;
+          discard_condition = discard_condition || texture_position.t > u_texture_offset[3];
         }
 
-        if (starting_condition || stopping_condition) {
+        discard_condition = discard_condition || texture_position.t < 0.0 || texture_position.t > 1.0;
+        discard_condition = discard_condition ||texture_position.s < 0.0 || texture_position.s > u_texture_offset[2] || texture_position.s > 1.0;
+
+        if (discard_condition) {
 
            // Don't draw texels outside of the beginning or ending offsets.
           discard;
