@@ -1949,6 +1949,9 @@ let Momo = new class {
 
     // @TODO: Cache this.
 
+    // Prevent feed-back loops when drawing into new textures.
+    this.cache.texture = undefined;
+
     this.canvas.context.bindFramebuffer(this.canvas.context.FRAMEBUFFER, frame_buffer.frame_buffer);
 
     if (frame_buffer.frame_buffer == null) {
