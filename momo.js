@@ -2020,7 +2020,7 @@ let Momo = new class {
     this.canvas.context.viewport(0, 0, this.target.width, this.target.height);
   }
 
-  getDefaultTexture() {
+  getDefaultTarget() {
 
     return {
 
