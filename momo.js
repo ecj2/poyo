@@ -75,6 +75,8 @@ let Momo = new class {
 
       tint: "",
 
+      texture: undefined,
+
       texture_offset: [],
 
       font_texture: undefined,
@@ -83,7 +85,7 @@ let Momo = new class {
 
       font_canvas_context: undefined,
 
-      texture: undefined
+      flip_texture_offset: false
     };
 
     this.matrix_stack[0] = this.getIdentityMatrix();
@@ -208,24 +210,43 @@ let Momo = new class {
 
       uniform vec4 u_texture_offset;
 
+      uniform bool u_flip_texture_offset;
+
       out vec4 output_color;
 
       void main(void) {
 
         vec2 texture_position = v_texture_position;
 
-        // Move the texture back to the top-left origin to compensate for the offset.
-        texture_position += vec2(u_texture_offset[0], u_texture_offset[1]);
+        float start_x = u_texture_offset[0];
+        float start_y = u_texture_offset[1];
 
-        if (texture_position.s < u_texture_offset[0] || texture_position.t < u_texture_offset[1]) {
+        float stop_x = u_texture_offset[2];
+        float stop_y = u_texture_offset[3];
 
-          // Don't draw texels outside of the beginning offset.
-          discard;
+        bool starting_condition = false;
+        bool stopping_condition = false;
+
+        if (u_flip_texture_offset) {
+
+          texture_position.t = texture_position.t * -1.0 + 1.0;
+
+          texture_position += vec2(start_x, -start_y);
+
+          starting_condition = texture_position.s < 0.0 || texture_position.s > stop_x || texture_position.s > 1.0;
+          stopping_condition = texture_position.t < 0.0 || texture_position.t < stop_y * -1.0 + 1.0 || texture_position.t > 1.0;
+        }
+        else {
+
+          texture_position += vec2(start_x, start_y);
+
+          starting_condition = texture_position.s < 0.0 || texture_position.s > stop_x || texture_position.s > 1.0;
+          stopping_condition = texture_position.t < 0.0 || texture_position.t > stop_y || texture_position.t > 1.0;
         }
 
-        if (texture_position.s > u_texture_offset[2] || texture_position.t > u_texture_offset[3]) {
+        if (starting_condition || stopping_condition) {
 
-          // Don't draw texels outside of the ending offset.
+           // Don't draw texels outside of the beginning or ending offsets.
           discard;
         }
 
@@ -291,6 +312,7 @@ let Momo = new class {
     this.locations.u_texture = this.canvas.context.getUniformLocation(this.shader_program, "u_texture");
     this.locations.u_texture_offset = this.canvas.context.getUniformLocation(this.shader_program, "u_texture_offset");
     this.locations.u_canvas_resolution = this.canvas.context.getUniformLocation(this.shader_program, "u_canvas_resolution");
+    this.locations.u_flip_texture_offset = this.canvas.context.getUniformLocation(this.shader_program, "u_flip_texture_offset");
 
     let key = undefined;
 
@@ -1441,11 +1463,12 @@ let Momo = new class {
     return texture.height;
   }
 
-  drawConsolidatedTexture(texture, texture_offset = [0.0, 0.0, 1.0, 1.0], tint = this.makeColor(1.0, 1.0, 1.0)) {
+  drawConsolidatedTexture(texture, texture_offset = [0.0, 0.0, 1.0, 1.0], tint = this.makeColor(1.0, 1.0, 1.0), flip_texture_offset = false) {
 
     let tint_needs_updating = false;
     let texture_needs_updating = false;
     let texture_offset_needs_updating = false;
+    let flip_texture_offset_needs_updating = false;
 
     if (this.cache.tint != "" + tint.r + tint.g + tint.b + tint.a) {
 
@@ -1467,6 +1490,11 @@ let Momo = new class {
 
         break;
       }
+    }
+
+    if (this.cache.flip_texture_offset != flip_texture_offset) {
+
+      flip_texture_offset_needs_updating = true;
     }
 
     this.canvas.context.useProgram(this.shader_program);
@@ -1515,6 +1543,15 @@ let Momo = new class {
 
       // Cache the texture offset for next time.
       this.cache.texture_offset = texture_offset;
+    }
+
+    if (flip_texture_offset_needs_updating) {
+
+      // Flip the texture offset.
+      this.canvas.context.uniform1i(this.locations.u_flip_texture_offset, flip_texture_offset);
+
+      // Cache this for next time.
+      this.cache.flip_texture_offset = flip_texture_offset;
     }
 
     // Draw the texture.
@@ -1575,7 +1612,18 @@ let Momo = new class {
 
     this.translateTransform(x, y);
 
-    this.drawConsolidatedTexture(texture, texture_offset, undefined);
+    if (texture.must_be_flipped) {
+
+      texture.must_be_flipped = false;
+
+      this.drawConsolidatedTexture(texture, texture_offset, undefined, true);
+
+      texture.must_be_flipped = true;
+    }
+    else {
+
+      this.drawConsolidatedTexture(texture, texture_offset, undefined, false);
+    }
 
     this.restoreTransform();
   }
