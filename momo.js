@@ -83,7 +83,7 @@ let Momo = new class {
 
       font_canvas: undefined,
 
-      use_texture: true,
+      use_texture: false,
 
       font_canvas_context: undefined,
 
@@ -1471,54 +1471,16 @@ let Momo = new class {
 
   drawConsolidatedTexture(texture, texture_offset = [0.0, 0.0, 1.0, 1.0], tint = this.makeColor(1.0, 1.0, 1.0), flip_texture_offset = false) {
 
-    let tint_needs_updating = false;
-    let texture_needs_updating = false;
-    let use_texture_needs_updating = false;
-    let texture_offset_needs_updating = false;
-    let flip_texture_offset_needs_updating = false;
-
     if (this.cache.tint != "" + tint.r + tint.g + tint.b + tint.a) {
 
-      tint_needs_updating = true;
+      // Upload the tint.
+      this.canvas.context.uniform4fv(this.locations.u_tint, [tint.r, tint.g, tint.b, tint.a]);
+
+      // Cache the tint for next time.
+      this.cache.tint = "" + tint.r + tint.g + tint.b + tint.a;
     }
 
     if (this.cache.texture != texture.texture) {
-
-      texture_needs_updating = true;
-    }
-
-    let i = 0;
-
-    for (i; i < 4; ++i) {
-
-      if (this.cache.texture_offset[i] != texture_offset[i]) {
-
-        texture_offset_needs_updating = true;
-
-        break;
-      }
-    }
-
-    if (this.cache.flip_texture_offset != flip_texture_offset) {
-
-      flip_texture_offset_needs_updating = true;
-    }
-
-    this.canvas.context.useProgram(this.shader_program);
-
-    if (this.cache.use_texture == false) {
-
-      use_texture_needs_updating = true;
-    }
-
-    if (use_texture_needs_updating) {
-
-      this.canvas.context.uniform1i(this.locations.u_use_texture, true);
-
-      this.cache.use_texture = true;
-    }
-
-    if (texture_needs_updating) {
 
       // Set the active texture.
       this.canvas.context.activeTexture(this.canvas.context.TEXTURE0);
@@ -1527,6 +1489,40 @@ let Momo = new class {
 
       // Cache the texture for next time.
       this.cache.texture = texture.texture;
+    }
+
+    let i = 0;
+
+    for (i; i < 4; ++i) {
+
+      if (this.cache.texture_offset[i] != texture_offset[i]) {
+
+        // Upload the texture offset.
+        this.canvas.context.uniform4fv(this.locations.u_texture_offset, texture_offset);
+
+        // Cache the texture offset for next time.
+        this.cache.texture_offset = texture_offset;
+
+        break;
+      }
+    }
+
+    if (this.cache.flip_texture_offset != flip_texture_offset) {
+
+      // Flip the texture offset.
+      this.canvas.context.uniform1i(this.locations.u_flip_texture_offset, flip_texture_offset);
+
+      // Cache this for next time.
+      this.cache.flip_texture_offset = flip_texture_offset;
+    }
+
+    this.canvas.context.useProgram(this.shader_program);
+
+    if (this.cache.use_texture == false) {
+
+      this.canvas.context.uniform1i(this.locations.u_use_texture, true);
+
+      this.cache.use_texture = true;
     }
 
     this.saveMatrix();
@@ -1545,33 +1541,6 @@ let Momo = new class {
     this.canvas.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
 
     this.restoreMatrix();
-
-    if (tint_needs_updating) {
-
-      // Upload the tint.
-      this.canvas.context.uniform4fv(this.locations.u_tint, [tint.r, tint.g, tint.b, tint.a]);
-
-      // Cache the tint for next time.
-      this.cache.tint = "" + tint.r + tint.g + tint.b + tint.a;
-    }
-
-    if (texture_offset_needs_updating) {
-
-      // Upload the texture offset.
-      this.canvas.context.uniform4fv(this.locations.u_texture_offset, texture_offset);
-
-      // Cache the texture offset for next time.
-      this.cache.texture_offset = texture_offset;
-    }
-
-    if (flip_texture_offset_needs_updating) {
-
-      // Flip the texture offset.
-      this.canvas.context.uniform1i(this.locations.u_flip_texture_offset, flip_texture_offset);
-
-      // Cache this for next time.
-      this.cache.flip_texture_offset = flip_texture_offset;
-    }
 
     // Draw the texture.
     this.canvas.context.drawArrays(this.canvas.context.TRIANGLE_FAN, 0, 4);
@@ -1876,13 +1845,13 @@ let Momo = new class {
 
   drawFilledRectangle(begin_x, begin_y, end_x, end_y, color) {
 
-    let tint_needs_updating = false;
-    let use_texture_needs_updating = false;
-    let texture_offset_needs_updating = false;
-
     if (this.cache.tint != "" + color.r + color.g + color.b + color.a) {
 
-      tint_needs_updating = true;
+      // Upload the tint.
+      this.canvas.context.uniform4fv(this.locations.u_tint, [color.r, color.g, color.b, color.a]);
+
+      // Cache the tint for next time.
+      this.cache.tint = "" + color.r + color.g + color.b + color.a;
     }
 
     let texture_offset = [0, 0, 1, 1];
@@ -1893,27 +1862,15 @@ let Momo = new class {
 
       if (this.cache.texture_offset[i] != texture_offset[i]) {
 
-        texture_offset_needs_updating = true;
+        this.canvas.context.uniform4fv(this.locations.u_texture_offset, [0, 0, 1, 1]);
+
+        this.cache.texture_offset = texture_offset;
 
         break;
       }
     }
 
-    if (tint_needs_updating) {
-
-      // Upload the tint.
-      this.canvas.context.uniform4fv(this.locations.u_tint, [color.r, color.g, color.b, color.a]);
-
-      // Cache the tint for next time.
-      this.cache.tint = "" + color.r + color.g + color.b + color.a;
-    }
-
     if (this.cache.use_texture == true) {
-
-      use_texture_needs_updating = true;
-    }
-
-    if (use_texture_needs_updating) {
 
       this.canvas.context.uniform1i(this.locations.u_use_texture, false);
 
@@ -1952,13 +1909,6 @@ let Momo = new class {
     this.canvas.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
 
     this.restoreMatrix();
-
-    if (texture_offset_needs_updating) {
-
-      this.canvas.context.uniform4fv(this.locations.u_texture_offset, [0, 0, 1, 1]);
-
-      this.cache.texture_offset = texture_offset;
-    }
 
     if (this.cache.flip_texture_offset == true) {
 
