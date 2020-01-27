@@ -1,14 +1,5 @@
 # Momo
 
-Momo is a JavaScript game-making library designed to facilitate the development of 2D games for the Web. It handles common tasks such as accepting user inputs, drawing images, playing sounds, and more.
+Momo is a relatively simple 2D game-making library written in JavaScript. It abstracts common tasks&mdash;such as managing user input, drawing images, and playing sounds&mdash;behind an easy-to-use interface.
 
-## Authors
-
-The list of people who have participated in this project can be found on the [contributors](https://github.com/ecj2/momo/graphs/contributors) page.
-
-## License
-
-This project is licensed under the MIT License &ndash; see the [LICENSE.md](https://github.com/ecj2/momo/blob/master/LICENSE.md) file for details.
-
-## Documentation
-Documentation information can be found on [the wiki](https://github.com/ecj2/momo/wiki).
+Momo works on modern Web browsers which support WebGL 2, such as desktop versions of Chrome and Firefox.
