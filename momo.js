@@ -2054,6 +2054,7 @@ let Momo = new class {
 
     // Prevent feed-back loops when drawing into new textures.
     this.cache.texture = undefined;
+    this.canvas.context.bindTexture(this.canvas.context.TEXTURE_2D, null);
 
     this.canvas.context.bindFramebuffer(this.canvas.context.FRAMEBUFFER, frame_buffer.frame_buffer);
 
