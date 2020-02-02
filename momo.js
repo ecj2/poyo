@@ -1471,8 +1471,6 @@ let Momo = new class {
 
   drawConsolidatedTexture(texture, texture_offset = [0.0, 0.0, 1.0, 1.0], tint = this.makeColor(1.0, 1.0, 1.0), flip_texture_offset = false) {
 
-    this.canvas.context.useProgram(this.shader_program);
-
     if (this.cache.tint != "" + tint.r + tint.g + tint.b + tint.a) {
 
       // Upload the tint.
