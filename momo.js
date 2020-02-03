@@ -981,6 +981,9 @@ let Momo = new class {
     this.target.width = width;
     this.canvas.canvas.width = width;
 
+    // Clear font texture cache.
+    this.cache.font_texture = undefined;
+
     // Update the vertex buffer.
     this.setUniformsAndAttributes();
 
@@ -993,6 +996,9 @@ let Momo = new class {
     this.canvas.height = height;
     this.target.height = height;
     this.canvas.canvas.height = height;
+
+    // Clear font texture cache.
+    this.cache.font_texture = undefined;
 
     // Update the vertex buffer.
     this.setUniformsAndAttributes();
@@ -1136,8 +1142,6 @@ let Momo = new class {
     if (this.cache.font_texture == undefined) {
 
       this.cache.font_canvas = document.createElement("canvas");
-
-      // @TODO: Update this whenever the main canvas' dimensions change.
 
       // Match the canvas for text-drawing to that of the main canvas' dimensions.
       this.cache.font_canvas.width = this.canvas.width;
