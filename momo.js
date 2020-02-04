@@ -334,13 +334,13 @@ let Momo = new class {
 
       [
 
-        0.0, 0.0,
+        0, 0,
 
-        this.target.width, 0.0,
+        this.target.width, 0,
 
         this.target.width, this.target.height,
 
-        0.0, this.target.height
+        0, this.target.height
       ]
     );
 
@@ -356,13 +356,13 @@ let Momo = new class {
 
       [
 
-        0.0, 0.0,
+        0, 0,
 
-        1.0, 0.0,
+        1, 0,
 
-        1.0, 1.0,
+        1, 1,
 
-        0.0, 1.0
+        0, 1
       ]
     );
 
@@ -1069,7 +1069,7 @@ let Momo = new class {
     window.requestAnimationFrame(animation_request);
   }
 
-  makeColor(r, g, b, a = 1.0) {
+  makeColor(r, g, b, a = 1) {
 
     return {r: r, g: g, b: b, a: a};
   }
@@ -1122,7 +1122,7 @@ let Momo = new class {
     };
 
     // Pre-load the font.
-    this.drawText(font, this.makeColor(0.0, 0.0, 0.0, 0.0), 0, 0, 0, "left", "");
+    this.drawText(font, this.makeColor(0, 0, 0, 0), 0, 0, 0, "left", "");
 
     return font;
   }
@@ -1148,9 +1148,9 @@ let Momo = new class {
     // Clear the canvas.
     this.cache.font_canvas_context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    let r = fill_color.r * 255.0;
-    let g = fill_color.g * 255.0;
-    let b = fill_color.b * 255.0;
+    let r = fill_color.r * 255;
+    let g = fill_color.g * 255;
+    let b = fill_color.b * 255;
     let a = fill_color.a;
 
     this.cache.font_canvas_context.textAlign = alignment;
@@ -1164,9 +1164,9 @@ let Momo = new class {
 
     if (outline_color != undefined && outline_width > 0) {
 
-      r = outline_color.r * 255.0;
-      g = outline_color.g * 255.0;
-      b = outline_color.b * 255.0;
+      r = outline_color.r * 255;
+      g = outline_color.g * 255;
+      b = outline_color.b * 255;
       a = outline_color.a;
 
       this.cache.font_canvas_context.lineWidth = outline_width;
@@ -1463,7 +1463,7 @@ let Momo = new class {
     return texture.height;
   }
 
-  drawConsolidatedTexture(texture, texture_offset = [0.0, 0.0, 1.0, 1.0], tint = this.makeColor(1.0, 1.0, 1.0), flip_texture_offset = false) {
+  drawConsolidatedTexture(texture, texture_offset = [0, 0, 1, 1], tint = this.makeColor(1, 1, 1), flip_texture_offset = false) {
 
     if (this.cache.tint != "" + tint.r + tint.g + tint.b + tint.a) {
 
@@ -1515,8 +1515,8 @@ let Momo = new class {
     if (texture.must_be_flipped) {
 
       // Flip frame-buffer textures right-side up.
-      this.scaleMatrix(1.0, -1.0);
-      this.translateMatrix(0.0, -texture.height);
+      this.scaleMatrix(1, -1);
+      this.translateMatrix(0, -texture.height);
     }
 
     // Scale the texture to its proper resolution.
@@ -1620,11 +1620,11 @@ let Momo = new class {
 
     return [
 
-      1.0, 0.0, 0.0,
+      1, 0, 0,
 
-      0.0, 1.0, 0.0,
+      0, 1, 0,
 
-      0.0, 0.0, 1.0
+      0, 0, 1
     ]
   }
 
@@ -1632,11 +1632,11 @@ let Momo = new class {
 
     let scaled_matrix = [
 
-      scale_x, 0.0, 0.0,
+      scale_x, 0, 0,
 
-      0.0, scale_y, 0.0,
+      0, scale_y, 0,
 
-      0.0, 0.0, 1.0
+      0, 0, 1
     ];
 
     let result = this.multiplyMatrices(this.matrix_stack[this.matrix_stack.length - 1], scaled_matrix);
@@ -1651,11 +1651,11 @@ let Momo = new class {
 
     let rotated_matrix = [
 
-      cosine, sine, 0.0,
+      cosine, sine, 0,
 
-      -sine, cosine, 0.0,
+      -sine, cosine, 0,
 
-      0.0, 0.0, 1.0
+      0, 0, 1
     ];
 
     let result = this.multiplyMatrices(this.matrix_stack[this.matrix_stack.length - 1], rotated_matrix)
@@ -1667,11 +1667,11 @@ let Momo = new class {
 
     let translated_matrix = [
 
-      1.0, 0.0, 0.0,
+      1, 0, 0,
 
-      0.0, 1.0, 0.0,
+      0, 1, 0,
 
-      translate_x, translate_y, 1.0
+      translate_x, translate_y, 1
     ];
 
     let result = this.multiplyMatrices(this.matrix_stack[this.matrix_stack.length - 1], translated_matrix);
