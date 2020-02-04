@@ -208,8 +208,6 @@ let Momo = new class {
 
       uniform vec4 u_tint;
 
-      uniform bool u_use_texture;
-
       uniform sampler2D u_texture;
 
       uniform vec4 u_texture_offset;
@@ -248,14 +246,7 @@ let Momo = new class {
           discard;
         }
 
-        if (u_use_texture) {
-
-          output_color = texture(u_texture, texture_position) * u_tint;
-        }
-        else {
-
-          output_color = u_tint;
-        }
+        output_color = texture(u_texture, texture_position) * u_tint;
       }
     `;
 
@@ -315,7 +306,6 @@ let Momo = new class {
     this.locations.u_tint = this.canvas.context.getUniformLocation(this.shader_program, "u_tint");
     this.locations.u_matrix = this.canvas.context.getUniformLocation(this.shader_program, "u_matrix");
     this.locations.u_texture = this.canvas.context.getUniformLocation(this.shader_program, "u_texture");
-    this.locations.u_use_texture = this.canvas.context.getUniformLocation(this.shader_program, "u_use_texture");
     this.locations.u_texture_offset = this.canvas.context.getUniformLocation(this.shader_program, "u_texture_offset");
     this.locations.u_canvas_resolution = this.canvas.context.getUniformLocation(this.shader_program, "u_canvas_resolution");
     this.locations.u_flip_texture_offset = this.canvas.context.getUniformLocation(this.shader_program, "u_flip_texture_offset");
@@ -1520,13 +1510,6 @@ let Momo = new class {
       this.cache.flip_texture_offset = flip_texture_offset;
     }
 
-    if (this.cache.use_texture == false) {
-
-      this.canvas.context.uniform1i(this.locations.u_use_texture, true);
-
-      this.cache.use_texture = true;
-    }
-
     this.saveMatrix();
 
     if (texture.must_be_flipped) {
@@ -1631,305 +1614,6 @@ let Momo = new class {
     this.drawConsolidatedTexture(texture, undefined, undefined);
 
     this.restoreMatrix();
-  }
-
-  drawPolyline(points, color, thickness) {
-
-    /*this.setStrokeAndFillStyle(color, thickness);
-
-    let x = [];
-    let y = [];
-
-    let i = 0;
-
-    let length = points.length;
-
-    for (i; i < length; ++i) {
-
-      // Split the points into their respective axes.
-
-      if (i % 2) {
-
-        y.push(points[i]);
-      }
-      else {
-
-        x.push(points[i]);
-      }
-    }
-
-    this.target_canvas.context.beginPath();
-
-    i = 0;
-
-    length = x.length;
-
-    for (i; i < length; ++i) {
-
-      if (i === 0) {
-
-        this.target_canvas.context.moveTo(x[i], y[i]);
-
-        continue;
-      }
-
-      this.target_canvas.context.lineTo(x[i], y[i]);
-    }
-
-    this.target_canvas.context.stroke();*/
-  }
-
-  drawPolygon(points, color, thickness) {
-
-    /*this.setStrokeAndFillStyle(color, thickness);
-
-    let x = [];
-    let y = [];
-
-    let i = 0;
-
-    let length = points.length;
-
-    for (i; i < length; ++i) {
-
-      // Split the points into their respective axes.
-
-      if (i % 2) {
-
-        y.push(points[i]);
-      }
-      else {
-
-        x.push(points[i]);
-      }
-    }
-
-    this.target_canvas.context.beginPath();
-
-    i = 0;
-
-    length = x.length;
-
-    for (i; i < length; ++i) {
-
-      if (i === 0) {
-
-        this.target_canvas.context.moveTo(x[i], y[i]);
-
-        continue;
-      }
-
-      this.target_canvas.context.lineTo(x[i], y[i]);
-    }
-
-    this.target_canvas.context.closePath();
-
-    this.target_canvas.context.stroke();*/
-  }
-
-  drawFilledPolygon(points, color) {
-
-    /*this.setStrokeAndFillStyle(color);
-
-    let x = [];
-    let y = [];
-
-    let i = 0;
-
-    let length = points.length;
-
-    for (i; i < length; ++i) {
-
-      // Split the points into their respective axes.
-
-      if (i % 2) {
-
-        y.push(points[i]);
-      }
-      else {
-
-        x.push(points[i]);
-      }
-    }
-
-    this.target_canvas.context.beginPath();
-
-    i = 0;
-
-    length = x.length;
-
-    for (i; i < length; ++i) {
-
-      if (i === 0) {
-
-        this.target_canvas.context.moveTo(x[i], y[i]);
-
-        continue;
-      }
-
-      this.target_canvas.context.lineTo(x[i], y[i]);
-    }
-
-    this.target_canvas.context.closePath();
-
-    this.target_canvas.context.fill();*/
-  }
-
-  drawLine(begin_x, begin_y, end_x, end_y, color, thickness) {
-
-    /*this.drawPolyline([begin_x, begin_y, end_x, end_y], color, thickness);*/
-  }
-
-  drawPixel(x, y, color) {
-
-    /*this.drawFilledRectangle(x, y, x + 1, y + 1, color);*/
-  }
-
-  drawArc(center_x, center_y, radius, start_angle, end_angle, color, thickness) {
-
-    /*this.setStrokeAndFillStyle(color, thickness);
-
-    this.target_canvas.context.beginPath();
-    this.target_canvas.context.arc(center_x, center_y, radius, start_angle, end_angle);
-    this.target_canvas.context.closePath();
-    this.target_canvas.context.stroke();*/
-  }
-
-  drawFilledArc(center_x, center_y, radius, start_angle, end_angle, color) {
-
-    /*this.setStrokeAndFillStyle(color);
-
-    this.target_canvas.context.beginPath();
-    this.target_canvas.context.arc(center_x, center_y, radius, start_angle, end_angle);
-    this.target_canvas.context.closePath();
-    this.target_canvas.context.fill();*/
-  }
-
-  drawCircle(center_x, center_y, radius, color, thickness) {
-
-    /*this.drawArc(center_x, center_y, radius, 0, 2 * Math.PI, color, thickness);*/
-  }
-
-  drawFilledCircle(center_x, center_y, radius, color) {
-
-    /*this.drawFilledArc(center_x, center_y, radius, 0, 2 * Math.PI, color);*/
-  }
-
-  drawEllipse(center_x, center_y, radius_x, radius_y, color, thickness) {
-
-    /*this.setStrokeAndFillStyle(color, thickness);
-
-    this.target_canvas.context.beginPath();
-    this.target_canvas.context.ellipse(center_x, center_y, radius_x, radius_y, 0, 0, 2 * Math.PI);
-    this.target_canvas.context.closePath();
-    this.target_canvas.context.stroke();*/
-  }
-
-  drawFilledEllipse(center_x, center_y, radius_x, radius_y, color) {
-
-    /*this.setStrokeAndFillStyle(color);
-
-    this.target_canvas.context.beginPath();
-    this.target_canvas.context.ellipse(center_x, center_y, radius_x, radius_y, 0, 0, 2 * Math.PI);
-    this.target_canvas.context.closePath();
-    this.target_canvas.context.fill();*/
-  }
-
-  drawRectangle(begin_x, begin_y, end_x, end_y, color, thickness) {
-
-    /*this.setStrokeAndFillStyle(color, thickness);
-
-    this.target_canvas.context.beginPath();
-    this.target_canvas.context.rect(begin_x, begin_y, end_x - begin_x, end_y - begin_y);
-    this.target_canvas.context.closePath();
-    this.target_canvas.context.stroke();*/
-  }
-
-  drawFilledRectangle(begin_x, begin_y, end_x, end_y, color) {
-
-    if (this.cache.tint != "" + color.r + color.g + color.b + color.a) {
-
-      // Upload the tint.
-      this.canvas.context.uniform4fv(this.locations.u_tint, [color.r, color.g, color.b, color.a]);
-
-      // Cache the tint for next time.
-      this.cache.tint = "" + color.r + color.g + color.b + color.a;
-    }
-
-    let texture_offset = [0, 0, 1, 1];
-
-    let i = 0;
-
-    for (i; i < 4; ++i) {
-
-      if (this.cache.texture_offset[i] != texture_offset[i]) {
-
-        this.canvas.context.uniform4fv(this.locations.u_texture_offset, [0, 0, 1, 1]);
-
-        this.cache.texture_offset = texture_offset;
-
-        break;
-      }
-    }
-
-    if (this.cache.use_texture == true) {
-
-      this.canvas.context.uniform1i(this.locations.u_use_texture, false);
-
-      this.cache.use_texture = false;
-    }
-
-    this.saveMatrix();
-
-    this.translateMatrix(begin_x, begin_y);
-
-    let width = 0;
-    let height = 0;
-
-    if (end_x > begin_x) {
-
-      width = end_x - begin_x;
-    }
-    else {
-
-      width = -begin_x + end_x;
-    }
-
-    if (end_y > begin_y) {
-
-      height = end_y - begin_y;
-    }
-    else {
-
-      height = -begin_y + end_y;
-    }
-
-    // Scale the rectangle to its proper resolution.
-    this.scaleMatrix(width / this.target.width, height / this.target.height);
-
-    // Upload the transformation matrix.
-    this.canvas.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
-
-    this.restoreMatrix();
-
-    if (this.cache.flip_texture_offset == true) {
-
-      this.canvas.context.uniform1i(this.locations.u_flip_texture_offset, false);
-
-      this.cache.flip_texture_offset = false;
-    }
-
-    this.canvas.context.drawArrays(this.canvas.context.TRIANGLE_FAN, 0, 4);
-  }
-
-  drawTriangle(x_1, y_1, x_2, y_2, x_3, y_3, color, thickness) {
-
-    /*this.drawPolygon([x_1, y_1, x_2, y_2, x_3, y_3], color, thickness);*/
-  }
-
-  drawFilledTriangle(x_1, y_1, x_2, y_2, x_3, y_3, color) {
-
-    /*this.drawFilledPolygon([x_1, y_1, x_2, y_2, x_3, y_3], color);*/
   }
 
   getIdentityMatrix() {
