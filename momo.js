@@ -1703,6 +1703,7 @@ let Momo = new class {
 
     this.canvas.context.framebufferTexture2D(this.canvas.context.FRAMEBUFFER, this.canvas.context.COLOR_ATTACHMENT0, this.canvas.context.TEXTURE_2D, texture, 0);
 
+    // Prevent feed-back loops between frame-buffer and active texture.
     this.canvas.context.bindFramebuffer(this.canvas.context.FRAMEBUFFER, null);
 
     return {
@@ -1719,25 +1720,23 @@ let Momo = new class {
     };
   }
 
-  setTargetTexture(frame_buffer) {
-
-    // @TODO: Cache this.
+  setTargetTexture(texture) {
 
     // Prevent feed-back loops when drawing into new textures.
     this.cache.texture = undefined;
     this.canvas.context.bindTexture(this.canvas.context.TEXTURE_2D, null);
 
-    this.canvas.context.bindFramebuffer(this.canvas.context.FRAMEBUFFER, frame_buffer.frame_buffer);
+    this.canvas.context.bindFramebuffer(this.canvas.context.FRAMEBUFFER, texture.frame_buffer);
 
-    if (frame_buffer.frame_buffer == null) {
+    if (texture.frame_buffer == null) {
 
       this.target.width = this.canvas.width;
       this.target.height = this.canvas.height;
     }
     else {
 
-      this.target.width = frame_buffer.width;
-      this.target.height = frame_buffer.height;
+      this.target.width = texture.width;
+      this.target.height = texture.height;
     }
 
     // Update the vertex buffer.
