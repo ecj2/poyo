@@ -1147,10 +1147,10 @@ let Momo = new class {
     // Clear the canvas.
     this.cache.font_canvas_context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    let r = fill_color.r;
-    let g = fill_color.g;
-    let b = fill_color.b;
-    let a = fill_color.a / 255;
+    let r = fill_color.r * 255;
+    let g = fill_color.g * 255;
+    let b = fill_color.b * 255;
+    let a = fill_color.a;
 
     this.cache.font_canvas_context.textAlign = alignment;
 
