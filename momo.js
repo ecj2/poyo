@@ -237,7 +237,7 @@ let Momo = new class {
         }
 
         discard_condition = discard_condition || texture_position.t < 0.0 || texture_position.t > 1.0;
-        discard_condition = discard_condition ||texture_position.s < 0.0 || texture_position.s > u_texture_offset[2] || texture_position.s > 1.0;
+        discard_condition = discard_condition || texture_position.s < 0.0 || texture_position.s > u_texture_offset[2] || texture_position.s > 1.0;
 
         if (discard_condition) {
 
@@ -1068,9 +1068,9 @@ let Momo = new class {
     window.requestAnimationFrame(animation_request);
   }
 
-  makeColor(r, g, b, a = 1) {
+  makeColor(r, g, b, a = 255) {
 
-    return {r: r, g: g, b: b, a: a};
+    return {r: r / 255, g: g / 255, b: b / 255, a: a / 255};
   }
 
   setEntryPoint(function_name) {
@@ -1147,10 +1147,10 @@ let Momo = new class {
     // Clear the canvas.
     this.cache.font_canvas_context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    let r = fill_color.r * 255;
-    let g = fill_color.g * 255;
-    let b = fill_color.b * 255;
-    let a = fill_color.a;
+    let r = fill_color.r;
+    let g = fill_color.g;
+    let b = fill_color.b;
+    let a = fill_color.a / 255;
 
     this.cache.font_canvas_context.textAlign = alignment;
 
@@ -1448,7 +1448,7 @@ let Momo = new class {
     return texture.height;
   }
 
-  drawConsolidatedTexture(texture, texture_offset = [0, 0, 1, 1], tint = this.makeColor(1, 1, 1), flip_texture_offset = false) {
+  drawConsolidatedTexture(texture, texture_offset = [0, 0, 1, 1], tint = this.makeColor(255, 255, 255), flip_texture_offset = false) {
 
     if (this.cache.tint != "" + tint.r + tint.g + tint.b + tint.a) {
 
