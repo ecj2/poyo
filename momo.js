@@ -135,7 +135,6 @@ let Momo = new class {
     // Set default blend mode.
     this.canvas.context.enable(this.canvas.context.BLEND);
     this.canvas.context.blendFunc(this.canvas.context.SRC_ALPHA, this.canvas.context.ONE_MINUS_SRC_ALPHA);
-    this.canvas.context.blendEquation(this.canvas.context.FUNC_ADD);
 
     if (!this.createShadersAndPrograms()) {
 
