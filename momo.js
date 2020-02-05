@@ -1126,7 +1126,7 @@ let Momo = new class {
     return font;
   }
 
-  drawText(font, fill_color, size, x, y, alignment, text, outline_color = undefined, outline_width = 0) {
+  drawText(font, fill_color, size, x, y, alignment, text) {
 
     if (this.cache.font_texture == undefined) {
 
@@ -1160,20 +1160,6 @@ let Momo = new class {
 
     // Draw the text to the canvas.
     this.cache.font_canvas_context.fillText(text, x, y + size);
-
-    if (outline_color != undefined && outline_width > 0) {
-
-      r = outline_color.r * 255;
-      g = outline_color.g * 255;
-      b = outline_color.b * 255;
-      a = outline_color.a;
-
-      this.cache.font_canvas_context.lineWidth = outline_width;
-      this.cache.font_canvas_context.strokeStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
-
-      // Draw the outline.
-      this.cache.font_canvas_context.strokeText(text, x, y + size);
-    }
 
     // Use the font canvas' contents as a texture.
     this.canvas.context.bindTexture(this.canvas.context.TEXTURE_2D, this.cache.font_texture.texture);
