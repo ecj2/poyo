@@ -19,7 +19,7 @@ let Momo = new class {
     this.shader_program = undefined;
     this.locations = {};
 
-    this.texture_flags = {};
+    this.texture_filtering = undefined;
 
     this.matrix_stack = [];
   }
@@ -148,10 +148,7 @@ let Momo = new class {
       return false;
     }
 
-    this.texture_flags = {
-
-      filtering: this.canvas.context.LINEAR
-    };
+    this.setTextureFiltering("nearest");
 
     this.target = {
 
@@ -1420,22 +1417,16 @@ let Momo = new class {
     );
   }
 
-  setNewTextureFlags(flag, value) {
+  setTextureFiltering(value) {
 
-    switch (flag) {
+    let filtering = this.canvas.context.NEAREST;
 
-      case "filtering":
+    if (value == "linear") {
 
-        if (value == "linear") {
-
-          this.texture_flags.filtering = this.canvas.context.LINEAR;
-        }
-        else if (value == "nearest") {
-
-          this.texture_flags.filtering = this.canvas.context.NEAREST;
-        }
-      break;
+      filtering = this.canvas.context.LINEAR;
     }
+
+    this.texture_filtering = filtering;
   }
 
   getTextureWidth(texture) {
@@ -1696,8 +1687,8 @@ let Momo = new class {
     this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_WRAP_S, this.canvas.context.CLAMP_TO_EDGE);
     this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_WRAP_T, this.canvas.context.CLAMP_TO_EDGE);
 
-    this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MIN_FILTER, this.texture_flags.filtering);
-    this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MAG_FILTER, this.texture_flags.filtering);
+    this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MIN_FILTER, this.texture_filtering);
+    this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MAG_FILTER, this.texture_filtering);
 
     this.canvas.context.bindFramebuffer(this.canvas.context.FRAMEBUFFER, frame_buffer);
 
