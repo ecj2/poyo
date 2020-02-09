@@ -1739,7 +1739,7 @@ let Momo = new class {
     this.WebGL2.viewport(0, 0, this.target.width, this.target.height);
   }
 
-  getDefaultTarget() {
+  getDefaultTargetTexture() {
 
     return {
 
