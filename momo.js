@@ -1040,6 +1040,8 @@ let Momo = new class {
           // Clear mouse button arrays so each mouse button event fires only once.
           this.mouse.pressed[i] = false;
           this.mouse.released[i] = false;
+
+          this.mouse.z = 0;
         }
 
         i = 0;
