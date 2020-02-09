@@ -22,6 +22,8 @@ let Momo = new class {
     this.texture_filtering = undefined;
 
     this.matrix_stack = [];
+
+    this.WebGL2 = undefined;
   }
 
   initialize(canvas_identifier, canvas_width, canvas_height) {
@@ -107,34 +109,34 @@ let Momo = new class {
 
       canvas: canvas,
 
-      context: canvas.getContext(
-
-        "webgl2",
-
-        {
-
-          alpha: false,
-
-          depth: false,
-
-          antialias: false,
-
-          powerPreference: "high-performance",
-
-          preserveDrawingBuffer: true,
-
-          failIfMajorPerformanceCaveat: true
-        }
-      ),
-
       width: canvas_width,
 
       height: canvas_height
     };
 
+    this.WebGL2 = canvas.getContext(
+
+      "webgl2",
+
+      {
+
+        alpha: false,
+
+        depth: false,
+
+        antialias: false,
+
+        powerPreference: "high-performance",
+
+        preserveDrawingBuffer: true,
+
+        failIfMajorPerformanceCaveat: true
+      }
+    );
+
     // Set default blend mode.
-    this.canvas.context.enable(this.canvas.context.BLEND);
-    this.canvas.context.blendFunc(this.canvas.context.SRC_ALPHA, this.canvas.context.ONE_MINUS_SRC_ALPHA);
+    this.WebGL2.enable(this.WebGL2.BLEND);
+    this.WebGL2.blendFunc(this.WebGL2.SRC_ALPHA, this.WebGL2.ONE_MINUS_SRC_ALPHA);
 
     if (!this.createShadersAndPrograms()) {
 
@@ -159,7 +161,7 @@ let Momo = new class {
 
     this.setUniformsAndAttributes();
 
-    this.canvas.context.viewport(0, 0, this.target.width, this.target.height);
+    this.WebGL2.viewport(0, 0, this.target.width, this.target.height);
 
     return true;
   }
@@ -246,9 +248,9 @@ let Momo = new class {
       }
     `;
 
-    let vertex_shader = this.createShader(vertex_shader_source.trim(), this.canvas.context.VERTEX_SHADER);
+    let vertex_shader = this.createShader(vertex_shader_source.trim(), this.WebGL2.VERTEX_SHADER);
 
-    let fragment_shader = this.createShader(fragment_shader_source.trim(), this.canvas.context.FRAGMENT_SHADER);
+    let fragment_shader = this.createShader(fragment_shader_source.trim(), this.WebGL2.FRAGMENT_SHADER);
 
     this.shader_program = this.createProgram(vertex_shader, fragment_shader);
 
@@ -257,13 +259,13 @@ let Momo = new class {
 
   createShader(source, type) {
 
-    let shader = this.canvas.context.createShader(type);
+    let shader = this.WebGL2.createShader(type);
 
-    this.canvas.context.shaderSource(shader, source);
+    this.WebGL2.shaderSource(shader, source);
 
-    this.canvas.context.compileShader(shader);
+    this.WebGL2.compileShader(shader);
 
-    if (!this.canvas.context.getShaderParameter(shader, this.canvas.context.COMPILE_STATUS)) {
+    if (!this.WebGL2.getShaderParameter(shader, this.WebGL2.COMPILE_STATUS)) {
 
       // The shader failed to compile.
       return false;
@@ -274,37 +276,37 @@ let Momo = new class {
 
   createProgram(vertex_shader, fragment_shader) {
 
-    let program = this.canvas.context.createProgram();
+    let program = this.WebGL2.createProgram();
 
-    this.canvas.context.attachShader(program, vertex_shader);
-    this.canvas.context.attachShader(program, fragment_shader);
+    this.WebGL2.attachShader(program, vertex_shader);
+    this.WebGL2.attachShader(program, fragment_shader);
 
-    this.canvas.context.linkProgram(program);
+    this.WebGL2.linkProgram(program);
 
-    if (!this.canvas.context.getProgramParameter(program, this.canvas.context.LINK_STATUS)) {
+    if (!this.WebGL2.getProgramParameter(program, this.WebGL2.LINK_STATUS)) {
 
       // The program failed to link the two shaders.
       return false;
     }
 
     // The compiled shaders are not needed after being linked.
-    this.canvas.context.deleteShader(vertex_shader);
-    this.canvas.context.deleteShader(fragment_shader);
+    this.WebGL2.deleteShader(vertex_shader);
+    this.WebGL2.deleteShader(fragment_shader);
 
     return program;
   }
 
   getUniformAndAttributeLocations() {
 
-    this.locations.a_vertex_position = this.canvas.context.getAttribLocation(this.shader_program, "a_vertex_position");
-    this.locations.a_texture_position = this.canvas.context.getAttribLocation(this.shader_program, "a_texture_position");
+    this.locations.a_vertex_position = this.WebGL2.getAttribLocation(this.shader_program, "a_vertex_position");
+    this.locations.a_texture_position = this.WebGL2.getAttribLocation(this.shader_program, "a_texture_position");
 
-    this.locations.u_tint = this.canvas.context.getUniformLocation(this.shader_program, "u_tint");
-    this.locations.u_matrix = this.canvas.context.getUniformLocation(this.shader_program, "u_matrix");
-    this.locations.u_texture = this.canvas.context.getUniformLocation(this.shader_program, "u_texture");
-    this.locations.u_texture_offset = this.canvas.context.getUniformLocation(this.shader_program, "u_texture_offset");
-    this.locations.u_canvas_resolution = this.canvas.context.getUniformLocation(this.shader_program, "u_canvas_resolution");
-    this.locations.u_flip_texture_offset = this.canvas.context.getUniformLocation(this.shader_program, "u_flip_texture_offset");
+    this.locations.u_tint = this.WebGL2.getUniformLocation(this.shader_program, "u_tint");
+    this.locations.u_matrix = this.WebGL2.getUniformLocation(this.shader_program, "u_matrix");
+    this.locations.u_texture = this.WebGL2.getUniformLocation(this.shader_program, "u_texture");
+    this.locations.u_texture_offset = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_offset");
+    this.locations.u_canvas_resolution = this.WebGL2.getUniformLocation(this.shader_program, "u_canvas_resolution");
+    this.locations.u_flip_texture_offset = this.WebGL2.getUniformLocation(this.shader_program, "u_flip_texture_offset");
 
     let key = undefined;
 
@@ -322,9 +324,9 @@ let Momo = new class {
 
   setUniformsAndAttributes() {
 
-    this.canvas.context.useProgram(this.shader_program);
+    this.WebGL2.useProgram(this.shader_program);
 
-    let vertex_buffer = this.canvas.context.createBuffer();
+    let vertex_buffer = this.WebGL2.createBuffer();
 
     let vertex_buffer_data = new Float32Array(
 
@@ -340,13 +342,13 @@ let Momo = new class {
       ]
     );
 
-    this.canvas.context.bindBuffer(this.canvas.context.ARRAY_BUFFER, vertex_buffer);
-    this.canvas.context.bufferData(this.canvas.context.ARRAY_BUFFER, vertex_buffer_data, this.canvas.context.STATIC_DRAW);
+    this.WebGL2.bindBuffer(this.WebGL2.ARRAY_BUFFER, vertex_buffer);
+    this.WebGL2.bufferData(this.WebGL2.ARRAY_BUFFER, vertex_buffer_data, this.WebGL2.STATIC_DRAW);
 
-    this.canvas.context.vertexAttribPointer(this.locations.a_vertex_position, 2, this.canvas.context.FLOAT, false, 0, 0);
-    this.canvas.context.enableVertexAttribArray(this.locations.a_vertex_position);
+    this.WebGL2.vertexAttribPointer(this.locations.a_vertex_position, 2, this.WebGL2.FLOAT, false, 0, 0);
+    this.WebGL2.enableVertexAttribArray(this.locations.a_vertex_position);
 
-    let texture_buffer = this.canvas.context.createBuffer();
+    let texture_buffer = this.WebGL2.createBuffer();
 
     let texture_buffer_data = new Float32Array(
 
@@ -362,14 +364,14 @@ let Momo = new class {
       ]
     );
 
-    this.canvas.context.bindBuffer(this.canvas.context.ARRAY_BUFFER, texture_buffer);
-    this.canvas.context.bufferData(this.canvas.context.ARRAY_BUFFER, texture_buffer_data, this.canvas.context.STATIC_DRAW);
+    this.WebGL2.bindBuffer(this.WebGL2.ARRAY_BUFFER, texture_buffer);
+    this.WebGL2.bufferData(this.WebGL2.ARRAY_BUFFER, texture_buffer_data, this.WebGL2.STATIC_DRAW);
 
-    this.canvas.context.vertexAttribPointer(this.locations.a_texture_position, 2, this.canvas.context.FLOAT, false, 0, 0);
-    this.canvas.context.enableVertexAttribArray(this.locations.a_texture_position);
+    this.WebGL2.vertexAttribPointer(this.locations.a_texture_position, 2, this.WebGL2.FLOAT, false, 0, 0);
+    this.WebGL2.enableVertexAttribArray(this.locations.a_texture_position);
 
     // Upload the target's resolution.
-    this.canvas.context.uniform2fv(this.locations.u_canvas_resolution, [this.target.width, this.target.height]);
+    this.WebGL2.uniform2fv(this.locations.u_canvas_resolution, [this.target.width, this.target.height]);
   }
 
   getTime() {
@@ -945,14 +947,14 @@ let Momo = new class {
 
   getContext() {
 
-    return this.canvas.context;
+    return this.WebGL2;
   }
 
   clearToColor(color) {
 
-    this.canvas.context.clearColor(color.r, color.g, color.b, color.a);
+    this.WebGL2.clearColor(color.r, color.g, color.b, color.a);
 
-    this.canvas.context.clear(this.canvas.context.COLOR_BUFFER_BIT);
+    this.WebGL2.clear(this.WebGL2.COLOR_BUFFER_BIT);
   }
 
   resizeCanvas(width, height) {
@@ -974,7 +976,7 @@ let Momo = new class {
     this.setUniformsAndAttributes();
 
     // Update the viewport to reflect the new canvas size.
-    this.canvas.context.viewport(0, 0, this.target.width, this.target.height);
+    this.WebGL2.viewport(0, 0, this.target.width, this.target.height);
   }
 
   setCanvasHeight(height) {
@@ -990,7 +992,7 @@ let Momo = new class {
     this.setUniformsAndAttributes();
 
     // Update the viewport to reflect the new canvas size.
-    this.canvas.context.viewport(0, 0, this.target.width, this.target.height);
+    this.WebGL2.viewport(0, 0, this.target.width, this.target.height);
   }
 
   getCanvasWidth() {
@@ -1159,8 +1161,8 @@ let Momo = new class {
     this.cache.font_canvas_context.fillText(text, x, y + size);
 
     // Use the font canvas' contents as a texture.
-    this.canvas.context.bindTexture(this.canvas.context.TEXTURE_2D, this.cache.font_texture.texture);
-    this.canvas.context.texImage2D(this.canvas.context.TEXTURE_2D, 0, this.canvas.context.RGBA, this.canvas.context.RGBA, this.canvas.context.UNSIGNED_BYTE, this.cache.font_canvas);
+    this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, this.cache.font_texture.texture);
+    this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, this.cache.font_canvas);
 
     // Draw the font texture.
     this.drawTexture(this.cache.font_texture, 0, 0);
@@ -1381,8 +1383,8 @@ let Momo = new class {
           let texture = this.createTexture(element.width, element.height);
 
           // Use the image's contents as a texture.
-          this.canvas.context.bindTexture(this.canvas.context.TEXTURE_2D, texture.texture);
-          this.canvas.context.texImage2D(this.canvas.context.TEXTURE_2D, 0, this.canvas.context.RGBA, this.canvas.context.RGBA, this.canvas.context.UNSIGNED_BYTE, element);
+          this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, texture.texture);
+          this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, element);
 
           texture.must_be_flipped = false;
 
@@ -1419,11 +1421,11 @@ let Momo = new class {
 
   setTextureFiltering(value) {
 
-    let filtering = this.canvas.context.NEAREST;
+    let filtering = this.WebGL2.NEAREST;
 
     if (value == "linear") {
 
-      filtering = this.canvas.context.LINEAR;
+      filtering = this.WebGL2.LINEAR;
     }
 
     this.texture_filtering = filtering;
@@ -1444,7 +1446,7 @@ let Momo = new class {
     if (this.cache.tint != "" + tint.r + tint.g + tint.b + tint.a) {
 
       // Upload the tint.
-      this.canvas.context.uniform4fv(this.locations.u_tint, [tint.r, tint.g, tint.b, tint.a]);
+      this.WebGL2.uniform4fv(this.locations.u_tint, [tint.r, tint.g, tint.b, tint.a]);
 
       // Cache the tint for next time.
       this.cache.tint = "" + tint.r + tint.g + tint.b + tint.a;
@@ -1453,9 +1455,9 @@ let Momo = new class {
     if (this.cache.texture != texture.texture) {
 
       // Set the active texture.
-      this.canvas.context.activeTexture(this.canvas.context.TEXTURE0);
-      this.canvas.context.bindTexture(this.canvas.context.TEXTURE_2D, texture.texture);
-      this.canvas.context.uniform1i(this.locations.u_texture, 0);
+      this.WebGL2.activeTexture(this.WebGL2.TEXTURE0);
+      this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, texture.texture);
+      this.WebGL2.uniform1i(this.locations.u_texture, 0);
 
       // Cache the texture for next time.
       this.cache.texture = texture.texture;
@@ -1468,7 +1470,7 @@ let Momo = new class {
       if (this.cache.texture_offset[i] != texture_offset[i]) {
 
         // Upload the texture offset.
-        this.canvas.context.uniform4fv(this.locations.u_texture_offset, texture_offset);
+        this.WebGL2.uniform4fv(this.locations.u_texture_offset, texture_offset);
 
         // Cache the texture offset for next time.
         this.cache.texture_offset = texture_offset;
@@ -1480,7 +1482,7 @@ let Momo = new class {
     if (this.cache.flip_texture_offset != flip_texture_offset) {
 
       // Flip the texture offset.
-      this.canvas.context.uniform1i(this.locations.u_flip_texture_offset, flip_texture_offset);
+      this.WebGL2.uniform1i(this.locations.u_flip_texture_offset, flip_texture_offset);
 
       // Cache this for next time.
       this.cache.flip_texture_offset = flip_texture_offset;
@@ -1499,12 +1501,12 @@ let Momo = new class {
     this.scaleMatrix(texture.width / this.target.width, texture.height / this.target.height);
 
     // Upload the transformation matrix.
-    this.canvas.context.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
+    this.WebGL2.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
 
     this.restoreMatrix();
 
     // Draw the texture.
-    this.canvas.context.drawArrays(this.canvas.context.TRIANGLE_FAN, 0, 4);
+    this.WebGL2.drawArrays(this.WebGL2.TRIANGLE_FAN, 0, 4);
   }
 
   drawTexture(texture, x, y) {
@@ -1676,26 +1678,26 @@ let Momo = new class {
 
   createTexture(width, height) {
 
-    let frame_buffer = this.canvas.context.createFramebuffer();
+    let frame_buffer = this.WebGL2.createFramebuffer();
 
-    let texture = this.canvas.context.createTexture();
+    let texture = this.WebGL2.createTexture();
 
-    this.canvas.context.bindTexture(this.canvas.context.TEXTURE_2D, texture);
+    this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, texture);
 
-    this.canvas.context.texImage2D(this.canvas.context.TEXTURE_2D, 0, this.canvas.context.RGBA, width, height, 0, this.canvas.context.RGBA, this.canvas.context.UNSIGNED_BYTE, null);
+    this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA, width, height, 0, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, null);
 
-    this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_WRAP_S, this.canvas.context.CLAMP_TO_EDGE);
-    this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_WRAP_T, this.canvas.context.CLAMP_TO_EDGE);
+    this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_WRAP_S, this.WebGL2.CLAMP_TO_EDGE);
+    this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_WRAP_T, this.WebGL2.CLAMP_TO_EDGE);
 
-    this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MIN_FILTER, this.texture_filtering);
-    this.canvas.context.texParameteri(this.canvas.context.TEXTURE_2D, this.canvas.context.TEXTURE_MAG_FILTER, this.texture_filtering);
+    this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_MIN_FILTER, this.texture_filtering);
+    this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_MAG_FILTER, this.texture_filtering);
 
-    this.canvas.context.bindFramebuffer(this.canvas.context.FRAMEBUFFER, frame_buffer);
+    this.WebGL2.bindFramebuffer(this.WebGL2.FRAMEBUFFER, frame_buffer);
 
-    this.canvas.context.framebufferTexture2D(this.canvas.context.FRAMEBUFFER, this.canvas.context.COLOR_ATTACHMENT0, this.canvas.context.TEXTURE_2D, texture, 0);
+    this.WebGL2.framebufferTexture2D(this.WebGL2.FRAMEBUFFER, this.WebGL2.COLOR_ATTACHMENT0, this.WebGL2.TEXTURE_2D, texture, 0);
 
     // Prevent feed-back loops between frame-buffer and active texture.
-    this.canvas.context.bindFramebuffer(this.canvas.context.FRAMEBUFFER, null);
+    this.WebGL2.bindFramebuffer(this.WebGL2.FRAMEBUFFER, null);
 
     return {
 
@@ -1715,9 +1717,9 @@ let Momo = new class {
 
     // Prevent feed-back loops when drawing into new textures.
     this.cache.texture = undefined;
-    this.canvas.context.bindTexture(this.canvas.context.TEXTURE_2D, null);
+    this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, null);
 
-    this.canvas.context.bindFramebuffer(this.canvas.context.FRAMEBUFFER, texture.frame_buffer);
+    this.WebGL2.bindFramebuffer(this.WebGL2.FRAMEBUFFER, texture.frame_buffer);
 
     if (texture.frame_buffer == null) {
 
@@ -1734,7 +1736,7 @@ let Momo = new class {
     this.setUniformsAndAttributes();
 
     // Update the viewport to reflect the new target size.
-    this.canvas.context.viewport(0, 0, this.target.width, this.target.height);
+    this.WebGL2.viewport(0, 0, this.target.width, this.target.height);
   }
 
   getDefaultTarget() {
