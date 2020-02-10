@@ -324,11 +324,13 @@ let Momo = new class {
 
     this.WebGL2.useProgram(this.shader_program);
 
-    let vertex_buffer = this.WebGL2.createBuffer();
+    let buffer = this.WebGL2.createBuffer();
 
-    let vertex_buffer_data = new Float32Array(
+    let buffer_data = new Float32Array(
 
       [
+
+        // Vertex data.
 
         0, 0,
 
@@ -336,21 +338,9 @@ let Momo = new class {
 
         this.target.width, this.target.height,
 
-        0, this.target.height
-      ]
-    );
+        0, this.target.height,
 
-    this.WebGL2.bindBuffer(this.WebGL2.ARRAY_BUFFER, vertex_buffer);
-    this.WebGL2.bufferData(this.WebGL2.ARRAY_BUFFER, vertex_buffer_data, this.WebGL2.STATIC_DRAW);
-
-    this.WebGL2.vertexAttribPointer(this.locations.a_vertex_position, 2, this.WebGL2.FLOAT, false, 0, 0);
-    this.WebGL2.enableVertexAttribArray(this.locations.a_vertex_position);
-
-    let texture_buffer = this.WebGL2.createBuffer();
-
-    let texture_buffer_data = new Float32Array(
-
-      [
+        // Texture data.
 
         0, 0,
 
@@ -362,10 +352,13 @@ let Momo = new class {
       ]
     );
 
-    this.WebGL2.bindBuffer(this.WebGL2.ARRAY_BUFFER, texture_buffer);
-    this.WebGL2.bufferData(this.WebGL2.ARRAY_BUFFER, texture_buffer_data, this.WebGL2.STATIC_DRAW);
+    this.WebGL2.bindBuffer(this.WebGL2.ARRAY_BUFFER, buffer);
+    this.WebGL2.bufferData(this.WebGL2.ARRAY_BUFFER, buffer_data, this.WebGL2.STATIC_DRAW);
 
-    this.WebGL2.vertexAttribPointer(this.locations.a_texture_position, 2, this.WebGL2.FLOAT, false, 0, 0);
+    this.WebGL2.vertexAttribPointer(this.locations.a_vertex_position, 2, this.WebGL2.FLOAT, false, 0, 0);
+    this.WebGL2.enableVertexAttribArray(this.locations.a_vertex_position);
+
+    this.WebGL2.vertexAttribPointer(this.locations.a_texture_position, 2, this.WebGL2.FLOAT, false, 0, 32);
     this.WebGL2.enableVertexAttribArray(this.locations.a_texture_position);
 
     // Upload the target's resolution.
