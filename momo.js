@@ -1135,7 +1135,7 @@ let Momo = new class {
     return font;
   }
 
-  drawText(font, fill_color, size, x, y, alignment, text) {
+  drawText(font, color, size, x, y, alignment, text) {
 
     if (this.cache.font_texture == undefined) {
 
@@ -1156,15 +1156,9 @@ let Momo = new class {
     // Clear the canvas.
     this.cache.font_canvas_context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    let r = fill_color.r * 255;
-    let g = fill_color.g * 255;
-    let b = fill_color.b * 255;
-    let a = fill_color.a;
-
+    // Set font properties.
     this.cache.font_canvas_context.textAlign = alignment;
-
-    this.cache.font_canvas_context.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
-
+    this.cache.font_canvas_context.fillStyle = "rgba(255, 255, 255, 1)";
     this.cache.font_canvas_context.font = `${font.style} ${size}px ${font.name}`;
 
     // Draw the text to the canvas.
@@ -1175,7 +1169,7 @@ let Momo = new class {
     this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, this.cache.font_canvas);
 
     // Draw the font texture.
-    this.drawTexture(this.cache.font_texture, 0, 0);
+    this.drawTintedTexture(this.cache.font_texture, color, 0, 0);
   }
 
   loadSample(file_name) {
