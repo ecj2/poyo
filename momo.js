@@ -1045,7 +1045,7 @@ let Momo = new class {
     return this.version;
   }
 
-  createGameLoop(update_function, render_function, update_interval) {
+  createGameLoop(update_function, render_function, update_interval = 60) {
 
     setInterval(
 
