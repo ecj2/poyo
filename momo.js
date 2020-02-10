@@ -161,8 +161,6 @@ let Momo = new class {
 
     this.setUniformsAndAttributes();
 
-    this.WebGL2.viewport(0, 0, this.target.width, this.target.height);
-
     return true;
   }
 
@@ -372,6 +370,9 @@ let Momo = new class {
 
     // Upload the target's resolution.
     this.WebGL2.uniform2fv(this.locations.u_canvas_resolution, [this.target.width, this.target.height]);
+
+    // Restrict the viewport to the target's resolution.
+    this.WebGL2.viewport(0, 0, this.target.width, this.target.height);
   }
 
   getTime() {
@@ -994,9 +995,6 @@ let Momo = new class {
 
     // Update the vertex buffer.
     this.setUniformsAndAttributes();
-
-    // Update the viewport to reflect the new canvas size.
-    this.WebGL2.viewport(0, 0, this.target.width, this.target.height);
   }
 
   setCanvasHeight(height) {
@@ -1010,9 +1008,6 @@ let Momo = new class {
 
     // Update the vertex buffer.
     this.setUniformsAndAttributes();
-
-    // Update the viewport to reflect the new canvas size.
-    this.WebGL2.viewport(0, 0, this.target.width, this.target.height);
   }
 
   getCanvasWidth() {
@@ -1756,9 +1751,6 @@ let Momo = new class {
 
     // Update the vertex buffer.
     this.setUniformsAndAttributes();
-
-    // Update the viewport to reflect the new target size.
-    this.WebGL2.viewport(0, 0, this.target.width, this.target.height);
   }
 
   getDefaultTargetTexture() {
