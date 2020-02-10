@@ -453,7 +453,7 @@ let Momo = new class {
 
       "alt": 18,
 
-      "pausebreak": 19,
+      "pause": 19,
 
       "capslock": 20,
 
@@ -553,10 +553,6 @@ let Momo = new class {
 
       "z": 90,
 
-      "lmeta": 91,
-
-      "rmeta": 92,
-
       "select": 93,
 
       "pad_0": 96,
@@ -621,7 +617,7 @@ let Momo = new class {
 
       "comma": 188,
 
-      "dash": 189,
+      "minus": 189,
 
       "period": 190,
 
@@ -629,13 +625,13 @@ let Momo = new class {
 
       "tilde": 192,
 
-      "openbrace": 219,
+      "openbracket": 219,
 
       "backslash": 220,
 
-      "closebrace": 221,
+      "closebracket": 221,
 
-      "quote": 222
+      "apostrophe": 222
     };
   }
 
@@ -810,22 +806,46 @@ let Momo = new class {
 
   manageKeyboardEvents(event) {
 
+    let which = event.which;
+
+    // Fix discrepancies in Firefox.
+    switch (which) {
+
+      case 59:
+
+        // Semicolon.
+        which = 186;
+      break;
+
+      case 61:
+
+        // EquaLs.
+        which = 187;
+      break;
+
+      case 173:
+
+        // Minus.
+        which = 189;
+      break;
+    }
+
     switch (event.type) {
 
       case "keyup":
 
-        this.keyboard.key[event.which] = false;
-        this.keyboard.released[event.which] = true;
+        this.keyboard.key[which] = false;
+        this.keyboard.released[which] = true;
       break;
 
       case "keydown":
 
-        if (!this.keyboard.key[event.which]) {
+        if (!this.keyboard.key[which]) {
 
-          this.keyboard.pressed[event.which] = true;
+          this.keyboard.pressed[which] = true;
         }
 
-        this.keyboard.key[event.which] = true;
+        this.keyboard.key[which] = true;
       break;
     }
 
