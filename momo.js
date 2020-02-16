@@ -670,7 +670,7 @@ let Momo = new class {
     return this.mouse.focused;
   }
 
-  isMouseButtonUp(button) {
+  isMouseUp(button) {
 
     if (button == "any") {
 
@@ -690,7 +690,7 @@ let Momo = new class {
     return !this.mouse.button[this.mouse.buttons[button]];
   }
 
-  isMouseButtonDown(button) {
+  isMouseDown(button) {
 
     if (button == "any") {
 
@@ -710,7 +710,7 @@ let Momo = new class {
     return this.mouse.button[this.mouse.buttons[button]];
   }
 
-  isMouseButtonPressed(button) {
+  isMousePressed(button) {
 
     if (button == "any") {
 
@@ -730,7 +730,7 @@ let Momo = new class {
     return this.mouse.pressed[this.mouse.buttons[button]];
   }
 
-  isMouseButtonReleased(button) {
+  isMouseReleased(button) {
 
     if (button == "any") {
 
