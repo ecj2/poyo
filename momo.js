@@ -148,7 +148,7 @@ let Momo = new class {
       return false;
     }
 
-    this.setNewTextureFiltering("nearest");
+    this.setNewBitmapFiltering("nearest");
 
     this.target = {
 
@@ -1421,7 +1421,7 @@ let Momo = new class {
     );
   }
 
-  setNewTextureFiltering(value) {
+  setNewBitmapFiltering(value) {
 
     let filtering = this.WebGL2.NEAREST;
 
