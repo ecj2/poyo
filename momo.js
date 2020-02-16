@@ -81,11 +81,9 @@ let Momo = new class {
 
       texture_offset: [],
 
-      font_texture: undefined,
+      font_bitmap: undefined,
 
       font_canvas: undefined,
-
-      use_texture: false,
 
       font_canvas_context: undefined,
 
@@ -983,8 +981,8 @@ let Momo = new class {
     this.target.width = width;
     this.canvas.canvas.width = width;
 
-    // Clear font texture cache.
-    this.cache.font_texture = undefined;
+    // Clear font bitmap cache.
+    this.cache.font_bitmap = undefined;
 
     // Update the vertex buffer.
     this.setUniformsAndAttributes();
@@ -996,8 +994,8 @@ let Momo = new class {
     this.target.height = height;
     this.canvas.canvas.height = height;
 
-    // Clear font texture cache.
-    this.cache.font_texture = undefined;
+    // Clear font bitmap cache.
+    this.cache.font_bitmap = undefined;
 
     // Update the vertex buffer.
     this.setUniformsAndAttributes();
@@ -1137,7 +1135,7 @@ let Momo = new class {
 
   drawText(font, color, size, x, y, alignment, text) {
 
-    if (this.cache.font_texture == undefined) {
+    if (this.cache.font_bitmap == undefined) {
 
       this.cache.font_canvas = document.createElement("canvas");
 
@@ -1148,9 +1146,9 @@ let Momo = new class {
       // Use the Canvas 2D context to handle drawing text.
       this.cache.font_canvas_context = this.cache.font_canvas.getContext("2d");
 
-      this.cache.font_texture = this.createTexture(this.canvas.width, this.canvas.height);
+      this.cache.font_bitmap = this.createBitmap(this.canvas.width, this.canvas.height);
 
-      this.cache.font_texture.must_be_flipped = false;
+      this.cache.font_bitmap.must_be_flipped = false;
     }
 
     // Clear the canvas.
@@ -1165,11 +1163,11 @@ let Momo = new class {
     this.cache.font_canvas_context.fillText(text, x, y + size);
 
     // Use the font canvas' contents as a texture.
-    this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, this.cache.font_texture.texture);
+    this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, this.cache.font_bitmap.texture);
     this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, this.cache.font_canvas);
 
-    // Draw the font texture.
-    this.drawTintedTexture(this.cache.font_texture, color, 0, 0);
+    // Draw the font bitmap.
+    this.drawTintedBitmap(this.cache.font_bitmap, color, 0, 0);
   }
 
   loadSample(file_name) {
@@ -1369,7 +1367,7 @@ let Momo = new class {
     }
   }
 
-  loadTexture(file_name) {
+  loadBitmap(file_name) {
 
     let element = new Image();
 
@@ -1384,15 +1382,15 @@ let Momo = new class {
 
         resolve_function = () => {
 
-          let texture = this.createTexture(element.width, element.height);
+          let bitmap = this.createBitmap(element.width, element.height);
 
           // Use the image's contents as a texture.
-          this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, texture.texture);
+          this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, bitmap.texture);
           this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, element);
 
-          texture.must_be_flipped = false;
+          bitmap.must_be_flipped = false;
 
-          resolve(texture);
+          resolve(bitmap);
         };
 
         reject_function = () => {
@@ -1435,17 +1433,17 @@ let Momo = new class {
     this.texture_filtering = filtering;
   }
 
-  getTextureWidth(texture) {
+  getBitmapWidth(bitmap) {
 
-    return texture.width;
+    return bitmap.width;
   }
 
-  getTextureHeight(texture) {
+  getBitmapHeight(bitmap) {
 
-    return texture.height;
+    return bitmap.height;
   }
 
-  drawConsolidatedTexture(texture, texture_offset = [0, 0, 1, 1], tint = this.makeColor(255, 255, 255), flip_texture_offset = false) {
+  drawConsolidatedBitmap(bitmap, texture_offset = [0, 0, 1, 1], tint = this.makeColor(255, 255, 255), flip_texture_offset = false) {
 
     if (this.cache.tint != "" + tint.r + tint.g + tint.b + tint.a) {
 
@@ -1456,15 +1454,15 @@ let Momo = new class {
       this.cache.tint = "" + tint.r + tint.g + tint.b + tint.a;
     }
 
-    if (this.cache.texture != texture.texture) {
+    if (this.cache.texture != bitmap.texture) {
 
       // Set the active texture.
       this.WebGL2.activeTexture(this.WebGL2.TEXTURE0);
-      this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, texture.texture);
+      this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, bitmap.texture);
       this.WebGL2.uniform1i(this.locations.u_texture, 0);
 
       // Cache the texture for next time.
-      this.cache.texture = texture.texture;
+      this.cache.texture = bitmap.texture;
     }
 
     let i = 0;
@@ -1494,37 +1492,37 @@ let Momo = new class {
 
     this.saveMatrix();
 
-    if (texture.must_be_flipped) {
+    if (bitmap.must_be_flipped) {
 
       // Flip frame-buffer textures right-side up.
       this.scaleMatrix(1, -1);
-      this.translateMatrix(0, -texture.height);
+      this.translateMatrix(0, -bitmap.height);
     }
 
-    // Scale the texture to its proper resolution.
-    this.scaleMatrix(texture.width / this.target.width, texture.height / this.target.height);
+    // Scale the bitmap to its proper resolution.
+    this.scaleMatrix(bitmap.width / this.target.width, bitmap.height / this.target.height);
 
     // Upload the transformation matrix.
     this.WebGL2.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix_stack[this.matrix_stack.length - 1]);
 
     this.restoreMatrix();
 
-    // Draw the texture.
+    // Draw the bitmap.
     this.WebGL2.drawArrays(this.WebGL2.TRIANGLE_FAN, 0, 4);
   }
 
-  drawTexture(texture, x, y) {
+  drawBitmap(bitmap, x, y) {
 
     this.saveMatrix();
 
     this.translateMatrix(x, y);
 
-    this.drawConsolidatedTexture(texture, undefined, undefined);
+    this.drawConsolidatedBitmap(bitmap, undefined, undefined);
 
     this.restoreMatrix();
   }
 
-  drawScaledTexture(texture, origin_x, origin_y, scale_width, scale_height, draw_x, draw_y) {
+  drawScaledBitmap(bitmap, origin_x, origin_y, scale_width, scale_height, draw_x, draw_y) {
 
     this.saveMatrix();
 
@@ -1534,56 +1532,56 @@ let Momo = new class {
 
     this.translateMatrix(-origin_x, -origin_y);
 
-    this.drawConsolidatedTexture(texture, undefined, undefined);
+    this.drawConsolidatedBitmap(bitmap, undefined, undefined);
 
     this.restoreMatrix();
   }
 
-  drawTintedTexture(texture, tint, x, y) {
+  drawTintedBitmap(bitmap, tint, x, y) {
 
     this.saveMatrix();
 
     this.translateMatrix(x, y);
 
-    this.drawConsolidatedTexture(texture, undefined, tint);
+    this.drawConsolidatedBitmap(bitmap, undefined, tint);
 
     this.restoreMatrix();
   }
 
-  drawClippedTexture(texture, start_x, start_y, width, height, x, y) {
+  drawClippedBitmap(bitmap, start_x, start_y, width, height, x, y) {
 
     let texture_offset = [
 
-      start_x / texture.width,
+      start_x / bitmap.width,
 
-      start_y / texture.height,
+      start_y / bitmap.height,
 
-      (start_x + width) / texture.width,
+      (start_x + width) / bitmap.width,
 
-      (start_y + height) / texture.height
+      (start_y + height) / bitmap.height
     ];
 
     this.saveMatrix();
 
     this.translateMatrix(x, y);
 
-    if (texture.must_be_flipped) {
+    if (bitmap.must_be_flipped) {
 
-      texture.must_be_flipped = false;
+      bitmap.must_be_flipped = false;
 
-      this.drawConsolidatedTexture(texture, texture_offset, undefined, true);
+      this.drawConsolidatedBitmap(bitmap, texture_offset, undefined, true);
 
-      texture.must_be_flipped = true;
+      bitmap.must_be_flipped = true;
     }
     else {
 
-      this.drawConsolidatedTexture(texture, texture_offset, undefined, false);
+      this.drawConsolidatedBitmap(bitmap, texture_offset, undefined, false);
     }
 
     this.restoreMatrix();
   }
 
-  drawRotatedTexture(texture, center_x, center_y, draw_x, draw_y, theta) {
+  drawRotatedBitmap(bitmap, center_x, center_y, draw_x, draw_y, theta) {
 
     this.saveMatrix();
 
@@ -1593,7 +1591,7 @@ let Momo = new class {
 
     this.translateMatrix(-center_x, -center_y);
 
-    this.drawConsolidatedTexture(texture, undefined, undefined);
+    this.drawConsolidatedBitmap(bitmap, undefined, undefined);
 
     this.restoreMatrix();
   }
@@ -1680,7 +1678,7 @@ let Momo = new class {
     return multiplied_matrix;
   }
 
-  createTexture(width, height) {
+  createBitmap(width, height) {
 
     let frame_buffer = this.WebGL2.createFramebuffer();
 
@@ -1717,30 +1715,30 @@ let Momo = new class {
     };
   }
 
-  setTargetTexture(texture) {
+  setTargetBitmap(bitmap) {
 
     // Prevent feed-back loops when drawing into new textures.
     this.cache.texture = undefined;
     this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, null);
 
-    this.WebGL2.bindFramebuffer(this.WebGL2.FRAMEBUFFER, texture.frame_buffer);
+    this.WebGL2.bindFramebuffer(this.WebGL2.FRAMEBUFFER, bitmap.frame_buffer);
 
-    if (texture.frame_buffer == null) {
+    if (bitmap.frame_buffer == null) {
 
       this.target.width = this.canvas.width;
       this.target.height = this.canvas.height;
     }
     else {
 
-      this.target.width = texture.width;
-      this.target.height = texture.height;
+      this.target.width = bitmap.width;
+      this.target.height = bitmap.height;
     }
 
     // Update the vertex buffer.
     this.setUniformsAndAttributes();
   }
 
-  getDefaultTargetTexture() {
+  getDefaultTargetBitmap() {
 
     return {
 
