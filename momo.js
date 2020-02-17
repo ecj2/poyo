@@ -1715,15 +1715,17 @@ let Momo = new class {
     };
   }
 
-  setTargetBitmap(bitmap) {
+  setDrawTarget(bitmap) {
 
     // Prevent feed-back loops when drawing into new textures.
     this.cache.texture = undefined;
     this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, null);
 
-    this.WebGL2.bindFramebuffer(this.WebGL2.FRAMEBUFFER, bitmap.frame_buffer);
+    let framebuffer = bitmap ? bitmap.frame_buffer : null;
 
-    if (bitmap.frame_buffer == null) {
+    this.WebGL2.bindFramebuffer(this.WebGL2.FRAMEBUFFER, framebuffer);
+
+    if (framebuffer == null) {
 
       this.target.width = this.canvas.width;
       this.target.height = this.canvas.height;
@@ -1738,17 +1740,8 @@ let Momo = new class {
     this.setUniformsAndAttributes();
   }
 
-  getDefaultTargetBitmap() {
+  getDefaultDrawTarget() {
 
-    return {
-
-      width: 0,
-
-      height: 0,
-
-      texture: null,
-
-      frame_buffer: null
-    };
+    return null;
   }
 };
