@@ -1443,6 +1443,16 @@ let Momo = new class {
     return bitmap.height;
   }
 
+  getBitmapTexture(bitmap) {
+
+    return bitmap.texture;
+  }
+
+  getBitmapFramebuffer(bitmap) {
+
+    return bitmap.framebuffer;
+  }
+
   drawConsolidatedBitmap(bitmap, texture_offset = [0, 0, 1, 1], tint = this.makeColor(255, 255, 255), flip_texture_offset = false) {
 
     if (this.cache.tint != "" + tint.r + tint.g + tint.b + tint.a) {
