@@ -1494,7 +1494,7 @@ let Momo = new class {
 
     if (bitmap.must_be_flipped) {
 
-      // Flip frame-buffer textures right-side up.
+      // Flip framebuffer textures right-side up.
       this.scaleMatrix(1, -1);
       this.translateMatrix(0, -bitmap.height);
     }
@@ -1680,7 +1680,7 @@ let Momo = new class {
 
   createBitmap(width, height) {
 
-    let frame_buffer = this.WebGL2.createFramebuffer();
+    let framebuffer = this.WebGL2.createFramebuffer();
 
     let texture = this.WebGL2.createTexture();
 
@@ -1694,11 +1694,11 @@ let Momo = new class {
     this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_MIN_FILTER, this.texture_filtering);
     this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_MAG_FILTER, this.texture_filtering);
 
-    this.WebGL2.bindFramebuffer(this.WebGL2.FRAMEBUFFER, frame_buffer);
+    this.WebGL2.bindFramebuffer(this.WebGL2.FRAMEBUFFER, framebuffer);
 
     this.WebGL2.framebufferTexture2D(this.WebGL2.FRAMEBUFFER, this.WebGL2.COLOR_ATTACHMENT0, this.WebGL2.TEXTURE_2D, texture, 0);
 
-    // Prevent feed-back loops between frame-buffer and active texture.
+    // Prevent feed-back loops between framebuffer and active texture.
     this.WebGL2.bindFramebuffer(this.WebGL2.FRAMEBUFFER, null);
 
     return {
@@ -1709,7 +1709,7 @@ let Momo = new class {
 
       texture: texture,
 
-      frame_buffer: frame_buffer,
+      framebuffer: framebuffer,
 
       must_be_flipped: true
     };
@@ -1721,7 +1721,7 @@ let Momo = new class {
     this.cache.texture = undefined;
     this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, null);
 
-    let framebuffer = bitmap ? bitmap.frame_buffer : null;
+    let framebuffer = bitmap ? bitmap.framebuffer : null;
 
     this.WebGL2.bindFramebuffer(this.WebGL2.FRAMEBUFFER, framebuffer);
 
