@@ -758,7 +758,7 @@ let Momo = new class {
     return this.mouse.y;
   }
 
-  getMouseZ() {
+  getMouseWheel() {
 
     return this.mouse.z;
   }
