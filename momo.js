@@ -19,7 +19,7 @@ let Momo = new class {
     this.shader_program = undefined;
     this.locations = {};
 
-    this.texture_filtering = undefined;
+    this.texture_filtering = {};
 
     this.matrix_stack = [];
 
@@ -148,7 +148,12 @@ let Momo = new class {
       return false;
     }
 
-    this.setNewBitmapFiltering("nearest");
+    this.texture_filtering = {
+
+      minification: this.WebGL2.NEAREST,
+
+      magnification: this.WebGL2.NEAREST
+    };
 
     this.target = {
 
@@ -1421,16 +1426,25 @@ let Momo = new class {
     );
   }
 
-  setNewBitmapFiltering(value) {
+  setNewBitmapFiltering(minification, magnification) {
 
-    let filtering = this.WebGL2.NEAREST;
+    if (minification == "nearest") {
 
-    if (value == "linear") {
+      this.texture_filtering.minification = this.WebGL2.NEAREST;
+    }
+    else if (minification == "linear") {
 
-      filtering = this.WebGL2.LINEAR;
+      this.texture_filtering.minification = this.WebGL2.LINEAR;
     }
 
-    this.texture_filtering = filtering;
+    if (magnification == "nearest") {
+
+      this.texture_filtering.magnification = this.WebGL2.NEAREST;
+    }
+    else if (magnification == "linear") {
+
+      this.texture_filtering.magnification = this.WebGL2.LINEAR;
+    }
   }
 
   getBitmapWidth(bitmap) {
@@ -1701,8 +1715,8 @@ let Momo = new class {
     this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_WRAP_S, this.WebGL2.CLAMP_TO_EDGE);
     this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_WRAP_T, this.WebGL2.CLAMP_TO_EDGE);
 
-    this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_MIN_FILTER, this.texture_filtering);
-    this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_MAG_FILTER, this.texture_filtering);
+    this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_MIN_FILTER, this.texture_filtering.minification);
+    this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_MAG_FILTER, this.texture_filtering.magnification);
 
     this.WebGL2.bindFramebuffer(this.WebGL2.FRAMEBUFFER, framebuffer);
 
