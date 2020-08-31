@@ -5,7 +5,30 @@ let Nini = new class {
   constructor() {
 
     this.cache = {};
-    this.mouse = {};
+
+    this.mouse = {
+
+      x: 0,
+
+      y: 0,
+
+      z: 0,
+
+      down: [],
+
+      pressed: [],
+
+      released: [],
+
+      method: this.manageMouseEvents.bind(this)
+    };
+
+    // Mouse codes.
+    this.MOUSE_ANY = 3;
+    this.MOUSE_LEFT = 0;
+    this.MOUSE_RIGHT = 2;
+    this.MOUSE_MIDDLE = 1;
+
     this.canvas = {};
     this.target = {};
     this.keyboard = {};
@@ -38,27 +61,6 @@ let Nini = new class {
 
     // Set the time in which the library was initialized.
     this.time_initialized = Date.now();
-
-    this.mouse = {
-
-      x: 0,
-
-      y: 0,
-
-      z: 0,
-
-      button: [],
-
-      buttons: this.defineMouseButtons(),
-
-      pressed: [],
-
-      released: [],
-
-      focused: false,
-
-      method: this.manageMouseEvents.bind(this)
-    };
 
     this.keyboard = {
 
@@ -388,7 +390,7 @@ let Nini = new class {
 
       case "mouseup":
 
-        this.mouse.button[event.button] = false;
+        this.mouse.down[event.button] = false;
         this.mouse.released[event.button] = true;
       break;
 
@@ -404,12 +406,12 @@ let Nini = new class {
 
       case "mousedown":
 
-        if (!this.mouse.button[event.button]) {
+        if (!this.mouse.down[event.button]) {
 
           this.mouse.pressed[event.button] = true;
         }
 
-        this.mouse.button[event.button] = true;
+        this.mouse.down[event.button] = true;
       break;
 
       case "mousemove":
@@ -632,18 +634,6 @@ let Nini = new class {
     };
   }
 
-  defineMouseButtons() {
-
-    return {
-
-      "left": 0,
-
-      "middle": 1,
-
-      "right": 2
-    };
-  }
-
   useMouse(use_mouse = true) {
 
     if (use_mouse) {
@@ -675,13 +665,13 @@ let Nini = new class {
 
   isMouseUp(button) {
 
-    if (button == "any") {
+    if (button == this.MOUSE_ANY) {
 
       let i = 0;
 
       for (i; i < 3; ++i) {
 
-        if (!this.mouse.button[i]) {
+        if (!this.mouse.down[i]) {
 
           return true;
         }
@@ -690,18 +680,18 @@ let Nini = new class {
       return false;
     }
 
-    return !this.mouse.button[this.mouse.buttons[button]];
+    return !this.mouse.down[button];
   }
 
   isMouseDown(button) {
 
-    if (button == "any") {
+    if (button == this.MOUSE_ANY) {
 
       let i = 0;
 
       for (i; i < 3; ++i) {
 
-        if (this.mouse.button[i]) {
+        if (this.mouse.down[i]) {
 
           return true;
         }
@@ -710,12 +700,12 @@ let Nini = new class {
       return false;
     }
 
-    return this.mouse.button[this.mouse.buttons[button]];
+    return this.mouse.down[button];
   }
 
   isMousePressed(button) {
 
-    if (button == "any") {
+    if (button == this.MOUSE_ANY) {
 
       let i = 0;
 
@@ -730,12 +720,12 @@ let Nini = new class {
       return false;
     }
 
-    return this.mouse.pressed[this.mouse.buttons[button]];
+    return this.mouse.pressed[button];
   }
 
   isMouseReleased(button) {
 
-    if (button == "any") {
+    if (button == this.MOUSE_ANY) {
 
       let i = 0;
 
@@ -750,7 +740,7 @@ let Nini = new class {
       return false;
     }
 
-    return this.mouse.released[this.mouse.buttons[button]];
+    return this.mouse.released[button];
   }
 
   getMouseX() {
@@ -1052,6 +1042,7 @@ let Nini = new class {
           this.mouse.pressed[i] = false;
           this.mouse.released[i] = false;
 
+          // Reset scroll wheel value each frame.
           this.mouse.z = 0;
         }
 
