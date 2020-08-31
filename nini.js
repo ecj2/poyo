@@ -23,15 +23,37 @@ let Nini = new class {
       method: this.manageMouseEvents.bind(this)
     };
 
+    this.keyboard = {
+
+      down: [],
+
+      pressed: [],
+
+      released: [],
+
+      method: this.manageKeyboardEvents.bind(this)
+    };
+
     // Mouse codes.
     this.MOUSE_ANY = 3;
     this.MOUSE_LEFT = 0;
     this.MOUSE_RIGHT = 2;
     this.MOUSE_MIDDLE = 1;
 
+    // Keyboard codes.
+    this.KEY_Z = 90;
+    this.KEY_X = 88;
+    this.KEY_C = 67;
+    this.KEY_V = 86;
+    this.KEY_UP = 38;
+    this.KEY_ESC = 27;
+    this.KEY_ANY = 98;
+    this.KEY_DOWN = 40;
+    this.KEY_LEFT = 37;
+    this.KEY_RIGHT = 39;
+
     this.canvas = {};
     this.target = {};
-    this.keyboard = {};
 
     this.time_initialized = undefined;
 
@@ -61,19 +83,6 @@ let Nini = new class {
 
     // Set the time in which the library was initialized.
     this.time_initialized = Date.now();
-
-    this.keyboard = {
-
-      key: [],
-
-      codes: this.defineKeyCodes(),
-
-      pressed: [],
-
-      released: [],
-
-      method: this.manageKeyboardEvents.bind(this)
-    };
 
     this.cache = {
 
@@ -436,204 +445,6 @@ let Nini = new class {
     }
   }
 
-  defineKeyCodes() {
-
-    return {
-
-      "backspace": 8,
-
-      "tab": 9,
-
-      "enter": 13,
-
-      "shift": 16,
-
-      "ctrl": 17,
-
-      "alt": 18,
-
-      "pause": 19,
-
-      "capslock": 20,
-
-      "escape": 27,
-
-      "space": 32,
-
-      "pageup": 33,
-
-      "pagedown": 34,
-
-      "end": 35,
-
-      "home": 36,
-
-      "left": 37,
-
-      "up": 38,
-
-      "right": 39,
-
-      "down": 40,
-
-      "insert": 45,
-
-      "delete": 46,
-
-      "0": 48,
-
-      "1": 49,
-
-      "2": 50,
-
-      "3": 51,
-
-      "4": 52,
-
-      "5": 53,
-
-      "6": 54,
-
-      "7": 55,
-
-      "8": 56,
-
-      "9": 57,
-
-      "a": 65,
-
-      "b": 66,
-
-      "c": 67,
-
-      "d": 68,
-
-      "e": 69,
-
-      "f": 70,
-
-      "g": 71,
-
-      "h": 72,
-
-      "i": 73,
-
-      "j": 74,
-
-      "k": 75,
-
-      "l": 76,
-
-      "m": 77,
-
-      "n": 78,
-
-      "o": 79,
-
-      "p": 80,
-
-      "q": 81,
-
-      "r": 82,
-
-      "s": 83,
-
-      "t": 84,
-
-      "u": 85,
-
-      "v": 86,
-
-      "w": 87,
-
-      "x": 88,
-
-      "y": 89,
-
-      "z": 90,
-
-      "select": 93,
-
-      "pad_0": 96,
-
-      "pad_1": 97,
-
-      "pad_2": 98,
-
-      "pad_3": 99,
-
-      "pad_4": 100,
-
-      "pad_5": 101,
-
-      "pad_6": 102,
-
-      "pad_7": 103,
-
-      "pad_8": 104,
-
-      "pad_9": 105,
-
-      "multiply": 106,
-
-      "add": 107,
-
-      "subtract": 109,
-
-      "divide": 111,
-
-      "f1": 112,
-
-      "f2": 113,
-
-      "f3": 114,
-
-      "f4": 115,
-
-      "f5": 116,
-
-      "f6": 117,
-
-      "f7": 118,
-
-      "f8": 119,
-
-      "f9": 120,
-
-      "f10": 121,
-
-      "f11": 122,
-
-      "f12": 123,
-
-      "numlock": 144,
-
-      "scrolllock": 145,
-
-      "semicolon": 186,
-
-      "equals": 187,
-
-      "comma": 188,
-
-      "minus": 189,
-
-      "period": 190,
-
-      "forwardslash": 191,
-
-      "tilde": 192,
-
-      "openbracket": 219,
-
-      "backslash": 220,
-
-      "closebracket": 221,
-
-      "apostrophe": 222
-    };
-  }
-
   useMouse(use_mouse = true) {
 
     if (use_mouse) {
@@ -793,50 +604,24 @@ let Nini = new class {
 
   manageKeyboardEvents(event) {
 
-    let which = event.which;
-
-    // Fix discrepancies in Firefox.
-    switch (which) {
-
-      case 59:
-
-        // Semicolon.
-        which = 186;
-      break;
-
-      case 61:
-
-        // EquaLs.
-        which = 187;
-      break;
-
-      case 173:
-
-        // Minus.
-        which = 189;
-      break;
-    }
-
     switch (event.type) {
 
       case "keyup":
 
-        this.keyboard.key[which] = false;
-        this.keyboard.released[which] = true;
+        this.keyboard.down[event.which] = false;
+        this.keyboard.released[event.which] = true;
       break;
 
       case "keydown":
 
-        if (!this.keyboard.key[which]) {
+        if (!this.keyboard.down[event.which]) {
 
-          this.keyboard.pressed[which] = true;
+          this.keyboard.pressed[event.which] = true;
         }
 
-        this.keyboard.key[which] = true;
+        this.keyboard.down[event.which] = true;
       break;
     }
-
-    event.preventDefault();
   }
 
   useKeyboard(use_keyboard = true) {
@@ -853,23 +638,15 @@ let Nini = new class {
     }
   }
 
-  isKeyUp(key_code) {
+  isKeyUp(key) {
 
-    if (key_code == "any") {
-
-      let length = this.keyboard.key.length;
-
-      if (length == 0) {
-
-        // Assume that at least one key is up before any keyboard events are fired.
-        return true;
-      }
+    if (key == this.KEY_ANY) {
 
       let i = 0;
 
-      for (i; i < length; ++i) {
+      for (i; i < 99; ++i) {
 
-        if (!this.keyboard.key[i]) {
+        if (!this.keyboard.down[i]) {
 
           return true;
         }
@@ -878,20 +655,18 @@ let Nini = new class {
       return false;
     }
 
-    return !this.keyboard.key[this.keyboard.codes[key_code]];
+    return !this.keyboard.down[key];
   }
 
-  isKeyDown(key_code) {
+  isKeyDown(key) {
 
-    if (key_code == "any") {
+    if (key == this.KEY_ANY) {
 
       let i = 0;
 
-      let length = this.keyboard.key.length;
+      for (i; i < 99; ++i) {
 
-      for (i; i < length; ++i) {
-
-        if (this.keyboard.key[i]) {
+        if (this.keyboard.down[i]) {
 
           return true;
         }
@@ -900,18 +675,16 @@ let Nini = new class {
       return false;
     }
 
-    return this.keyboard.key[this.keyboard.codes[key_code]];
+    return this.keyboard.down[key];
   }
 
-  isKeyPressed(key_code) {
+  isKeyPressed(key) {
 
-    if (key_code == "any") {
+    if (key == this.KEY_ANY) {
 
       let i = 0;
 
-      let length = this.keyboard.pressed.length;
-
-      for (i; i < length; ++i) {
+      for (i; i < 99; ++i) {
 
         if (this.keyboard.pressed[i]) {
 
@@ -922,18 +695,16 @@ let Nini = new class {
       return false;
     }
 
-    return this.keyboard.pressed[this.keyboard.codes[key_code]];
+    return this.keyboard.pressed[key];
   }
 
-  isKeyReleased(key_code) {
+  isKeyReleased(key) {
 
-    if (key_code == "any") {
+    if (key == this.KEY_ANY) {
 
       let i = 0;
 
-      let length = this.keyboard.released.length;
-
-      for (i; i < length; ++i) {
+      for (i; i < 99; ++i) {
 
         if (this.keyboard.released[i]) {
 
@@ -944,7 +715,7 @@ let Nini = new class {
       return false;
     }
 
-    return this.keyboard.released[this.keyboard.codes[key_code]];
+    return this.keyboard.released[key];
   }
 
   getCanvas() {
@@ -1048,9 +819,7 @@ let Nini = new class {
 
         i = 0;
 
-        let length = this.keyboard.key.length;
-
-        for (i; i < length; ++i) {
+        for (i; i < 99; ++i) {
 
           // Clear key arrays so each keyboard event fires only once.
           this.keyboard.pressed[i] = false;
