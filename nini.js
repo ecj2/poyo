@@ -18,9 +18,7 @@ let Nini = new class {
 
       pressed: [],
 
-      released: [],
-
-      method: this.manageMouseEvents.bind(this)
+      released: []
     };
 
     this.keyboard = {
@@ -29,9 +27,7 @@ let Nini = new class {
 
       pressed: [],
 
-      released: [],
-
-      method: this.manageKeyboardEvents.bind(this)
+      released: []
     };
 
     // Mouse codes.
@@ -174,6 +170,19 @@ let Nini = new class {
     };
 
     this.setUniformsAndAttributes();
+
+    // Listen for mouse events.
+    this.canvas.canvas.addEventListener("wheel", this.manageMouseEvents.bind(this));
+    this.canvas.canvas.addEventListener("mouseup", this.manageMouseEvents.bind(this));
+    this.canvas.canvas.addEventListener("mouseout", this.manageMouseEvents.bind(this));
+    this.canvas.canvas.addEventListener("mouseover", this.manageMouseEvents.bind(this));
+    this.canvas.canvas.addEventListener("mousedown", this.manageMouseEvents.bind(this));
+    this.canvas.canvas.addEventListener("mousemove", this.manageMouseEvents.bind(this));
+    this.canvas.canvas.addEventListener("contextmenu", this.manageMouseEvents.bind(this));
+
+    // Listen for keyboard events.
+    document.addEventListener("keyup", this.manageKeyboardEvents.bind(this));
+    document.addEventListener("keydown", this.manageKeyboardEvents.bind(this));
 
     return true;
   }
@@ -445,30 +454,6 @@ let Nini = new class {
     }
   }
 
-  useMouse(use_mouse = true) {
-
-    if (use_mouse) {
-
-      this.canvas.canvas.addEventListener("wheel", this.mouse.method);
-      this.canvas.canvas.addEventListener("mouseup", this.mouse.method);
-      this.canvas.canvas.addEventListener("mouseout", this.mouse.method);
-      this.canvas.canvas.addEventListener("mouseover", this.mouse.method);
-      this.canvas.canvas.addEventListener("mousedown", this.mouse.method);
-      this.canvas.canvas.addEventListener("mousemove", this.mouse.method);
-      this.canvas.canvas.addEventListener("contextmenu", this.mouse.method);
-    }
-    else {
-
-      this.canvas.canvas.removeEventListener("wheel", this.mouse.method);
-      this.canvas.canvas.removeEventListener("mouseup", this.mouse.method);
-      this.canvas.canvas.removeEventListener("mouseout", this.mouse.method);
-      this.canvas.canvas.removeEventListener("mouseover", this.mouse.method);
-      this.canvas.canvas.removeEventListener("mousedown", this.mouse.method);
-      this.canvas.canvas.removeEventListener("mousemove", this.mouse.method);
-      this.canvas.canvas.removeEventListener("contextmenu", this.mouse.method);
-    }
-  }
-
   isMouseFocused() {
 
     return this.mouse.focused;
@@ -621,20 +606,6 @@ let Nini = new class {
 
         this.keyboard.down[event.which] = true;
       break;
-    }
-  }
-
-  useKeyboard(use_keyboard = true) {
-
-    if (use_keyboard) {
-
-      document.addEventListener("keyup", this.keyboard.method);
-      document.addEventListener("keydown", this.keyboard.method);
-    }
-    else {
-
-      document.removeEventListener("keyup", this.keyboard.method);
-      document.removeEventListener("keydown", this.keyboard.method);
     }
   }
 
