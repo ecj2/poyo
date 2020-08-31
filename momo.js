@@ -1,6 +1,6 @@
 "use strict";
 
-let Momo = new class {
+let Nini = new class {
 
   constructor() {
 
