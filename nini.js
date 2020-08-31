@@ -14,7 +14,7 @@ let Nini = new class {
 
     this.sample_instances = [];
 
-    this.version = 2;
+    this.version = 1;
 
     this.shader_program = undefined;
     this.locations = {};
