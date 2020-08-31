@@ -60,8 +60,6 @@ let Nini = new class {
     this.shader_program = undefined;
     this.locations = {};
 
-    this.texture_filtering = {};
-
     this.matrix_stack = [];
 
     this.WebGL2 = undefined;
@@ -154,13 +152,6 @@ let Nini = new class {
       // Failed to get uniform and attribute locations.
       return false;
     }
-
-    this.texture_filtering = {
-
-      minification: this.WebGL2.NEAREST,
-
-      magnification: this.WebGL2.NEAREST
-    };
 
     this.target = {
 
@@ -1157,27 +1148,6 @@ let Nini = new class {
     );
   }
 
-  setNewBitmapFiltering(minification, magnification) {
-
-    if (minification == "nearest") {
-
-      this.texture_filtering.minification = this.WebGL2.NEAREST;
-    }
-    else if (minification == "linear") {
-
-      this.texture_filtering.minification = this.WebGL2.LINEAR;
-    }
-
-    if (magnification == "nearest") {
-
-      this.texture_filtering.magnification = this.WebGL2.NEAREST;
-    }
-    else if (magnification == "linear") {
-
-      this.texture_filtering.magnification = this.WebGL2.LINEAR;
-    }
-  }
-
   getBitmapWidth(bitmap) {
 
     return bitmap.width;
@@ -1446,8 +1416,8 @@ let Nini = new class {
     this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_WRAP_S, this.WebGL2.CLAMP_TO_EDGE);
     this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_WRAP_T, this.WebGL2.CLAMP_TO_EDGE);
 
-    this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_MIN_FILTER, this.texture_filtering.minification);
-    this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_MAG_FILTER, this.texture_filtering.magnification);
+    this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_MIN_FILTER, this.WebGL2.NEAREST);
+    this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_MAG_FILTER, this.WebGL2.NEAREST);
 
     this.WebGL2.bindFramebuffer(this.WebGL2.FRAMEBUFFER, framebuffer);
 
