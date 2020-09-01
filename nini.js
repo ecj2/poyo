@@ -602,6 +602,12 @@ let Nini = new class {
         this.keyboard.down[event.which] = true;
       break;
     }
+
+    if (event.which == 38 || event.which == 40 || event.which == 37 || event.which == 39) {
+
+      // Prevent arrow keys from scrolling page.
+      event.preventDefault();
+    }
   }
 
   isKeyUp(key) {
