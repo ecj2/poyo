@@ -37,6 +37,10 @@ let Nini = new class {
     this.MOUSE_MIDDLE = 1;
 
     // Keyboard codes.
+    this.KEY_W = 87;
+    this.KEY_A = 65;
+    this.KEY_S = 83;
+    this.KEY_D = 68;
     this.KEY_Z = 90;
     this.KEY_X = 88;
     this.KEY_C = 67;
