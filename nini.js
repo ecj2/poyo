@@ -52,8 +52,21 @@ let Nini = new class {
     this.KEY_LEFT = 37;
     this.KEY_RIGHT = 39;
 
-    this.canvas = {};
-    this.target = {};
+    this.canvas = {
+
+      canvas: undefined,
+
+      width: 240,
+
+      height: 160
+    };
+
+    this.target = {
+
+      width: 240,
+
+      height: 160
+    };
 
     this.time_initialized = undefined;
 
@@ -69,7 +82,7 @@ let Nini = new class {
     this.WebGL2 = undefined;
   }
 
-  initialize(canvas_identifier, canvas_width, canvas_height) {
+  initialize(canvas_identifier) {
 
     let canvas = document.createElement("canvas");
 
@@ -109,17 +122,10 @@ let Nini = new class {
       return false;
     }
 
-    canvas.width = canvas_width;
-    canvas.height = canvas_height;
+    this.canvas.canvas = canvas;
 
-    this.canvas = {
-
-      canvas: canvas,
-
-      width: canvas_width,
-
-      height: canvas_height
-    };
+    this.canvas.canvas.width = this.canvas.width;
+    this.canvas.canvas.height = this.canvas.height;
 
     this.WebGL2 = canvas.getContext(
 
@@ -156,13 +162,6 @@ let Nini = new class {
       // Failed to get uniform and attribute locations.
       return false;
     }
-
-    this.target = {
-
-      width: canvas_width,
-
-      height: canvas_height
-    };
 
     this.setUniformsAndAttributes();
 
@@ -705,48 +704,6 @@ let Nini = new class {
     this.WebGL2.clearColor(color.r, color.g, color.b, color.a);
 
     this.WebGL2.clear(this.WebGL2.COLOR_BUFFER_BIT);
-  }
-
-  resizeCanvas(width, height) {
-
-    this.setCanvasWidth(width);
-    this.setCanvasHeight(height);
-  }
-
-  setCanvasWidth(width) {
-
-    this.canvas.width = width;
-    this.target.width = width;
-    this.canvas.canvas.width = width;
-
-    // Clear font bitmap cache.
-    this.cache.font_bitmap = undefined;
-
-    // Update the vertex buffer.
-    this.setUniformsAndAttributes();
-  }
-
-  setCanvasHeight(height) {
-
-    this.canvas.height = height;
-    this.target.height = height;
-    this.canvas.canvas.height = height;
-
-    // Clear font bitmap cache.
-    this.cache.font_bitmap = undefined;
-
-    // Update the vertex buffer.
-    this.setUniformsAndAttributes();
-  }
-
-  getCanvasWidth() {
-
-    return this.canvas.width;
-  }
-
-  getCanvasHeight() {
-
-    return this.canvas.height;
   }
 
   saveMatrix() {
