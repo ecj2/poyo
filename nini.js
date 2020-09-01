@@ -1388,17 +1388,13 @@ let Nini = new class {
 
     let multiplied_matrix = this.getIdentityMatrix();
 
-    multiplied_matrix[0] = a[0] * b[0] + a[3] * b[1] + a[6] * b[2];
-    multiplied_matrix[3] = a[0] * b[3] + a[3] * b[4] + a[6] * b[5];
-    multiplied_matrix[6] = a[0] * b[6] + a[3] * b[7] + a[6] * b[8];
+    multiplied_matrix[0] = a[0] * b[0] + a[3] * b[1];
+    multiplied_matrix[3] = a[0] * b[3] + a[3] * b[4];
+    multiplied_matrix[6] = a[0] * b[6] + a[3] * b[7] + a[6];
 
-    multiplied_matrix[1] = a[1] * b[0] + a[4] * b[1] + a[7] * b[2];
-    multiplied_matrix[4] = a[1] * b[3] + a[4] * b[4] + a[7] * b[5];
-    multiplied_matrix[7] = a[1] * b[6] + a[4] * b[7] + a[7] * b[8];
-
-    multiplied_matrix[2] = a[2] * b[0] + a[5] * b[1] + a[8] * b[2];
-    multiplied_matrix[5] = a[2] * b[3] + a[5] * b[4] + a[8] * b[5];
-    multiplied_matrix[8] = a[2] * b[6] + a[5] * b[7] + a[8] * b[8];
+    multiplied_matrix[1] = a[1] * b[0] + a[4] * b[1];
+    multiplied_matrix[4] = a[1] * b[3] + a[4] * b[4];
+    multiplied_matrix[7] = a[1] * b[6] + a[4] * b[7] + a[7];
 
     return multiplied_matrix;
   }
