@@ -734,7 +734,7 @@ let Nini = new class {
     return this.version;
   }
 
-  createGameLoop(update_function, render_function, update_interval = 60) {
+  createGameLoop(update_function, render_function) {
 
     setInterval(
 
@@ -764,7 +764,7 @@ let Nini = new class {
         }
       }).bind(this),
 
-      1000 / update_interval
+      1000 / 60
     );
 
     let animation_request = () => {
