@@ -543,12 +543,12 @@ let Nini = new class {
 
   getMouseX() {
 
-    return this.mouse.x;
+    return this.mouse.x / 3;
   }
 
   getMouseY() {
 
-    return this.mouse.y;
+    return this.mouse.y / 3;
   }
 
   getMouseWheel() {
