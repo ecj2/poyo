@@ -165,9 +165,9 @@ let Nini = new class {
       return false;
     }
 
-    if (!this.getUniformAndAttributeLocations()) {
+    if (!this.getUniformLocations()) {
 
-      // Failed to get uniform and attribute locations.
+      // Failed to get uniform locations.
       return false;
     }
 
@@ -195,9 +195,8 @@ let Nini = new class {
 
       #version 300 es
 
-      in vec2 a_vertex_position;
-
-      in vec2 a_texture_position;
+      layout(location = 0) in vec2 a_vertex_position;
+      layout(location = 1) in vec2 a_texture_position;
 
       uniform mat3 u_matrix;
 
@@ -319,10 +318,7 @@ let Nini = new class {
     return program;
   }
 
-  getUniformAndAttributeLocations() {
-
-    this.locations.a_vertex_position = this.WebGL2.getAttribLocation(this.shader_program, "a_vertex_position");
-    this.locations.a_texture_position = this.WebGL2.getAttribLocation(this.shader_program, "a_texture_position");
+  getUniformLocations() {
 
     this.locations.u_tint = this.WebGL2.getUniformLocation(this.shader_program, "u_tint");
     this.locations.u_matrix = this.WebGL2.getUniformLocation(this.shader_program, "u_matrix");
@@ -335,9 +331,9 @@ let Nini = new class {
 
     for (key in this.locations) {
 
-      if (this.locations[key] == -1 || this.locations[key] == null) {
+      if (this.locations[key] == null) {
 
-        // Failed to find location of an attribute or uniform.
+        // Failed to find location of a uniform.
         return false;
       }
     }
@@ -380,11 +376,11 @@ let Nini = new class {
     this.WebGL2.bindBuffer(this.WebGL2.ARRAY_BUFFER, buffer);
     this.WebGL2.bufferData(this.WebGL2.ARRAY_BUFFER, buffer_data, this.WebGL2.STATIC_DRAW);
 
-    this.WebGL2.vertexAttribPointer(this.locations.a_vertex_position, 2, this.WebGL2.FLOAT, false, 0, 0);
-    this.WebGL2.enableVertexAttribArray(this.locations.a_vertex_position);
+    this.WebGL2.vertexAttribPointer(0, 2, this.WebGL2.FLOAT, false, 0, 0);
+    this.WebGL2.enableVertexAttribArray(0);
 
-    this.WebGL2.vertexAttribPointer(this.locations.a_texture_position, 2, this.WebGL2.FLOAT, false, 0, 32);
-    this.WebGL2.enableVertexAttribArray(this.locations.a_texture_position);
+    this.WebGL2.vertexAttribPointer(1, 2, this.WebGL2.FLOAT, false, 0, 32);
+    this.WebGL2.enableVertexAttribArray(1);
 
     // Upload the target's resolution.
     this.WebGL2.uniform2fv(this.locations.u_canvas_resolution, [this.target.width, this.target.height]);
