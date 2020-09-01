@@ -82,7 +82,7 @@ let Nini = new class {
     this.WebGL2 = undefined;
   }
 
-  initialize(canvas_identifier) {
+  initialize() {
 
     let canvas = document.createElement("canvas");
 
@@ -114,11 +114,11 @@ let Nini = new class {
 
     this.matrix_stack[0] = this.getIdentityMatrix();
 
-    canvas = document.getElementById(canvas_identifier);
+    canvas = document.getElementById("nini");
 
     if (!!!canvas) {
 
-      // The specified canvas element does not exist.
+      // The required canvas element does not exist.
       return false;
     }
 
