@@ -124,8 +124,16 @@ let Nini = new class {
 
     this.canvas.canvas = canvas;
 
+    // Set canvas dimensions to match interal resolution.
     this.canvas.canvas.width = this.canvas.width;
     this.canvas.canvas.height = this.canvas.height;
+
+    // Stretch physical canvas to three times internal resolution.
+    this.canvas.canvas.style.width = "720px";
+    this.canvas.canvas.style.height = "480px";
+
+    // Preserve pixelated aesthetic.
+    this.canvas.canvas.style.imageRendering = "pixelated";
 
     this.WebGL2 = canvas.getContext(
 
