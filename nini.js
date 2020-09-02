@@ -777,8 +777,18 @@ let Nini = new class {
 
   setEntryPoint(function_name) {
 
-    // Call the specified function when the window loads.
-    window.addEventListener("load", function_name);
+    // Initialize Nini and call the specified function when the window loads.
+    window.addEventListener(
+
+      "load",
+
+      () => {
+
+        this.initialize();
+
+        function_name();
+      }
+    );
   }
 
   loadFont(file_name, style = "normal") {
