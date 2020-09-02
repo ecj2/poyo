@@ -200,14 +200,14 @@ let Nini = new class {
 
       uniform mat3 u_matrix;
 
-      uniform vec2 u_canvas_resolution;
+      uniform vec2 u_resolution;
 
       out vec2 v_texture_position;
 
       void main(void) {
 
-        // Convert from pixel coordinates to normalized device coordinates.
-        vec2 clip_space_position = vec2(u_matrix * vec3(a_vertex_position, 1.0)).xy / u_canvas_resolution * 2.0 - 1.0;
+        // Convert pixel coordinates to normalized device coordinates.
+        vec2 clip_space_position = vec2(u_matrix * vec3(a_vertex_position, 1.0)).xy / u_resolution * 2.0 - 1.0;
 
         // Flip the Y axis.
         clip_space_position.y *= -1.0;
@@ -238,35 +238,32 @@ let Nini = new class {
 
       void main(void) {
 
-        vec2 texture_position = v_texture_position;
+        bool reject = false;
 
-        bool discard_condition = false;
+        vec2 position = v_texture_position;
 
         if (u_flip_texture_offset) {
 
-          texture_position.t = texture_position.t * -1.0 + 1.0;
+          position.t = position.t * -1.0 + 1.0;
 
-          texture_position += vec2(u_texture_offset[0], -u_texture_offset[1]);
+          position += vec2(u_texture_offset[0], -u_texture_offset[1]);
 
-          discard_condition = discard_condition || texture_position.t < u_texture_offset[3] * -1.0 + 1.0;
+          reject = position.t < u_texture_offset[3] * -1.0 + 1.0;
         }
         else {
 
-          texture_position += vec2(u_texture_offset[0], u_texture_offset[1]);
+          position += vec2(u_texture_offset[0], u_texture_offset[1]);
 
-          discard_condition = discard_condition || texture_position.t > u_texture_offset[3];
+          reject = position.t > u_texture_offset[3];
         }
 
-        discard_condition = discard_condition || texture_position.t < 0.0 || texture_position.t > 1.0;
-        discard_condition = discard_condition || texture_position.s < 0.0 || texture_position.s > u_texture_offset[2] || texture_position.s > 1.0;
+        reject = reject || position.t < 0.0 || position.t > 1.0 || position.s < 0.0;
+        reject = reject || position.s > u_texture_offset[2] || position.s > 1.0;
 
-        if (discard_condition) {
+        // Don't draw texels outside of the clipped offsets.
+        if (reject) discard;
 
-           // Don't draw texels outside of the beginning or ending offsets.
-          discard;
-        }
-
-        output_color = texture(u_texture, texture_position) * u_tint;
+        output_color = texture(u_texture, position) * u_tint;
       }
     `;
 
@@ -323,8 +320,8 @@ let Nini = new class {
     this.locations.u_tint = this.WebGL2.getUniformLocation(this.shader_program, "u_tint");
     this.locations.u_matrix = this.WebGL2.getUniformLocation(this.shader_program, "u_matrix");
     this.locations.u_texture = this.WebGL2.getUniformLocation(this.shader_program, "u_texture");
+    this.locations.u_resolution = this.WebGL2.getUniformLocation(this.shader_program, "u_resolution");
     this.locations.u_texture_offset = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_offset");
-    this.locations.u_canvas_resolution = this.WebGL2.getUniformLocation(this.shader_program, "u_canvas_resolution");
     this.locations.u_flip_texture_offset = this.WebGL2.getUniformLocation(this.shader_program, "u_flip_texture_offset");
 
     let key = undefined;
@@ -383,7 +380,7 @@ let Nini = new class {
     this.WebGL2.enableVertexAttribArray(1);
 
     // Upload the target's resolution.
-    this.WebGL2.uniform2fv(this.locations.u_canvas_resolution, [this.target.width, this.target.height]);
+    this.WebGL2.uniform2fv(this.locations.u_resolution, [this.target.width, this.target.height]);
 
     // Restrict the viewport to the target's resolution.
     this.WebGL2.viewport(0, 0, this.target.width, this.target.height);
