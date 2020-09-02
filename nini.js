@@ -80,17 +80,16 @@ let Nini = new class {
     this.matrix_stack = [];
 
     this.WebGL2 = undefined;
+
+    this.errors = [];
+  }
+
+  getErrors() {
+
+    return this.errors;
   }
 
   initialize() {
-
-    let canvas = document.createElement("canvas");
-
-    if (!!!(canvas && canvas.getContext("webgl2"))) {
-
-      // The browser does not support the canvas element or WebGL 2.
-      return false;
-    }
 
     // Set the time in which the library was initialized.
     this.time_initialized = Date.now();
@@ -114,15 +113,14 @@ let Nini = new class {
 
     this.matrix_stack[0] = this.getIdentityMatrix();
 
-    canvas = document.getElementById("nini");
+    this.canvas.canvas = document.getElementById("nini");
 
-    if (!!!canvas) {
+    if (this.canvas.canvas == null) {
 
-      // The required canvas element does not exist.
-      return false;
+      this.errors.push("missing canvas element");
+
+      return;
     }
-
-    this.canvas.canvas = canvas;
 
     // Set canvas dimensions to match interal resolution.
     this.canvas.canvas.width = this.canvas.width;
@@ -135,7 +133,7 @@ let Nini = new class {
     // Preserve pixelated aesthetic.
     this.canvas.canvas.style.imageRendering = "pixelated";
 
-    this.WebGL2 = canvas.getContext(
+    this.WebGL2 = this.canvas.canvas.getContext(
 
       "webgl2",
 
@@ -155,19 +153,28 @@ let Nini = new class {
       }
     );
 
+    if (this.WebGL2 == null) {
+
+      this.errors.push("browser lacks WebGL 2 support");
+
+      return;
+    }
+
     // Set default blend mode.
     this.WebGL2.enable(this.WebGL2.BLEND);
     this.WebGL2.blendFunc(this.WebGL2.SRC_ALPHA, this.WebGL2.ONE_MINUS_SRC_ALPHA);
 
     if (!this.createShadersAndPrograms()) {
 
-      // Failed to create shaders and programs.
+      this.errors.push("failed to create shaders and program");
+
       return false;
     }
 
     if (!this.getUniformLocations()) {
 
-      // Failed to get uniform locations.
+      this.errors.push("failed to get uniform locations");
+
       return false;
     }
 
@@ -286,7 +293,8 @@ let Nini = new class {
 
     if (!this.WebGL2.getShaderParameter(shader, this.WebGL2.COMPILE_STATUS)) {
 
-      // The shader failed to compile.
+      this.errors.push("shader failed to compile");
+
       return false;
     }
 
@@ -297,14 +305,24 @@ let Nini = new class {
 
     let program = this.WebGL2.createProgram();
 
-    this.WebGL2.attachShader(program, vertex_shader);
-    this.WebGL2.attachShader(program, fragment_shader);
+    try {
+
+      this.WebGL2.attachShader(program, vertex_shader);
+      this.WebGL2.attachShader(program, fragment_shader);
+    }
+    catch (exception) {
+
+      this.errors.push("failed to attach shader");
+
+      return;
+    }
 
     this.WebGL2.linkProgram(program);
 
     if (!this.WebGL2.getProgramParameter(program, this.WebGL2.LINK_STATUS)) {
 
-      // The program failed to link the two shaders.
+      this.errors.push("failed to link shaders");
+
       return false;
     }
 
