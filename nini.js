@@ -460,11 +460,7 @@ let Nini = new class {
       break;
     }
 
-    if (event.type == "wheel" || event.which == 3) {
-
-      // Prevent default event when scrolling the wheel or right-clicking.
-      event.preventDefault();
-    }
+    event.preventDefault();
   }
 
   isMouseFocused() {
