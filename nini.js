@@ -82,6 +82,16 @@ let Nini = new class {
     this.WebGL2 = undefined;
 
     this.errors = [];
+
+    this.texture_filtering = {
+
+      minification: undefined,
+
+      magnification: undefined
+    };
+
+    this.FILTER_LINEAR = undefined;
+    this.FILTER_NEAREST = undefined;
   }
 
   getErrors() {
@@ -126,13 +136,6 @@ let Nini = new class {
     this.canvas.canvas.width = this.canvas.width;
     this.canvas.canvas.height = this.canvas.height;
 
-    // Stretch physical canvas to three times internal resolution.
-    this.canvas.canvas.style.width = "720px";
-    this.canvas.canvas.style.height = "480px";
-
-    // Preserve pixelated aesthetic.
-    this.canvas.canvas.style.imageRendering = "pixelated";
-
     this.WebGL2 = this.canvas.canvas.getContext(
 
       "webgl2",
@@ -159,6 +162,13 @@ let Nini = new class {
 
       return;
     }
+
+    // Define filtering enumerations.
+    this.FILTER_LINEAR = this.WebGL2.LINEAR;
+    this.FILTER_NEAREST = this.WebGL2.NEAREST;
+
+    // Default to nearest filtering.
+    this.setNewBitmapFiltering(this.FILTER_NEAREST, this.FILTER_NEAREST);
 
     // Set default blend mode.
     this.WebGL2.enable(this.WebGL2.BLEND);
@@ -550,12 +560,12 @@ let Nini = new class {
 
   getMouseX() {
 
-    return this.mouse.x / 3;
+    return this.mouse.x;
   }
 
   getMouseY() {
 
-    return this.mouse.y / 3;
+    return this.mouse.y;
   }
 
   getMouseWheel() {
@@ -719,6 +729,48 @@ let Nini = new class {
     this.WebGL2.clearColor(color.r, color.g, color.b, color.a);
 
     this.WebGL2.clear(this.WebGL2.COLOR_BUFFER_BIT);
+  }
+
+  resizeCanvas(width, height) {
+
+    this.setCanvasWidth(width);
+    this.setCanvasHeight(height);
+  }
+
+  setCanvasWidth(width) {
+
+    this.canvas.width = width;
+    this.target.width = width;
+    this.canvas.canvas.width = width;
+
+    // Clear font bitmap cache.
+    this.cache.font_bitmap = undefined;
+
+    // Update the vertex buffer.
+    this.setUniformsAndAttributes();
+  }
+
+  setCanvasHeight(height) {
+
+    this.canvas.height = height;
+    this.target.height = height;
+    this.canvas.canvas.height = height;
+
+    // Clear font bitmap cache.
+    this.cache.font_bitmap = undefined;
+
+    // Update the vertex buffer.
+    this.setUniformsAndAttributes();
+  }
+
+  getCanvasWidth() {
+
+    return this.canvas.width;
+  }
+
+  getCanvasHeight() {
+
+    return this.canvas.height;
   }
 
   saveMatrix() {
@@ -1140,6 +1192,12 @@ let Nini = new class {
     );
   }
 
+  setNewBitmapFiltering(minification, magnification) {
+
+    this.texture_filtering.minification = minification;
+    this.texture_filtering.magnification = magnification;
+  }
+
   getBitmapWidth(bitmap) {
 
     return bitmap.width;
@@ -1404,8 +1462,8 @@ let Nini = new class {
     this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_WRAP_S, this.WebGL2.CLAMP_TO_EDGE);
     this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_WRAP_T, this.WebGL2.CLAMP_TO_EDGE);
 
-    this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_MIN_FILTER, this.WebGL2.NEAREST);
-    this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_MAG_FILTER, this.WebGL2.NEAREST);
+    this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_MIN_FILTER, this.texture_filtering.minification);
+    this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_MAG_FILTER, this.texture_filtering.magnification);
 
     this.WebGL2.bindFramebuffer(this.WebGL2.FRAMEBUFFER, framebuffer);
 
