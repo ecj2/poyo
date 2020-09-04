@@ -773,6 +773,16 @@ let Nini = new class {
     return this.canvas.height;
   }
 
+  getTargetWidth() {
+
+    return this.target.width;
+  }
+
+  getTargetHeight() {
+
+    return this.target.height;
+  }
+
   saveMatrix() {
 
     this.matrix_stack.push(this.matrix_stack[this.matrix_stack.length - 1]);
