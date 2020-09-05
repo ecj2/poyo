@@ -843,10 +843,12 @@ let Nini = new class {
 
       window.requestAnimationFrame(animation_request);
 
+      this.pushMatrix(this.matrix);
+
       render_function();
 
       // Reset matrix each frame.
-      this.matrix = this.createMatrix();
+      this.popMatrix(this.matrix);
     };
 
     window.requestAnimationFrame(animation_request);
