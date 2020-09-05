@@ -781,12 +781,12 @@ let Nini = new class {
     return this.target.height;
   }
 
-  saveMatrix(matrix) {
+  pushMatrix(matrix) {
 
     matrix.stack.push(matrix.value);
   }
 
-  restoreMatrix(matrix) {
+  popMatrix(matrix) {
 
     matrix.value = matrix.stack.pop();
 
@@ -1273,7 +1273,7 @@ let Nini = new class {
       this.cache.flip_texture_offset = flip_texture_offset;
     }
 
-    this.saveMatrix(this.matrix);
+    this.pushMatrix(this.matrix);
 
     let matrix = this.createMatrix();
 
@@ -1287,12 +1287,12 @@ let Nini = new class {
     // Scale the bitmap to its proper resolution.
     this.scaleMatrix(matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
 
-    this.useMatrix(matrix);
+    this.applyMatrix(matrix);
 
     // Upload the transformation matrix.
     this.WebGL2.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix.value);
 
-    this.restoreMatrix(this.matrix);
+    this.popMatrix(this.matrix);
 
     // Draw the bitmap.
     this.WebGL2.drawArrays(this.WebGL2.TRIANGLE_FAN, 0, 4);
@@ -1300,22 +1300,22 @@ let Nini = new class {
 
   drawBitmap(bitmap, x, y) {
 
-    this.saveMatrix(this.matrix);
+    this.pushMatrix(this.matrix);
 
     let matrix = this.createMatrix();
 
     this.translateMatrix(matrix, x, y);
 
-    this.useMatrix(matrix);
+    this.applyMatrix(matrix);
 
     this.drawConsolidatedBitmap(bitmap, undefined, undefined);
 
-    this.restoreMatrix(this.matrix);
+    this.popMatrix(this.matrix);
   }
 
   drawScaledBitmap(bitmap, origin_x, origin_y, scale_width, scale_height, draw_x, draw_y) {
 
-    this.saveMatrix(this.matrix);
+    this.pushMatrix(this.matrix);
 
     let matrix = this.createMatrix();
 
@@ -1325,26 +1325,26 @@ let Nini = new class {
 
     this.translateMatrix(matrix, -origin_x, -origin_y);
 
-    this.useMatrix(matrix);
+    this.applyMatrix(matrix);
 
     this.drawConsolidatedBitmap(bitmap, undefined, undefined);
 
-    this.restoreMatrix(this.matrix);
+    this.popMatrix(this.matrix);
   }
 
   drawTintedBitmap(bitmap, tint, x, y) {
 
-    this.saveMatrix(this.matrix);
+    this.pushMatrix(this.matrix);
 
     let matrix = this.createMatrix();
 
     this.translateMatrix(matrix, x, y);
 
-    this.useMatrix(matrix);
+    this.applyMatrix(matrix);
 
     this.drawConsolidatedBitmap(bitmap, undefined, tint);
 
-    this.restoreMatrix(this.matrix);
+    this.popMatrix(this.matrix);
   }
 
   drawClippedBitmap(bitmap, start_x, start_y, width, height, x, y) {
@@ -1360,13 +1360,13 @@ let Nini = new class {
       (start_y + height) / bitmap.height
     ];
 
-    this.saveMatrix(this.matrix);
+    this.pushMatrix(this.matrix);
 
     let matrix = this.createMatrix();
 
     this.translateMatrix(matrix, x, y);
 
-    this.useMatrix(matrix);
+    this.applyMatrix(matrix);
 
     if (bitmap.must_be_flipped) {
 
@@ -1381,12 +1381,12 @@ let Nini = new class {
       this.drawConsolidatedBitmap(bitmap, texture_offset, undefined, false);
     }
 
-    this.restoreMatrix(this.matrix);
+    this.popMatrix(this.matrix);
   }
 
   drawRotatedBitmap(bitmap, center_x, center_y, draw_x, draw_y, theta) {
 
-    this.saveMatrix(this.matrix);
+    this.pushMatrix(this.matrix);
 
     let matrix = this.createMatrix();
 
@@ -1396,11 +1396,11 @@ let Nini = new class {
 
     this.translateMatrix(matrix, -center_x, -center_y);
 
-    this.useMatrix(matrix);
+    this.applyMatrix(matrix);
 
     this.drawConsolidatedBitmap(bitmap, undefined, undefined);
 
-    this.restoreMatrix(this.matrix);
+    this.popMatrix(this.matrix);
   }
 
   getIdentityMatrix() {
@@ -1427,12 +1427,14 @@ let Nini = new class {
 
   useMatrix(matrix) {
 
-    let current_matrix = this.matrix.value;
-    let new_matrix = matrix.value;
+    // Use the given matrix. This should only be used externally.
+    this.matrix.value = matrix.value;
+  }
 
-    let result = this.multiplyMatrices(current_matrix, new_matrix);
+  applyMatrix(matrix) {
 
-    this.matrix.value = result;
+    // Compose internal matrices. This should not be used externally.
+    this.matrix.value = this.multiplyMatrices(this.matrix.value, matrix.value);
   }
 
   scaleMatrix(matrix, scale_x, scale_y) {
