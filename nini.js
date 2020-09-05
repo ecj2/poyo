@@ -790,6 +790,11 @@ let Nini = new class {
 
     matrix.value = matrix.stack.pop();
 
+    if (matrix.value == undefined) {
+
+      matrix.value = this.getIdentityMatrix();
+    }
+
     if (matrix.stack.length == 0) {
 
       matrix.stack[0] = this.getIdentityMatrix();
