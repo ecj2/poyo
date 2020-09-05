@@ -844,6 +844,9 @@ let Nini = new class {
       window.requestAnimationFrame(animation_request);
 
       render_function();
+
+      // Reset matrix each frame.
+      this.matrix = this.createMatrix();
     };
 
     window.requestAnimationFrame(animation_request);
