@@ -854,7 +854,7 @@ let Nini = new class {
     window.requestAnimationFrame(animation_request);
   }
 
-  makeColor(r, g, b, a = 255) {
+  createColor(r, g, b, a = 255) {
 
     return {r: r / 255, g: g / 255, b: b / 255, a: a / 255};
   }
@@ -917,7 +917,7 @@ let Nini = new class {
     };
 
     // Pre-load the font.
-    this.drawText(font, this.makeColor(0, 0, 0, 0), 0, 0, 0, "left", "");
+    this.drawText(font, this.createColor(0, 0, 0, 0), 0, 0, 0, "left", "");
 
     return font;
   }
@@ -1236,7 +1236,7 @@ let Nini = new class {
     return bitmap.framebuffer;
   }
 
-  drawConsolidatedBitmap(bitmap, texture_offset = [0, 0, 1, 1], tint = this.makeColor(255, 255, 255), flip_texture_offset = false) {
+  drawConsolidatedBitmap(bitmap, texture_offset = [0, 0, 1, 1], tint = this.createColor(255, 255, 255), flip_texture_offset = false) {
 
     if (this.cache.tint != "" + tint.r + tint.g + tint.b + tint.a) {
 
