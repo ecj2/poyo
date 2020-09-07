@@ -75,7 +75,7 @@ let Nini = new class {
     this.version = 1;
 
     this.shader_program = undefined;
-    this.locations = {};
+    this.uniforms = [];
 
     this.matrix = this.createMatrix();
 
@@ -343,18 +343,18 @@ let Nini = new class {
 
   getUniformLocations() {
 
-    this.locations.u_tint = this.WebGL2.getUniformLocation(this.shader_program, "u_tint");
-    this.locations.u_matrix = this.WebGL2.getUniformLocation(this.shader_program, "u_matrix");
-    this.locations.u_texture = this.WebGL2.getUniformLocation(this.shader_program, "u_texture");
-    this.locations.u_resolution = this.WebGL2.getUniformLocation(this.shader_program, "u_resolution");
-    this.locations.u_texture_offset = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_offset");
-    this.locations.u_flip_texture_offset = this.WebGL2.getUniformLocation(this.shader_program, "u_flip_texture_offset");
+    this.uniforms["u_tint"] = this.WebGL2.getUniformLocation(this.shader_program, "u_tint");
+    this.uniforms["u_matrix"] = this.WebGL2.getUniformLocation(this.shader_program, "u_matrix");
+    this.uniforms["u_texture"] = this.WebGL2.getUniformLocation(this.shader_program, "u_texture");
+    this.uniforms["u_resolution"] = this.WebGL2.getUniformLocation(this.shader_program, "u_resolution");
+    this.uniforms["u_texture_offset"] = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_offset");
+    this.uniforms["u_flip_texture_offset"] = this.WebGL2.getUniformLocation(this.shader_program, "u_flip_texture_offset");
 
     let key = undefined;
 
-    for (key in this.locations) {
+    for (key in this.uniforms) {
 
-      if (this.locations[key] == null) {
+      if (this.uniforms[key] == null) {
 
         // Failed to find location of a uniform.
         return false;
@@ -406,7 +406,7 @@ let Nini = new class {
     this.WebGL2.enableVertexAttribArray(1);
 
     // Upload the target's resolution.
-    this.WebGL2.uniform2fv(this.locations.u_resolution, [this.target.width, this.target.height]);
+    this.WebGL2.uniform2fv(this.uniforms["u_resolution"], [this.target.width, this.target.height]);
 
     // Restrict the viewport to the target's resolution.
     this.WebGL2.viewport(0, 0, this.target.width, this.target.height);
@@ -1241,7 +1241,7 @@ let Nini = new class {
     if (this.cache.tint != "" + tint.r + tint.g + tint.b + tint.a) {
 
       // Upload the tint.
-      this.WebGL2.uniform4fv(this.locations.u_tint, [tint.r, tint.g, tint.b, tint.a]);
+      this.WebGL2.uniform4fv(this.uniforms["u_tint"], [tint.r, tint.g, tint.b, tint.a]);
 
       // Cache the tint for next time.
       this.cache.tint = "" + tint.r + tint.g + tint.b + tint.a;
@@ -1252,7 +1252,7 @@ let Nini = new class {
       // Set the active texture.
       this.WebGL2.activeTexture(this.WebGL2.TEXTURE0);
       this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, bitmap.texture);
-      this.WebGL2.uniform1i(this.locations.u_texture, 0);
+      this.WebGL2.uniform1i(this.uniforms["u_texture"], 0);
 
       // Cache the texture for next time.
       this.cache.texture = bitmap.texture;
@@ -1265,7 +1265,7 @@ let Nini = new class {
       if (this.cache.texture_offset[i] != texture_offset[i]) {
 
         // Upload the texture offset.
-        this.WebGL2.uniform4fv(this.locations.u_texture_offset, texture_offset);
+        this.WebGL2.uniform4fv(this.uniforms["u_texture_offset"], texture_offset);
 
         // Cache the texture offset for next time.
         this.cache.texture_offset = texture_offset;
@@ -1277,7 +1277,7 @@ let Nini = new class {
     if (this.cache.flip_texture_offset != flip_texture_offset) {
 
       // Flip the texture offset.
-      this.WebGL2.uniform1i(this.locations.u_flip_texture_offset, flip_texture_offset);
+      this.WebGL2.uniform1i(this.uniforms["u_flip_texture_offset"], flip_texture_offset);
 
       // Cache this for next time.
       this.cache.flip_texture_offset = flip_texture_offset;
@@ -1300,7 +1300,7 @@ let Nini = new class {
     this.applyMatrix(matrix);
 
     // Upload the transformation matrix.
-    this.WebGL2.uniformMatrix3fv(this.locations.u_matrix, false, this.matrix.value);
+    this.WebGL2.uniformMatrix3fv(this.uniforms["u_matrix"], false, this.matrix.value);
 
     this.popMatrix(this.matrix);
 
