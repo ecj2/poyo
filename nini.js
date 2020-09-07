@@ -92,6 +92,12 @@ let Nini = new class {
 
     this.FILTER_LINEAR = undefined;
     this.FILTER_NEAREST = undefined;
+
+    this.hold_bitmap_drawing = false;
+
+    this.instanced_drawing_buffer = [];
+
+    this.instanced_bitmap = undefined;
   }
 
   getErrors() {
@@ -213,16 +219,41 @@ let Nini = new class {
       layout(location = 0) in vec2 a_vertex_position;
       layout(location = 1) in vec2 a_texture_position;
 
+      layout(location = 2) in vec4 a_instance_tint;
+      layout(location = 3) in vec3 a_instance_matrix_part_1;
+      layout(location = 4) in vec3 a_instance_matrix_part_2;
+      layout(location = 5) in vec4 a_instance_texture_offset;
+
       uniform mat3 u_matrix;
 
       uniform vec2 u_resolution;
 
+      uniform bool u_instance;
+
       out vec2 v_texture_position;
+
+      out vec4 v_instance_tint;
+      out vec4 v_instance_texture_offset;
 
       void main(void) {
 
+        mat3 matrix = u_matrix;
+
+        if (u_instance) {
+
+          matrix[0][0] = a_instance_matrix_part_1[0];
+          matrix[1][0] = a_instance_matrix_part_2[2];
+          matrix[2][0] = a_instance_matrix_part_1[1];
+          matrix[0][1] = a_instance_matrix_part_2[1];
+          matrix[1][1] = a_instance_matrix_part_2[0];
+          matrix[2][1] = a_instance_matrix_part_1[2];
+
+          v_instance_tint = a_instance_tint;
+          v_instance_texture_offset = a_instance_texture_offset;
+        }
+
         // Convert pixel coordinates to normalized device coordinates.
-        vec2 clip_space_position = vec2(u_matrix * vec3(a_vertex_position, 1.0)).xy / u_resolution * 2.0 - 1.0;
+        vec2 clip_space_position = vec2(matrix * vec3(a_vertex_position, 1.0)).xy / u_resolution * 2.0 - 1.0;
 
         // Flip the Y axis.
         clip_space_position.y *= -1.0;
@@ -243,42 +274,56 @@ let Nini = new class {
 
       uniform vec4 u_tint;
 
+      uniform bool u_instance;
+
       uniform sampler2D u_texture;
 
       uniform vec4 u_texture_offset;
 
       uniform bool u_flip_texture_offset;
 
+      in vec4 v_instance_tint;
+      in vec4 v_instance_texture_offset;
+
       out vec4 output_color;
 
       void main(void) {
 
-        bool reject = false;
+        bool reject;
 
         vec2 position = v_texture_position;
+
+        vec4 tint = u_tint;
+        vec4 texture_offset = u_texture_offset;
+
+        if (u_instance) {
+
+          tint = v_instance_tint;
+          texture_offset = v_instance_texture_offset;
+        }
 
         if (u_flip_texture_offset) {
 
           position.t = position.t * -1.0 + 1.0;
 
-          position += vec2(u_texture_offset[0], -u_texture_offset[1]);
+          position += vec2(texture_offset[0], -texture_offset[1]);
 
-          reject = position.t < u_texture_offset[3] * -1.0 + 1.0;
+          reject = position.t < texture_offset[3] * -1.0 + 1.0;
         }
         else {
 
-          position += vec2(u_texture_offset[0], u_texture_offset[1]);
+          position += vec2(texture_offset[0], texture_offset[1]);
 
-          reject = position.t > u_texture_offset[3];
+          reject = position.t > texture_offset[3];
         }
 
         reject = reject || position.t < 0.0 || position.t > 1.0 || position.s < 0.0;
-        reject = reject || position.s > u_texture_offset[2] || position.s > 1.0;
+        reject = reject || position.s > texture_offset[2] || position.s > 1.0;
 
         // Don't draw texels outside of the clipped offsets.
         if (reject) discard;
 
-        output_color = texture(u_texture, position) * u_tint;
+        output_color = texture(u_texture, position) * tint;
       }
     `;
 
@@ -346,6 +391,7 @@ let Nini = new class {
     this.uniforms["u_tint"] = this.WebGL2.getUniformLocation(this.shader_program, "u_tint");
     this.uniforms["u_matrix"] = this.WebGL2.getUniformLocation(this.shader_program, "u_matrix");
     this.uniforms["u_texture"] = this.WebGL2.getUniformLocation(this.shader_program, "u_texture");
+    this.uniforms["u_instance"] = this.WebGL2.getUniformLocation(this.shader_program, "u_instance");
     this.uniforms["u_resolution"] = this.WebGL2.getUniformLocation(this.shader_program, "u_resolution");
     this.uniforms["u_texture_offset"] = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_offset");
     this.uniforms["u_flip_texture_offset"] = this.WebGL2.getUniformLocation(this.shader_program, "u_flip_texture_offset");
@@ -1156,6 +1202,23 @@ let Nini = new class {
     }
   }
 
+  holdBitmapDrawing(hold) {
+
+    if (!hold) {
+
+      if (this.hold_bitmap_drawing) {
+
+        // Drawing was being held, but now it's time to draw.
+        this.drawInstancedBitmaps(this.bitmap, undefined, undefined);
+
+        // Clear the buffer for next time.
+        this.instanced_drawing_buffer = [];
+      }
+    }
+
+    this.hold_bitmap_drawing = hold;
+  }
+
   loadBitmap(file_name) {
 
     let element = new Image();
@@ -1236,6 +1299,64 @@ let Nini = new class {
     return bitmap.framebuffer;
   }
 
+  drawInstancedBitmaps() {
+
+    this.WebGL2.activeTexture(this.WebGL2.TEXTURE0);
+    this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, this.instanced_bitmap.texture);
+    this.WebGL2.uniform1i(this.uniforms["u_texture"], 0);
+
+    let buffer = this.WebGL2.createBuffer();
+    this.WebGL2.bindBuffer(this.WebGL2.ARRAY_BUFFER, buffer);
+    this.WebGL2.bufferData(this.WebGL2.ARRAY_BUFFER, new Float32Array(this.instanced_drawing_buffer), this.WebGL2.STATIC_DRAW);
+
+    // Tints.
+    this.WebGL2.vertexAttribPointer(2, 4, this.WebGL2.FLOAT, false, 4 * 14, 40);
+    this.WebGL2.vertexAttribDivisor(2, 1);
+    this.WebGL2.enableVertexAttribArray(2);
+
+    // Matrices part 1.
+    this.WebGL2.vertexAttribPointer(3, 3, this.WebGL2.FLOAT, false, 4 * 14, 0);
+    this.WebGL2.vertexAttribDivisor(3, 1);
+    this.WebGL2.enableVertexAttribArray(3);
+
+    // Matrices part 2.
+    this.WebGL2.vertexAttribPointer(4, 3, this.WebGL2.FLOAT, false, 4 * 14, 12);
+    this.WebGL2.vertexAttribDivisor(4, 1);
+    this.WebGL2.enableVertexAttribArray(4);
+
+    // Texture offsets.
+    this.WebGL2.vertexAttribPointer(5, 4, this.WebGL2.FLOAT, false, 4 * 14, 24);
+    this.WebGL2.vertexAttribDivisor(5, 1);
+    this.WebGL2.enableVertexAttribArray(5);
+
+    if (this.cache.instance != this.hold_bitmap_drawing) {
+
+      this.WebGL2.uniform1i(this.uniforms["u_instance"], this.hold_bitmap_drawing);
+
+      this.cache.instance = this.hold_bitmap_drawing;
+    }
+
+    // @TODO: Flip texture offset if bitmap was clipped when drawn inside another target.
+
+    this.WebGL2.drawArraysInstanced(this.WebGL2.TRIANGLE_FAN, 0, 4, this.instanced_drawing_buffer.length / 14);
+  }
+
+  addBitmapInstance(bitmap, offsets = [0, 0, 1, 1], tint = this.createColor(255, 255, 255)) {
+
+    this.instanced_bitmap = bitmap;
+
+    this.instanced_drawing_buffer.push(
+
+      this.matrix.value[0], this.matrix.value[6], this.matrix.value[7],
+
+      this.matrix.value[4], this.matrix.value[1], this.matrix.value[3],
+
+      offsets[0], offsets[1], offsets[2], offsets[3],
+
+      tint.r, tint.g, tint.b, tint.a
+    );
+  }
+
   drawConsolidatedBitmap(bitmap, texture_offset = [0, 0, 1, 1], tint = this.createColor(255, 255, 255), flip_texture_offset = false) {
 
     if (this.cache.tint != "" + tint.r + tint.g + tint.b + tint.a) {
@@ -1283,6 +1404,13 @@ let Nini = new class {
       this.cache.flip_texture_offset = flip_texture_offset;
     }
 
+    if (this.cache.instance != this.hold_bitmap_drawing) {
+
+      this.WebGL2.uniform1i(this.uniforms["u_instance"], this.hold_bitmap_drawing);
+
+      this.cache.instance = this.hold_bitmap_drawing;
+    }
+
     this.pushMatrix(this.matrix);
 
     let matrix = this.createMatrix();
@@ -1316,9 +1444,21 @@ let Nini = new class {
 
     this.translateMatrix(matrix, x, y);
 
-    this.applyMatrix(matrix);
+    if (this.hold_bitmap_drawing) {
 
-    this.drawConsolidatedBitmap(bitmap, undefined, undefined);
+      // Scale instanced bitmap to its proper resolution.
+      this.scaleMatrix(matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
+
+      this.applyMatrix(matrix);
+
+      this.addBitmapInstance(bitmap, undefined, undefined);
+    }
+    else {
+
+      this.applyMatrix(matrix);
+
+      this.drawConsolidatedBitmap(bitmap, undefined, undefined);
+    }
 
     this.popMatrix(this.matrix);
   }
@@ -1335,9 +1475,21 @@ let Nini = new class {
 
     this.translateMatrix(matrix, -origin_x, -origin_y);
 
-    this.applyMatrix(matrix);
+    if (this.hold_bitmap_drawing) {
 
-    this.drawConsolidatedBitmap(bitmap, undefined, undefined);
+      // Scale instanced bitmap to its proper resolution.
+      this.scaleMatrix(matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
+
+      this.applyMatrix(matrix);
+
+      this.addBitmapInstance(bitmap, undefined, undefined);
+    }
+    else {
+
+      this.applyMatrix(matrix);
+
+      this.drawConsolidatedBitmap(bitmap, undefined, undefined);
+    }
 
     this.popMatrix(this.matrix);
   }
@@ -1350,9 +1502,21 @@ let Nini = new class {
 
     this.translateMatrix(matrix, x, y);
 
-    this.applyMatrix(matrix);
+    if (this.hold_bitmap_drawing) {
 
-    this.drawConsolidatedBitmap(bitmap, undefined, tint);
+      // Scale instanced bitmap to its proper resolution.
+      this.scaleMatrix(matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
+
+      this.applyMatrix(matrix);
+
+      this.addBitmapInstance(bitmap, undefined, tint);
+    }
+    else {
+
+      this.applyMatrix(matrix);
+
+      this.drawConsolidatedBitmap(bitmap, undefined, tint);
+    }
 
     this.popMatrix(this.matrix);
   }
@@ -1376,19 +1540,33 @@ let Nini = new class {
 
     this.translateMatrix(matrix, x, y);
 
-    this.applyMatrix(matrix);
+    if (this.hold_bitmap_drawing) {
 
-    if (bitmap.must_be_flipped) {
+      // Scale instanced bitmap to its proper resolution.
+      this.scaleMatrix(matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
 
-      bitmap.must_be_flipped = false;
+      this.applyMatrix(matrix);
 
-      this.drawConsolidatedBitmap(bitmap, texture_offset, undefined, true);
+      this.addBitmapInstance(bitmap, texture_offset, undefined);
 
-      bitmap.must_be_flipped = true;
+      // @TODO: Flip texture offsets.
     }
     else {
 
-      this.drawConsolidatedBitmap(bitmap, texture_offset, undefined, false);
+      this.applyMatrix(matrix);
+
+      if (bitmap.must_be_flipped) {
+
+        bitmap.must_be_flipped = false;
+
+        this.drawConsolidatedBitmap(bitmap, texture_offset, undefined, true);
+
+        bitmap.must_be_flipped = true;
+      }
+      else {
+
+        this.drawConsolidatedBitmap(bitmap, texture_offset, undefined, false);
+      }
     }
 
     this.popMatrix(this.matrix);
@@ -1406,9 +1584,21 @@ let Nini = new class {
 
     this.translateMatrix(matrix, -center_x, -center_y);
 
-    this.applyMatrix(matrix);
+    if (this.hold_bitmap_drawing) {
 
-    this.drawConsolidatedBitmap(bitmap, undefined, undefined);
+      // Scale instanced bitmap to its proper resolution.
+      this.scaleMatrix(matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
+
+      this.applyMatrix(matrix);
+
+      this.addBitmapInstance(bitmap, undefined, undefined);
+    }
+    else {
+
+      this.applyMatrix(matrix);
+
+      this.drawConsolidatedBitmap(bitmap, undefined, undefined);
+    }
 
     this.popMatrix(this.matrix);
   }
