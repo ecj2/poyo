@@ -95,7 +95,8 @@ let Nini = new class {
 
     this.hold_bitmap_drawing = false;
 
-    this.instanced_drawing_buffer = [];
+    this.instanced_drawing_buffer = undefined;
+    this.instanced_drawing_buffer_data = [];
 
     this.instanced_bitmap = undefined;
   }
@@ -193,6 +194,8 @@ let Nini = new class {
     }
 
     this.setUniformsAndAttributes();
+
+    this.instanced_drawing_buffer = this.WebGL2.createBuffer();
 
     // Listen for mouse events.
     this.canvas.canvas.addEventListener("wheel", this.manageMouseEvents.bind(this));
@@ -1212,7 +1215,7 @@ let Nini = new class {
         this.drawInstancedBitmaps(this.bitmap, undefined, undefined);
 
         // Clear the buffer for next time.
-        this.instanced_drawing_buffer = [];
+        this.instanced_drawing_buffer_data = [];
       }
     }
 
@@ -1301,13 +1304,13 @@ let Nini = new class {
 
   drawInstancedBitmaps() {
 
+    // @TODO: Cache this.
     this.WebGL2.activeTexture(this.WebGL2.TEXTURE0);
     this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, this.instanced_bitmap.texture);
     this.WebGL2.uniform1i(this.uniforms["u_texture"], 0);
 
-    let buffer = this.WebGL2.createBuffer();
-    this.WebGL2.bindBuffer(this.WebGL2.ARRAY_BUFFER, buffer);
-    this.WebGL2.bufferData(this.WebGL2.ARRAY_BUFFER, new Float32Array(this.instanced_drawing_buffer), this.WebGL2.STATIC_DRAW);
+    this.WebGL2.bindBuffer(this.WebGL2.ARRAY_BUFFER, this.instanced_drawing_buffer);
+    this.WebGL2.bufferData(this.WebGL2.ARRAY_BUFFER, new Float32Array(this.instanced_drawing_buffer_data), this.WebGL2.STATIC_DRAW);
 
     // Tints.
     this.WebGL2.vertexAttribPointer(2, 4, this.WebGL2.FLOAT, false, 4 * 14, 40);
@@ -1338,14 +1341,14 @@ let Nini = new class {
 
     // @TODO: Flip texture offset if bitmap was clipped when drawn inside another target.
 
-    this.WebGL2.drawArraysInstanced(this.WebGL2.TRIANGLE_FAN, 0, 4, this.instanced_drawing_buffer.length / 14);
+    this.WebGL2.drawArraysInstanced(this.WebGL2.TRIANGLE_FAN, 0, 4, this.instanced_drawing_buffer_data.length / 14);
   }
 
   addBitmapInstance(bitmap, offsets = [0, 0, 1, 1], tint = this.createColor(255, 255, 255)) {
 
     this.instanced_bitmap = bitmap;
 
-    this.instanced_drawing_buffer.push(
+    this.instanced_drawing_buffer_data.push(
 
       this.matrix.value[0], this.matrix.value[6], this.matrix.value[7],
 
