@@ -1304,10 +1304,16 @@ let Nini = new class {
 
   drawInstancedBitmaps() {
 
-    // @TODO: Cache this.
-    this.WebGL2.activeTexture(this.WebGL2.TEXTURE0);
-    this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, this.instanced_bitmap.texture);
-    this.WebGL2.uniform1i(this.uniforms["u_texture"], 0);
+    if (this.cache.texture != this.instanced_bitmap.texture) {
+
+      // Set the active texture.
+      this.WebGL2.activeTexture(this.WebGL2.TEXTURE0);
+      this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, this.instanced_bitmap.texture);
+      this.WebGL2.uniform1i(this.uniforms["u_texture"], 0);
+
+      // Cache the texture for next time.
+      this.cache.texture = this.instanced_bitmap.texture;
+    }
 
     this.WebGL2.bindBuffer(this.WebGL2.ARRAY_BUFFER, this.instanced_drawing_buffer);
     this.WebGL2.bufferData(this.WebGL2.ARRAY_BUFFER, new Float32Array(this.instanced_drawing_buffer_data), this.WebGL2.STATIC_DRAW);
