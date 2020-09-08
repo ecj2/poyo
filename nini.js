@@ -1691,6 +1691,20 @@ let Nini = new class {
     matrix.value = this.multiplyMatrices(matrix.value, translated_matrix);
   }
 
+  shearMatrix(matrix, x_theta, y_theta) {
+
+    let sheared_matrix = [
+
+      1, Math.atan(y_theta), 0,
+
+      -Math.atan(x_theta), 1, 0,
+
+      0, 0, 1
+    ];
+
+    matrix.value = this.multiplyMatrices(matrix.value, sheared_matrix);
+  }
+
   multiplyMatrices(a, b) {
 
     let multiplied_matrix = this.getIdentityMatrix();
