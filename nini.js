@@ -1304,6 +1304,9 @@ let Nini = new class {
 
   drawInstancedBitmaps() {
 
+    // Don't attempt to draw anything if the buffer data is empty.
+    if (this.instanced_drawing_buffer_data.length == 0) return;
+
     if (this.cache.texture != this.instanced_bitmap.texture) {
 
       // Set the active texture.
