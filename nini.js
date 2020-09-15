@@ -335,7 +335,7 @@ let Nini = new class {
 
         if (u_flip_texture_offset) {
 
-          position.t = position.t * -1.0 + 1.0;
+          if (!u_instance) position.t = position.t * -1.0 + 1.0;
 
           position += vec2(texture_offset[0], -texture_offset[1]);
 
@@ -1376,14 +1376,38 @@ let Nini = new class {
       this.cache.instance = this.hold_bitmap_drawing;
     }
 
-    // @TODO: Flip texture offset if bitmap was clipped when drawn inside another target.
+    let flip_it = this.instanced_bitmap.must_be_flipped && !this.cache.flip_texture_offset;
+
+    if (flip_it) {
+
+      // Flip the texture offsets.
+      this.WebGL2.uniform1i(this.uniforms["u_flip_texture_offset"], true);
+    }
 
     this.WebGL2.drawArraysInstanced(this.WebGL2.TRIANGLE_FAN, 0, 4, this.instanced_drawing_buffer_data.length / 14);
+
+    if (flip_it) {
+
+      // Flip texture offsets back without affecting cache.
+      this.WebGL2.uniform1i(this.uniforms["u_flip_texture_offset"], false);
+    }
   }
 
   addBitmapInstance(bitmap, offsets = [0, 0, 1, 1], tint = this.createColor(255, 255, 255)) {
 
     this.instanced_bitmap = bitmap;
+
+    Nini.pushMatrix(this.matrix);
+
+    let matrix = this.createMatrix();
+
+    if (bitmap.must_be_flipped) {
+
+      this.scaleMatrix(matrix, 1, -1);
+      this.translateMatrix(matrix, 0, -bitmap.height);
+
+      this.applyMatrix(matrix);
+    }
 
     this.instanced_drawing_buffer_data.push(
 
@@ -1395,6 +1419,9 @@ let Nini = new class {
 
       tint.r, tint.g, tint.b, tint.a
     );
+
+    Nini.popMatrix(this.matrix);
+    Nini.applyMatrix(matrix);
   }
 
   drawConsolidatedBitmap(bitmap, texture_offset = [0, 0, 1, 1], tint = this.createColor(255, 255, 255), flip_texture_offset = false) {
