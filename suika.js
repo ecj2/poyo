@@ -1,6 +1,6 @@
 "use strict";
 
-let Nini = new class {
+let Suika = new class {
 
   constructor() {
 
@@ -156,7 +156,7 @@ let Nini = new class {
       flip_texture_offset: false
     };
 
-    this.canvas.canvas = document.getElementById("nini");
+    this.canvas.canvas = document.getElementById("suika");
 
     if (this.canvas.canvas == null) {
 
@@ -938,7 +938,7 @@ let Nini = new class {
 
   setEntryPoint(function_name) {
 
-    // Initialize Nini and call the specified function when the window loads.
+    // Initialize Suika and call the specified function when the window loads.
     window.addEventListener(
 
       "load",
@@ -1397,7 +1397,7 @@ let Nini = new class {
 
     this.instanced_bitmap = bitmap;
 
-    Nini.pushMatrix(this.matrix);
+    this.pushMatrix(this.matrix);
 
     let matrix = this.createMatrix();
 
@@ -1420,8 +1420,8 @@ let Nini = new class {
       tint.r, tint.g, tint.b, tint.a
     );
 
-    Nini.popMatrix(this.matrix);
-    Nini.applyMatrix(matrix);
+    this.popMatrix(this.matrix);
+    this.applyMatrix(matrix);
   }
 
   drawConsolidatedBitmap(bitmap, texture_offset = [0, 0, 1, 1], tint = this.createColor(255, 255, 255), flip_texture_offset = false) {
