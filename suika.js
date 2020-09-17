@@ -80,6 +80,14 @@ let Suika = new class {
     this.KEY_LEFT = 37;
     this.KEY_RIGHT = 39;
 
+    this.TEXT_ALIGN_LEFT = "left";
+    this.TEXT_ALIGN_RIGHT = "right";
+    this.TEXT_ALIGN_CENTER = "center";
+
+    this.FONT_STYLE_BOLD = "bold";
+    this.FONT_STYLE_ITALIC = "italic";
+    this.FONT_STYLE_NORMAL = "normal";
+
     this.canvas = {
 
       canvas: undefined,
@@ -952,7 +960,7 @@ let Suika = new class {
     );
   }
 
-  loadFont(file_name, style = "normal") {
+  loadFont(file_name, style = this.FONT_STYLE_NORMAL) {
 
     return fetch(file_name).then(
 
@@ -984,7 +992,7 @@ let Suika = new class {
     );
   }
 
-  loadFontFace(font_family_name, style = "normal") {
+  loadFontFace(font_family_name, style = this.FONT_STYLE_NORMAL) {
 
     let font = {
 
