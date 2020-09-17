@@ -1002,12 +1002,20 @@ let Suika = new class {
     };
 
     // Pre-load the font.
-    this.drawText(font, this.createColor(0, 0, 0, 0), 0, 0, 0, "left", "");
+    this.addText(font, this.createColor(0, 0, 0, 0), 0, 0, 0, this.TEXT_ALIGN_LEFT, "");
 
     return font;
   }
 
-  drawText(font, color, size, x, y, alignment, text) {
+  clearText() {
+
+    if (this.cache.font_bitmap != undefined) {
+
+      this.cache.font_canvas_context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+  }
+
+  addText(font, color, size, x, y, alignment, text) {
 
     if (this.cache.font_bitmap == undefined) {
 
@@ -1025,23 +1033,28 @@ let Suika = new class {
       this.cache.font_bitmap.must_be_flipped = false;
     }
 
-    // Clear the canvas.
-    this.cache.font_canvas_context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    let r = color.r * 255;
+    let g = color.g * 255;
+    let b = color.b * 255;
+    let a = color.a;
 
     // Set font properties.
     this.cache.font_canvas_context.textAlign = alignment;
-    this.cache.font_canvas_context.fillStyle = "rgba(255, 255, 255, 1)";
+    this.cache.font_canvas_context.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
     this.cache.font_canvas_context.font = `${font.style} ${size}px ${font.name}`;
 
     // Draw the text to the canvas.
     this.cache.font_canvas_context.fillText(text, x, y + size);
+  }
+
+  drawText() {
 
     // Use the font canvas' contents as a texture.
     this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, this.cache.font_bitmap.texture);
     this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, this.cache.font_canvas);
 
     // Draw the font bitmap.
-    this.drawTintedBitmap(this.cache.font_bitmap, color, 0, 0);
+    this.drawBitmap(this.cache.font_bitmap, 0, 0);
   }
 
   loadSample(file_name) {
