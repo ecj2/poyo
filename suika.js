@@ -866,6 +866,17 @@ let Suika = new class {
     return this.target.height;
   }
 
+  saveTransform(transform) {
+
+    this.pushTransform(transform);
+  }
+
+  restoreTransform(transform) {
+
+    this.popTransform(transform);
+    this.useTransform(transform);
+  }
+
   pushTransform(transform) {
 
     transform.stack.push(transform.value);
