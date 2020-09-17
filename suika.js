@@ -913,7 +913,7 @@ let Suika = new class {
         }
       }).bind(this),
 
-      1000 / 60
+      1000 / 60 // @TODO: Bring back custom speed.
     );
 
     let animation_request = () => {
@@ -1183,24 +1183,19 @@ let Suika = new class {
     return false;
   }
 
-  getSampleProperties(identifier) {
+  getSampleSpeed(identifier) {
 
-    let properties = this.sample_instances[identifier];
+    return this.sample_instances[identifier].playbackRate;
+  }
 
-    if (properties == undefined) {
+  getSampleVolume(identifier) {
 
-      // There does not exist a sample instance with this identifier.
-      return undefined;
-    }
+    return this.sample_instances[identifier].volume;
+  }
 
-    return {
+  getSampleRepeat(identifier) {
 
-      "speed": properties.playbackRate,
-
-      "repeat": properties.loop,
-
-      "volume": properties.volume
-    };
+    return this.sample_instances[identifier].loop;
   }
 
   getSampleDuration(sample) {
@@ -1615,8 +1610,6 @@ let Suika = new class {
       this.applyMatrix(matrix);
 
       this.addBitmapInstance(bitmap, texture_offset, undefined);
-
-      // @TODO: Flip texture offsets.
     }
     else {
 
