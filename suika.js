@@ -113,7 +113,7 @@ let Suika = new class {
     this.shader_program = undefined;
     this.uniforms = [];
 
-    this.matrix = this.createMatrix();
+    this.matrix = this.createTransform();
 
     this.WebGL2 = undefined;
 
@@ -866,23 +866,23 @@ let Suika = new class {
     return this.target.height;
   }
 
-  pushMatrix(matrix) {
+  pushTransform(transform) {
 
-    matrix.stack.push(matrix.value);
+    transform.stack.push(transform.value);
   }
 
-  popMatrix(matrix) {
+  popTransform(transform) {
 
-    matrix.value = matrix.stack.pop();
+    transform.value = transform.stack.pop();
 
-    if (matrix.value == undefined) {
+    if (transform.value == undefined) {
 
-      matrix.value = this.getIdentityMatrix();
+      transform.value = this.getIdentityTransform();
     }
 
-    if (matrix.stack.length == 0) {
+    if (transform.stack.length == 0) {
 
-      matrix.stack[0] = this.getIdentityMatrix();
+      transform.stack[0] = this.getIdentityTransform();
     }
   }
 
@@ -928,12 +928,12 @@ let Suika = new class {
 
       window.requestAnimationFrame(animation_request);
 
-      this.pushMatrix(this.matrix);
+      this.pushTransform(this.matrix);
 
       render_function();
 
       // Reset matrix each frame.
-      this.popMatrix(this.matrix);
+      this.popTransform(this.matrix);
     };
 
     window.requestAnimationFrame(animation_request);
@@ -1413,16 +1413,16 @@ let Suika = new class {
 
     this.instanced_bitmap = bitmap;
 
-    this.pushMatrix(this.matrix);
+    this.pushTransform(this.matrix);
 
-    let matrix = this.createMatrix();
+    let transform = this.createTransform();
 
     if (bitmap.must_be_flipped) {
 
-      this.scaleMatrix(matrix, 1, -1);
-      this.translateMatrix(matrix, 0, -bitmap.height);
+      this.scaleTransform(transform, 1, -1);
+      this.translateTransform(transform, 0, -bitmap.height);
 
-      this.applyMatrix(matrix);
+      this.applyTransform(transform);
     }
 
     this.instanced_drawing_buffer_data.push(
@@ -1436,8 +1436,8 @@ let Suika = new class {
       tint.r, tint.g, tint.b, tint.a
     );
 
-    this.popMatrix(this.matrix);
-    this.applyMatrix(matrix);
+    this.popTransform(this.matrix);
+    this.applyTransform(transform);
   }
 
   drawConsolidatedBitmap(bitmap, texture_offset = [0, 0, 1, 1], tint = this.createColor(255, 255, 255), flip_texture_offset = false) {
@@ -1494,26 +1494,26 @@ let Suika = new class {
       this.cache.instance = this.hold_bitmap_drawing;
     }
 
-    this.pushMatrix(this.matrix);
+    this.pushTransform(this.matrix);
 
-    let matrix = this.createMatrix();
+    let transform = this.createTransform();
 
     if (bitmap.must_be_flipped) {
 
       // Flip framebuffer textures right-side up.
-      this.scaleMatrix(matrix, 1, -1);
-      this.translateMatrix(matrix, 0, -bitmap.height);
+      this.scaleTransform(transform, 1, -1);
+      this.translateTransform(transform, 0, -bitmap.height);
     }
 
     // Scale the bitmap to its proper resolution.
-    this.scaleMatrix(matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
+    this.scaleTransform(transform, bitmap.width / this.target.width, bitmap.height / this.target.height);
 
-    this.applyMatrix(matrix);
+    this.applyTransform(transform);
 
     // Upload the transformation matrix.
     this.WebGL2.uniformMatrix3fv(this.uniforms["u_matrix"], false, this.matrix.value);
 
-    this.popMatrix(this.matrix);
+    this.popTransform(this.matrix);
 
     // Draw the bitmap.
     this.WebGL2.drawArrays(this.WebGL2.TRIANGLE_FAN, 0, 4);
@@ -1521,87 +1521,87 @@ let Suika = new class {
 
   drawBitmap(bitmap, x, y) {
 
-    this.pushMatrix(this.matrix);
+    this.pushTransform(this.matrix);
 
-    let matrix = this.createMatrix();
+    let transform = this.createTransform();
 
-    this.translateMatrix(matrix, x, y);
+    this.translateTransform(transform, x, y);
 
     if (this.hold_bitmap_drawing) {
 
       // Scale instanced bitmap to its proper resolution.
-      this.scaleMatrix(matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
+      this.scaleTransform(transform, bitmap.width / this.target.width, bitmap.height / this.target.height);
 
-      this.applyMatrix(matrix);
+      this.applyTransform(transform);
 
       this.addBitmapInstance(bitmap, undefined, undefined);
     }
     else {
 
-      this.applyMatrix(matrix);
+      this.applyTransform(transform);
 
       this.drawConsolidatedBitmap(bitmap, undefined, undefined);
     }
 
-    this.popMatrix(this.matrix);
+    this.popTransform(this.matrix);
   }
 
   drawScaledBitmap(bitmap, origin_x, origin_y, scale_width, scale_height, draw_x, draw_y) {
 
-    this.pushMatrix(this.matrix);
+    this.pushTransform(this.matrix);
 
-    let matrix = this.createMatrix();
+    let transform = this.createTransform();
 
-    this.translateMatrix(matrix, draw_x, draw_y);
+    this.translateTransform(transform, draw_x, draw_y);
 
-    this.scaleMatrix(matrix, scale_width, scale_height);
+    this.scaleTransform(transform, scale_width, scale_height);
 
-    this.translateMatrix(matrix, -origin_x, -origin_y);
+    this.translateTransform(transform, -origin_x, -origin_y);
 
     if (this.hold_bitmap_drawing) {
 
       // Scale instanced bitmap to its proper resolution.
-      this.scaleMatrix(matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
+      this.scaleTransform(transform, bitmap.width / this.target.width, bitmap.height / this.target.height);
 
-      this.applyMatrix(matrix);
+      this.applyTransform(transform);
 
       this.addBitmapInstance(bitmap, undefined, undefined);
     }
     else {
 
-      this.applyMatrix(matrix);
+      this.applyTransform(transform);
 
       this.drawConsolidatedBitmap(bitmap, undefined, undefined);
     }
 
-    this.popMatrix(this.matrix);
+    this.popTransform(this.matrix);
   }
 
   drawTintedBitmap(bitmap, tint, x, y) {
 
-    this.pushMatrix(this.matrix);
+    this.pushTransform(this.matrix);
 
-    let matrix = this.createMatrix();
+    let transform = this.createTransform();
 
-    this.translateMatrix(matrix, x, y);
+    this.translateTransform(transform, x, y);
 
     if (this.hold_bitmap_drawing) {
 
       // Scale instanced bitmap to its proper resolution.
-      this.scaleMatrix(matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
+      this.scaleTransform(transform, bitmap.width / this.target.width, bitmap.height / this.target.height);
 
-      this.applyMatrix(matrix);
+      this.applyTransform(transform);
 
       this.addBitmapInstance(bitmap, undefined, tint);
     }
     else {
 
-      this.applyMatrix(matrix);
+      this.applyTransform(transform);
 
       this.drawConsolidatedBitmap(bitmap, undefined, tint);
     }
 
-    this.popMatrix(this.matrix);
+    this.popTransform(this.matrix);
   }
 
   drawClippedBitmap(bitmap, start_x, start_y, width, height, x, y) {
@@ -1617,24 +1617,24 @@ let Suika = new class {
       (start_y + height) / bitmap.height
     ];
 
-    this.pushMatrix(this.matrix);
+    this.pushTransform(this.matrix);
 
-    let matrix = this.createMatrix();
+    let transform = this.createTransform();
 
-    this.translateMatrix(matrix, x, y);
+    this.translateTransform(transform, x, y);
 
     if (this.hold_bitmap_drawing) {
 
       // Scale instanced bitmap to its proper resolution.
-      this.scaleMatrix(matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
+      this.scaleTransform(transform, bitmap.width / this.target.width, bitmap.height / this.target.height);
 
-      this.applyMatrix(matrix);
+      this.applyTransform(transform);
 
       this.addBitmapInstance(bitmap, texture_offset, undefined);
     }
     else {
 
-      this.applyMatrix(matrix);
+      this.applyTransform(transform);
 
       if (bitmap.must_be_flipped) {
 
@@ -1650,41 +1650,41 @@ let Suika = new class {
       }
     }
 
-    this.popMatrix(this.matrix);
+    this.popTransform(this.matrix);
   }
 
   drawRotatedBitmap(bitmap, center_x, center_y, draw_x, draw_y, theta) {
 
-    this.pushMatrix(this.matrix);
+    this.pushTransform(this.matrix);
 
-    let matrix = this.createMatrix();
+    let transform = this.createTransform();
 
-    this.translateMatrix(matrix, draw_x, draw_y);
+    this.translateTransform(transform, draw_x, draw_y);
 
-    this.rotateMatrix(matrix, theta);
+    this.rotateTransform(transform, theta);
 
-    this.translateMatrix(matrix, -center_x, -center_y);
+    this.translateTransform(transform, -center_x, -center_y);
 
     if (this.hold_bitmap_drawing) {
 
       // Scale instanced bitmap to its proper resolution.
-      this.scaleMatrix(matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
+      this.scaleTransform(transform, bitmap.width / this.target.width, bitmap.height / this.target.height);
 
-      this.applyMatrix(matrix);
+      this.applyTransform(transform);
 
       this.addBitmapInstance(bitmap, undefined, undefined);
     }
     else {
 
-      this.applyMatrix(matrix);
+      this.applyTransform(transform);
 
       this.drawConsolidatedBitmap(bitmap, undefined, undefined);
     }
 
-    this.popMatrix(this.matrix);
+    this.popTransform(this.matrix);
   }
 
-  getIdentityMatrix() {
+  getIdentityTransform() {
 
     return [
 
@@ -1696,29 +1696,29 @@ let Suika = new class {
     ]
   }
 
-  createMatrix() {
+  createTransform() {
 
     return {
 
-      value: this.getIdentityMatrix(),
+      value: this.getIdentityTransform(),
 
       stack: []
     };
   }
 
-  useMatrix(matrix) {
+  useTransform(transform) {
 
     // Use the given matrix. This should only be used externally.
-    this.matrix.value = matrix.value;
+    this.matrix.value = transform.value;
   }
 
-  applyMatrix(matrix) {
+  applyTransform(transform) {
 
     // Compose internal matrices. This should not be used externally.
-    this.matrix.value = this.multiplyMatrices(this.matrix.value, matrix.value);
+    this.matrix.value = this.multiplyMatrices(this.matrix.value, transform.value);
   }
 
-  scaleMatrix(matrix, scale_x, scale_y) {
+  scaleTransform(transform, scale_x, scale_y) {
 
     let scaled_matrix = [
 
@@ -1729,10 +1729,10 @@ let Suika = new class {
       0, 0, 1
     ];
 
-    matrix.value = this.multiplyMatrices(matrix.value, scaled_matrix);
+    transform.value = this.multiplyMatrices(transform.value, scaled_matrix);
   }
 
-  rotateMatrix(matrix, theta) {
+  rotateTransform(transform, theta) {
 
     let sine = Math.sin(theta);
     let cosine = Math.cos(theta);
@@ -1746,10 +1746,10 @@ let Suika = new class {
       0, 0, 1
     ];
 
-    matrix.value = this.multiplyMatrices(matrix.value, rotated_matrix);
+    transform.value = this.multiplyMatrices(transform.value, rotated_matrix);
   }
 
-  translateMatrix(matrix, translate_x, translate_y) {
+  translateTransform(transform, translate_x, translate_y) {
 
     let translated_matrix = [
 
@@ -1760,10 +1760,10 @@ let Suika = new class {
       translate_x, translate_y, 1
     ];
 
-    matrix.value = this.multiplyMatrices(matrix.value, translated_matrix);
+    transform.value = this.multiplyMatrices(transform.value, translated_matrix);
   }
 
-  shearMatrix(matrix, x_theta, y_theta) {
+  shearTransform(transform, x_theta, y_theta) {
 
     let sheared_matrix = [
 
@@ -1774,12 +1774,12 @@ let Suika = new class {
       0, 0, 1
     ];
 
-    matrix.value = this.multiplyMatrices(matrix.value, sheared_matrix);
+    transform.value = this.multiplyMatrices(transform.value, sheared_matrix);
   }
 
   multiplyMatrices(a, b) {
 
-    let multiplied_matrix = this.getIdentityMatrix();
+    let multiplied_matrix = this.getIdentityTransform();
 
     multiplied_matrix[0] = a[0] * b[0] + a[3] * b[1];
     multiplied_matrix[3] = a[0] * b[3] + a[3] * b[4];
