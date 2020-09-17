@@ -883,7 +883,7 @@ let Suika = new class {
     return this.version;
   }
 
-  createGameLoop(update_function, render_function) {
+  createGameLoop(update_function, render_function, update_interval = 60) {
 
     setInterval(
 
@@ -913,7 +913,7 @@ let Suika = new class {
         }
       }).bind(this),
 
-      1000 / 60 // @TODO: Bring back custom speed.
+      1000 / update_interval
     );
 
     let animation_request = () => {
