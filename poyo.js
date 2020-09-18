@@ -1,6 +1,6 @@
 "use strict";
 
-let Suika = new class {
+let Poyo = new class {
 
   constructor() {
 
@@ -164,7 +164,7 @@ let Suika = new class {
       flip_texture_offset: false
     };
 
-    this.canvas.canvas = document.getElementById("suika");
+    this.canvas.canvas = document.getElementById("poyo");
 
     if (this.canvas.canvas == null) {
 
@@ -957,7 +957,7 @@ let Suika = new class {
 
   setEntryPoint(function_name) {
 
-    // Initialize Suika and call the specified function when the window loads.
+    // Initialize Poyo and call the specified function when the window loads.
     window.addEventListener(
 
       "load",
