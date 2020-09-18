@@ -902,38 +902,7 @@ let Poyo = new class {
     return this.version;
   }
 
-  createGameLoop(update_function, render_function, update_interval = 60) {
-
-    setInterval(
-
-      (() => {
-
-        update_function();
-
-        let i = 0;
-
-        for (i; i < 3; ++i) {
-
-          // Clear mouse button arrays so each mouse button event fires only once.
-          this.mouse.pressed[i] = false;
-          this.mouse.released[i] = false;
-
-          // Reset scroll wheel value each frame.
-          this.mouse.z = 0;
-        }
-
-        i = 0;
-
-        for (i; i < 99; ++i) {
-
-          // Clear key arrays so each keyboard event fires only once.
-          this.keyboard.pressed[i] = false;
-          this.keyboard.released[i] = false;
-        }
-      }).bind(this),
-
-      1000 / update_interval
-    );
+  createGameLoop(loop_procedure) {
 
     let animation_request = () => {
 
@@ -941,13 +910,39 @@ let Poyo = new class {
 
       this.pushTransform(this.matrix);
 
-      render_function();
+      loop_procedure();
 
       // Reset matrix each frame.
       this.popTransform(this.matrix);
+
+      this.clearInputArrays();
     };
 
     window.requestAnimationFrame(animation_request);
+  }
+
+  clearInputArrays() {
+
+    let i = 0;
+
+    for (i; i < 3; ++i) {
+
+      // Clear mouse button arrays so each mouse button event fires only once.
+      this.mouse.pressed[i] = false;
+      this.mouse.released[i] = false;
+
+      // Reset scroll wheel value each frame.
+      this.mouse.z = 0;
+    }
+
+    i = 0;
+
+    for (i; i < 99; ++i) {
+
+      // Clear key arrays so each keyboard event fires only once.
+      this.keyboard.pressed[i] = false;
+      this.keyboard.released[i] = false;
+    }
   }
 
   createColor(r, g, b, a = 255) {
