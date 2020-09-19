@@ -1028,13 +1028,13 @@ let Poyo = new class {
       this.cache.font_canvas = document.createElement("canvas");
 
       // Match the canvas for text-drawing to that of the main canvas' dimensions.
-      this.cache.font_canvas.width = this.canvas.width;
-      this.cache.font_canvas.height = this.canvas.height;
+      this.cache.font_canvas.width = this.target.width;
+      this.cache.font_canvas.height = this.target.height;
 
       // Use the Canvas 2D context to handle drawing text.
       this.cache.font_canvas_context = this.cache.font_canvas.getContext("2d");
 
-      this.cache.font_bitmap = this.createBitmap(this.canvas.width, this.canvas.height);
+      this.cache.font_bitmap = this.createBitmap(this.target.width, this.target.height);
 
       this.cache.font_bitmap.must_be_flipped = false;
     }
