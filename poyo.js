@@ -126,8 +126,8 @@ let Poyo = new class {
       magnification: undefined
     };
 
-    this.FILTER_LINEAR = undefined;
-    this.FILTER_NEAREST = undefined;
+    this.BITMAP_FILTER_LINEAR = undefined;
+    this.BITMAP_FILTER_NEAREST = undefined;
 
     this.hold_bitmap_drawing = false;
 
@@ -205,11 +205,11 @@ let Poyo = new class {
     }
 
     // Define filtering enumerations.
-    this.FILTER_LINEAR = this.WebGL2.LINEAR;
-    this.FILTER_NEAREST = this.WebGL2.NEAREST;
+    this.BITMAP_FILTER_LINEAR = this.WebGL2.LINEAR;
+    this.BITMAP_FILTER_NEAREST = this.WebGL2.NEAREST;
 
     // Default to nearest filtering.
-    this.setNewBitmapFiltering(this.FILTER_NEAREST, this.FILTER_NEAREST);
+    this.setNewBitmapFiltering(this.BITMAP_FILTER_NEAREST, this.BITMAP_FILTER_NEAREST);
 
     // Set default blend mode.
     this.WebGL2.enable(this.WebGL2.BLEND);
