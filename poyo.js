@@ -129,7 +129,7 @@ let Poyo = new class {
     this.BITMAP_FILTER_LINEAR = undefined;
     this.BITMAP_FILTER_NEAREST = undefined;
 
-    this.hold_bitmap_drawing = false;
+    this.batch_drawing = false;
 
     this.instanced_drawing_buffer = undefined;
     this.instanced_drawing_buffer_data = [];
@@ -1255,11 +1255,11 @@ let Poyo = new class {
     }
   }
 
-  holdBitmapDrawing(hold) {
+  batchDrawing(hold) {
 
     if (!hold) {
 
-      if (this.hold_bitmap_drawing) {
+      if (this.batch_drawing) {
 
         // Drawing was being held, but now it's time to draw.
         this.drawInstancedBitmaps(this.bitmap, undefined, undefined);
@@ -1269,7 +1269,7 @@ let Poyo = new class {
       }
     }
 
-    this.hold_bitmap_drawing = hold;
+    this.batch_drawing = hold;
   }
 
   loadBitmap(file_name) {
@@ -1391,11 +1391,11 @@ let Poyo = new class {
     this.WebGL2.vertexAttribDivisor(5, 1);
     this.WebGL2.enableVertexAttribArray(5);
 
-    if (this.cache.instance != this.hold_bitmap_drawing) {
+    if (this.cache.instance != this.batch_drawing) {
 
-      this.WebGL2.uniform1i(this.uniforms["u_instance"], this.hold_bitmap_drawing);
+      this.WebGL2.uniform1i(this.uniforms["u_instance"], this.batch_drawing);
 
-      this.cache.instance = this.hold_bitmap_drawing;
+      this.cache.instance = this.batch_drawing;
     }
 
     let flip_it = this.instanced_bitmap.must_be_flipped && !this.cache.flip_texture_offset;
@@ -1493,11 +1493,11 @@ let Poyo = new class {
       this.cache.flip_texture_offset = flip_texture_offset;
     }
 
-    if (this.cache.instance != this.hold_bitmap_drawing) {
+    if (this.cache.instance != this.batch_drawing) {
 
-      this.WebGL2.uniform1i(this.uniforms["u_instance"], this.hold_bitmap_drawing);
+      this.WebGL2.uniform1i(this.uniforms["u_instance"], this.batch_drawing);
 
-      this.cache.instance = this.hold_bitmap_drawing;
+      this.cache.instance = this.batch_drawing;
     }
 
     this.pushTransform(this.matrix);
@@ -1533,7 +1533,7 @@ let Poyo = new class {
 
     this.translateTransform(transform, x, y);
 
-    if (this.hold_bitmap_drawing) {
+    if (this.batch_drawing) {
 
       // Scale instanced bitmap to its proper resolution.
       this.scaleTransform(transform, bitmap.width / this.target.width, bitmap.height / this.target.height);
@@ -1564,7 +1564,7 @@ let Poyo = new class {
 
     this.translateTransform(transform, -origin_x, -origin_y);
 
-    if (this.hold_bitmap_drawing) {
+    if (this.batch_drawing) {
 
       // Scale instanced bitmap to its proper resolution.
       this.scaleTransform(transform, bitmap.width / this.target.width, bitmap.height / this.target.height);
@@ -1591,7 +1591,7 @@ let Poyo = new class {
 
     this.translateTransform(transform, x, y);
 
-    if (this.hold_bitmap_drawing) {
+    if (this.batch_drawing) {
 
       // Scale instanced bitmap to its proper resolution.
       this.scaleTransform(transform, bitmap.width / this.target.width, bitmap.height / this.target.height);
@@ -1629,7 +1629,7 @@ let Poyo = new class {
 
     this.translateTransform(transform, x, y);
 
-    if (this.hold_bitmap_drawing) {
+    if (this.batch_drawing) {
 
       // Scale instanced bitmap to its proper resolution.
       this.scaleTransform(transform, bitmap.width / this.target.width, bitmap.height / this.target.height);
@@ -1671,7 +1671,7 @@ let Poyo = new class {
 
     this.translateTransform(transform, -center_x, -center_y);
 
-    if (this.hold_bitmap_drawing) {
+    if (this.batch_drawing) {
 
       // Scale instanced bitmap to its proper resolution.
       this.scaleTransform(transform, bitmap.width / this.target.width, bitmap.height / this.target.height);
