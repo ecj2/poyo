@@ -135,6 +135,8 @@ let Poyo = new class {
     this.instanced_drawing_buffer_data = [];
 
     this.instanced_bitmap = undefined;
+
+    this.batch_text = false;
   }
 
   getErrors() {
@@ -1008,20 +1010,17 @@ let Poyo = new class {
     };
 
     // Pre-load the font.
-    this.addText(font, this.createColor(0, 0, 0, 0), 0, 0, 0, this.TEXT_ALIGN_LEFT, "");
+    this.drawText(font, this.createColor(0, 0, 0, 0), 0, 0, 0, this.TEXT_ALIGN_LEFT, "");
 
     return font;
   }
 
-  clearText() {
+  drawText(font, color, size, x, y, alignment, text) {
 
-    if (this.cache.font_bitmap != undefined) {
+    if (this.batch_drawing) {
 
-      this.cache.font_canvas_context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.batch_text = true;
     }
-  }
-
-  addText(font, color, size, x, y, alignment, text) {
 
     if (this.cache.font_bitmap == undefined) {
 
@@ -1051,9 +1050,14 @@ let Poyo = new class {
 
     // Draw the text to the canvas.
     this.cache.font_canvas_context.fillText(text, x, y + size);
+
+    if (!this.batch_drawing) {
+
+      this.actuallyDrawText();
+    }
   }
 
-  drawText() {
+  actuallyDrawText() {
 
     // Use the font canvas' contents as a texture.
     this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, this.cache.font_bitmap.texture);
@@ -1061,6 +1065,9 @@ let Poyo = new class {
 
     // Draw the font bitmap.
     this.drawBitmap(this.cache.font_bitmap, 0, 0);
+
+    // Clear the font canvas.
+    this.cache.font_canvas_context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
   loadSample(file_name) {
@@ -1260,6 +1267,16 @@ let Poyo = new class {
     if (!hold) {
 
       if (this.batch_drawing) {
+
+        if (this.batch_text) {
+
+          this.batch_text = false;
+          this.batch_drawing = false;
+
+          this.actuallyDrawText();
+
+          return;
+        }
 
         // Drawing was being held, but now it's time to draw.
         this.drawInstancedBitmaps(this.bitmap, undefined, undefined);
