@@ -92,16 +92,16 @@ let Poyo = new class {
 
       canvas: undefined,
 
-      width: 240,
+      width: 768,
 
-      height: 160
+      height: 432
     };
 
     this.target = {
 
-      width: 240,
+      width: 768,
 
-      height: 160
+      height: 432
     };
 
     this.time_initialized = undefined;
