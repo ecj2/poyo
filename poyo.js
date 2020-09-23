@@ -137,6 +137,15 @@ let Poyo = new class {
     this.instanced_bitmap = undefined;
 
     this.batch_text = false;
+
+    this.font = {
+
+      bitmap: undefined,
+
+      canvas: undefined,
+
+      context: undefined
+    };
   }
 
   getErrors() {
@@ -234,6 +243,15 @@ let Poyo = new class {
     this.setUniformsAndAttributes();
 
     this.instanced_drawing_buffer = this.WebGL2.createBuffer();
+
+    this.font.bitmap = this.createBitmap(this.target.width, this.target.height);
+    this.font.bitmap.must_be_flipped = false;
+
+    this.font.canvas = document.createElement("canvas");
+    this.font.context = this.font.canvas.getContext("2d");
+
+    this.font.canvas.width = this.target.width;
+    this.font.canvas.height = this.target.height;
 
     // Listen for mouse events.
     this.canvas.canvas.addEventListener("wheel", this.manageMouseEvents.bind(this));
@@ -828,9 +846,6 @@ let Poyo = new class {
     this.target.width = width;
     this.canvas.canvas.width = width;
 
-    // Clear font bitmap cache.
-    this.cache.font_bitmap = undefined;
-
     // Update the vertex buffer.
     this.setUniformsAndAttributes();
   }
@@ -840,9 +855,6 @@ let Poyo = new class {
     this.canvas.height = height;
     this.target.height = height;
     this.canvas.canvas.height = height;
-
-    // Clear font bitmap cache.
-    this.cache.font_bitmap = undefined;
 
     // Update the vertex buffer.
     this.setUniformsAndAttributes();
@@ -1022,20 +1034,15 @@ let Poyo = new class {
       this.batch_text = true;
     }
 
-    if (this.cache.font_bitmap == undefined) {
+    if (this.font.canvas.width != this.target.width || this.font.canvas.height != this.target.height) {
 
-      this.cache.font_canvas = document.createElement("canvas");
+      // Resize font bitmap and canvas.
 
-      // Match the canvas for text-drawing to that of the main canvas' dimensions.
-      this.cache.font_canvas.width = this.target.width;
-      this.cache.font_canvas.height = this.target.height;
+      this.font.bitmap.width = this.target.width;
+      this.font.bitmap.height = this.target.height;
 
-      // Use the Canvas 2D context to handle drawing text.
-      this.cache.font_canvas_context = this.cache.font_canvas.getContext("2d");
-
-      this.cache.font_bitmap = this.createBitmap(this.target.width, this.target.height);
-
-      this.cache.font_bitmap.must_be_flipped = false;
+      this.font.canvas.width = this.target.width;
+      this.font.canvas.height = this.target.height;
     }
 
     let r = color.r * 255;
@@ -1044,12 +1051,12 @@ let Poyo = new class {
     let a = color.a;
 
     // Set font properties.
-    this.cache.font_canvas_context.textAlign = alignment;
-    this.cache.font_canvas_context.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
-    this.cache.font_canvas_context.font = `${font.style} ${size}px ${font.name}`;
+    this.font.context.textAlign = alignment;
+    this.font.context.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
+    this.font.context.font = `${font.style} ${size}px ${font.name}`;
 
     // Draw the text to the canvas.
-    this.cache.font_canvas_context.fillText(text, x, y + size);
+    this.font.context.fillText(text, x, y + size);
 
     if (!this.batch_drawing) {
 
@@ -1060,14 +1067,14 @@ let Poyo = new class {
   actuallyDrawText() {
 
     // Use the font canvas' contents as a texture.
-    this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, this.cache.font_bitmap.texture);
-    this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, this.cache.font_canvas);
+    this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, this.font.bitmap.texture);
+    this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, this.font.canvas);
 
     // Draw the font bitmap.
-    this.drawBitmap(this.cache.font_bitmap, 0, 0);
+    this.drawBitmap(this.font.bitmap, 0, 0);
 
     // Clear the font canvas.
-    this.cache.font_canvas_context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.font.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
   loadSample(file_name) {
