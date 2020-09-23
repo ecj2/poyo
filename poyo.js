@@ -1845,6 +1845,9 @@ let Poyo = new class {
     // Prevent feed-back loops between framebuffer and active texture.
     this.WebGL2.bindFramebuffer(this.WebGL2.FRAMEBUFFER, null);
 
+    // Clear texture cache to force a re-bind.
+    this.cache.texture = undefined;
+
     return {
 
       width: width,
