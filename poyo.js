@@ -1068,8 +1068,20 @@ let Poyo = new class {
     this.font.context.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
     this.font.context.font = `${font.style} ${size}px ${font.name}`;
 
+    let transform = this.createTransform();
+
+    this.translateTransform(transform, x, y + size);
+
+    let m = this.multiplyMatrices(this.matrix.value, transform.value);
+
+    this.font.context.save();
+
+    this.font.context.transform(m[0], -m[3], -m[1], m[4], m[6], m[7]);
+
     // Draw the text to the canvas.
-    this.font.context.fillText(text, x, y + size);
+    this.font.context.fillText(text, 0, 0);
+
+    this.font.context.restore();
 
     if (!this.batch_drawing) {
 
@@ -1083,8 +1095,15 @@ let Poyo = new class {
     this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, this.font.bitmap.texture);
     this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, this.font.canvas);
 
+    this.saveTransform(this.matrix);
+
+    // Transformations were applied to the text canvas, not to the final bitmap.
+    this.useTransform(this.createTransform());
+
     // Draw the font bitmap.
     this.drawBitmap(this.font.bitmap, 0, 0);
+
+    this.restoreTransform(this.matrix);
 
     // Clear the font canvas.
     this.font.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
