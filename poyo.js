@@ -289,7 +289,11 @@ let Poyo = new class {
 
       uniform bool u_instance;
 
+      uniform bool u_flip_texture_offset;
+
       out vec2 v_texture_position;
+
+      flat out int v_flip_texture_offset;
 
       out vec4 v_instance_tint;
       out vec4 v_instance_texture_offset;
@@ -297,6 +301,7 @@ let Poyo = new class {
       void main(void) {
 
         mat3 matrix = u_matrix;
+        vec2 position = a_vertex_position;
 
         if (u_instance) {
 
@@ -307,12 +312,18 @@ let Poyo = new class {
           matrix[1][1] = a_instance_matrix_part_2[0];
           matrix[2][1] = a_instance_matrix_part_1[2];
 
+          if (u_flip_texture_offset) {
+
+            position.y *= -1.0;
+            position.y += u_resolution.y;
+          }
+
           v_instance_tint = a_instance_tint;
           v_instance_texture_offset = a_instance_texture_offset;
         }
 
         // Convert pixel coordinates to normalized device coordinates.
-        vec2 clip_space_position = vec2(matrix * vec3(a_vertex_position, 1.0)).xy / u_resolution * 2.0 - 1.0;
+        vec2 clip_space_position = vec2(matrix * vec3(position, 1.0)).xy / u_resolution * 2.0 - 1.0;
 
         // Flip the Y axis.
         clip_space_position.y *= -1.0;
@@ -320,6 +331,8 @@ let Poyo = new class {
         gl_Position = vec4(clip_space_position, 0.0, 1.0);
 
         v_texture_position = a_texture_position;
+
+        v_flip_texture_offset = (u_flip_texture_offset ? 1 : 0);
       }
     `;
 
@@ -339,7 +352,7 @@ let Poyo = new class {
 
       uniform vec4 u_texture_offset;
 
-      uniform bool u_flip_texture_offset;
+      flat in int v_flip_texture_offset;
 
       in vec4 v_instance_tint;
       in vec4 v_instance_texture_offset;
@@ -361,7 +374,7 @@ let Poyo = new class {
           texture_offset = v_instance_texture_offset;
         }
 
-        if (u_flip_texture_offset) {
+        if (v_flip_texture_offset == 1) {
 
           if (!u_instance) position.t = position.t * -1.0 + 1.0;
 
@@ -1446,14 +1459,6 @@ let Poyo = new class {
     this.pushTransform(this.matrix);
 
     let transform = this.createTransform();
-
-    if (bitmap.must_be_flipped) {
-
-      this.scaleTransform(transform, 1, -1);
-      this.translateTransform(transform, 0, -bitmap.height);
-
-      this.applyTransform(transform);
-    }
 
     this.instanced_drawing_buffer_data.push(
 
