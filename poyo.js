@@ -92,16 +92,16 @@ let Poyo = new class {
 
       canvas: undefined,
 
-      width: 768,
+      width: 0,
 
-      height: 432
+      height: 0
     };
 
     this.target = {
 
-      width: 768,
+      width: 0,
 
-      height: 432
+      height: 0
     };
 
     this.time_initialized = undefined;
@@ -153,7 +153,7 @@ let Poyo = new class {
     return this.errors;
   }
 
-  initialize() {
+  initialize(canvas_width, canvas_height) {
 
     // Set the time in which the library was initialized.
     this.time_initialized = Date.now();
@@ -183,6 +183,12 @@ let Poyo = new class {
 
       return;
     }
+
+    this.canvas.width = canvas_width;
+    this.canvas.height = canvas_height;
+
+    this.target.width = canvas_width;
+    this.target.height = canvas_height;
 
     // Set canvas dimensions to match interal resolution.
     this.canvas.canvas.width = this.canvas.width;
@@ -979,14 +985,12 @@ let Poyo = new class {
 
   setEntryPoint(function_name) {
 
-    // Initialize Poyo and call the specified function when the window loads.
+    // Call the specified function when the window loads.
     window.addEventListener(
 
       "load",
 
       () => {
-
-        this.initialize();
 
         function_name();
       }
