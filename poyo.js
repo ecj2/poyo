@@ -1479,10 +1479,6 @@ let Poyo = new class {
 
     this.instanced_bitmap = bitmap;
 
-    this.pushTransform(this.matrix);
-
-    let transform = this.createTransform();
-
     this.instanced_drawing_buffer_data.push(
 
       this.matrix.value[0], this.matrix.value[6], this.matrix.value[7],
@@ -1493,9 +1489,6 @@ let Poyo = new class {
 
       tint.r, tint.g, tint.b, tint.a
     );
-
-    this.popTransform(this.matrix);
-    this.applyTransform(transform);
   }
 
   drawConsolidatedBitmap(bitmap, texture_offset = [0, 0, 1, 1], tint = this.createColor(255, 255, 255), flip_texture_offset = false) {
