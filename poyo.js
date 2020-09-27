@@ -1704,6 +1704,55 @@ let Poyo = new class {
     this.popTransform(this.matrix);
   }
 
+  drawTintedClippedBitmap(bitmap, tint, start_x, start_y, width, height, x, y) {
+
+    let texture_offset = [
+
+      start_x / bitmap.width,
+
+      start_y / bitmap.height,
+
+      (start_x + width) / bitmap.width,
+
+      (start_y + height) / bitmap.height
+    ];
+
+    this.pushTransform(this.matrix);
+
+    let transform = this.createTransform();
+
+    this.translateTransform(transform, x, y);
+
+    if (this.batch_drawing) {
+
+      // Scale instanced bitmap to its proper resolution.
+      this.scaleTransform(transform, bitmap.width / this.target.width, bitmap.height / this.target.height);
+
+      this.applyTransform(transform);
+
+      this.addBitmapInstance(bitmap, texture_offset, tint);
+    }
+    else {
+
+      this.applyTransform(transform);
+
+      if (bitmap.must_be_flipped) {
+
+        bitmap.must_be_flipped = false;
+
+        this.drawConsolidatedBitmap(bitmap, texture_offset, tint, true);
+
+        bitmap.must_be_flipped = true;
+      }
+      else {
+
+        this.drawConsolidatedBitmap(bitmap, texture_offset, tint, false);
+      }
+    }
+
+    this.popTransform(this.matrix);
+  }
+
   drawRotatedBitmap(bitmap, center_x, center_y, draw_x, draw_y, theta) {
 
     this.pushTransform(this.matrix);
