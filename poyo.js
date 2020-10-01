@@ -1072,15 +1072,17 @@ let Poyo = new class {
     this.font.context.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
     this.font.context.font = `${font.style} ${size}px ${font.name}`;
 
-    let transform = this.createTransform();
+    this.pushTransform(this.matrix);
 
-    this.translateTransform(transform, x, y + size);
+    this.translateTransform(this.matrix, x, y + size);
 
-    let m = this.multiplyMatrices(this.matrix.value, transform.value);
+    let t = this.matrix.value;
 
     this.font.context.save();
 
-    this.font.context.transform(m[0], -m[3], -m[1], m[4], m[6], m[7]);
+    this.font.context.transform(t[0], -t[3], -t[1], t[4], t[6], t[7]);
+
+    this.popTransform(this.matrix);
 
     // Draw the text to the canvas.
     this.font.context.fillText(text, 0, 0);
@@ -1099,7 +1101,7 @@ let Poyo = new class {
     this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, this.font.bitmap.texture);
     this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, this.font.canvas);
 
-    this.saveTransform(this.matrix);
+    this.pushTransform(this.matrix);
 
     // Transformations were applied to the text canvas, not to the final bitmap.
     this.useTransform(this.createTransform());
@@ -1107,7 +1109,7 @@ let Poyo = new class {
     // Draw the font bitmap.
     this.drawBitmap(this.font.bitmap, 0, 0);
 
-    this.restoreTransform(this.matrix);
+    this.popTransform(this.matrix);
 
     // Clear the font canvas.
     this.font.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -1547,19 +1549,15 @@ let Poyo = new class {
 
     this.pushTransform(this.matrix);
 
-    let transform = this.createTransform();
-
     if (bitmap.must_be_flipped) {
 
       // Flip framebuffer textures right-side up.
-      this.scaleTransform(transform, 1, -1);
-      this.translateTransform(transform, 0, -bitmap.height);
+      this.scaleTransform(this.matrix, 1, -1);
+      this.translateTransform(this.matrix, 0, -bitmap.height);
     }
 
     // Scale the bitmap to its proper resolution.
-    this.scaleTransform(transform, bitmap.width / this.target.width, bitmap.height / this.target.height);
-
-    this.applyTransform(transform);
+    this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
 
     // Upload the transformation matrix.
     this.WebGL2.uniformMatrix3fv(this.uniforms["u_matrix"], false, this.matrix.value);
@@ -1574,22 +1572,16 @@ let Poyo = new class {
 
     this.pushTransform(this.matrix);
 
-    let transform = this.createTransform();
-
-    this.translateTransform(transform, x, y);
+    this.translateTransform(this.matrix, x, y);
 
     if (this.batch_drawing) {
 
       // Scale instanced bitmap to its proper resolution.
-      this.scaleTransform(transform, bitmap.width / this.target.width, bitmap.height / this.target.height);
-
-      this.applyTransform(transform);
+      this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
 
       this.addBitmapInstance(bitmap, undefined, undefined);
     }
     else {
-
-      this.applyTransform(transform);
 
       this.drawConsolidatedBitmap(bitmap, undefined, undefined);
     }
@@ -1601,26 +1593,18 @@ let Poyo = new class {
 
     this.pushTransform(this.matrix);
 
-    let transform = this.createTransform();
-
-    this.translateTransform(transform, draw_x, draw_y);
-
-    this.scaleTransform(transform, scale_width, scale_height);
-
-    this.translateTransform(transform, -origin_x, -origin_y);
+    this.translateTransform(this.matrix, draw_x, draw_y);
+    this.scaleTransform(this.matrix, scale_width, scale_height);
+    this.translateTransform(this.matrix, -origin_x, -origin_y);
 
     if (this.batch_drawing) {
 
       // Scale instanced bitmap to its proper resolution.
-      this.scaleTransform(transform, bitmap.width / this.target.width, bitmap.height / this.target.height);
-
-      this.applyTransform(transform);
+      this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
 
       this.addBitmapInstance(bitmap, undefined, undefined);
     }
     else {
-
-      this.applyTransform(transform);
 
       this.drawConsolidatedBitmap(bitmap, undefined, undefined);
     }
@@ -1632,22 +1616,16 @@ let Poyo = new class {
 
     this.pushTransform(this.matrix);
 
-    let transform = this.createTransform();
-
-    this.translateTransform(transform, x, y);
+    this.translateTransform(this.matrix, x, y);
 
     if (this.batch_drawing) {
 
       // Scale instanced bitmap to its proper resolution.
-      this.scaleTransform(transform, bitmap.width / this.target.width, bitmap.height / this.target.height);
-
-      this.applyTransform(transform);
+      this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
 
       this.addBitmapInstance(bitmap, undefined, tint);
     }
     else {
-
-      this.applyTransform(transform);
 
       this.drawConsolidatedBitmap(bitmap, undefined, tint);
     }
@@ -1670,22 +1648,16 @@ let Poyo = new class {
 
     this.pushTransform(this.matrix);
 
-    let transform = this.createTransform();
-
-    this.translateTransform(transform, x, y);
+    this.translateTransform(this.matrix, x, y);
 
     if (this.batch_drawing) {
 
       // Scale instanced bitmap to its proper resolution.
-      this.scaleTransform(transform, bitmap.width / this.target.width, bitmap.height / this.target.height);
-
-      this.applyTransform(transform);
+      this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
 
       this.addBitmapInstance(bitmap, texture_offset, undefined);
     }
     else {
-
-      this.applyTransform(transform);
 
       if (bitmap.must_be_flipped) {
 
@@ -1719,22 +1691,16 @@ let Poyo = new class {
 
     this.pushTransform(this.matrix);
 
-    let transform = this.createTransform();
-
-    this.translateTransform(transform, x, y);
+    this.translateTransform(this.matrix, x, y);
 
     if (this.batch_drawing) {
 
       // Scale instanced bitmap to its proper resolution.
-      this.scaleTransform(transform, bitmap.width / this.target.width, bitmap.height / this.target.height);
-
-      this.applyTransform(transform);
+      this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
 
       this.addBitmapInstance(bitmap, texture_offset, tint);
     }
     else {
-
-      this.applyTransform(transform);
 
       if (bitmap.must_be_flipped) {
 
@@ -1757,26 +1723,18 @@ let Poyo = new class {
 
     this.pushTransform(this.matrix);
 
-    let transform = this.createTransform();
-
-    this.translateTransform(transform, draw_x, draw_y);
-
-    this.rotateTransform(transform, theta);
-
-    this.translateTransform(transform, -center_x, -center_y);
+    this.translateTransform(this.matrix, draw_x, draw_y);
+    this.rotateTransform(this.matrix, theta);
+    this.translateTransform(this.matrix, -center_x, -center_y);
 
     if (this.batch_drawing) {
 
       // Scale instanced bitmap to its proper resolution.
-      this.scaleTransform(transform, bitmap.width / this.target.width, bitmap.height / this.target.height);
-
-      this.applyTransform(transform);
+      this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
 
       this.addBitmapInstance(bitmap, undefined, undefined);
     }
     else {
-
-      this.applyTransform(transform);
 
       this.drawConsolidatedBitmap(bitmap, undefined, undefined);
     }
