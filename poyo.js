@@ -1481,6 +1481,9 @@ let Poyo = new class {
 
     this.instanced_bitmap = bitmap;
 
+    // Scale instanced bitmap to its proper resolution.
+    this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
+
     this.instanced_drawing_buffer_data.push(
 
       this.matrix.value[0], this.matrix.value[6], this.matrix.value[7],
@@ -1576,9 +1579,6 @@ let Poyo = new class {
 
     if (this.batch_drawing) {
 
-      // Scale instanced bitmap to its proper resolution.
-      this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
-
       this.addBitmapInstance(bitmap, undefined, undefined);
     }
     else {
@@ -1599,9 +1599,6 @@ let Poyo = new class {
 
     if (this.batch_drawing) {
 
-      // Scale instanced bitmap to its proper resolution.
-      this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
-
       this.addBitmapInstance(bitmap, undefined, undefined);
     }
     else {
@@ -1619,9 +1616,6 @@ let Poyo = new class {
     this.translateTransform(this.matrix, x, y);
 
     if (this.batch_drawing) {
-
-      // Scale instanced bitmap to its proper resolution.
-      this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
 
       this.addBitmapInstance(bitmap, undefined, tint);
     }
@@ -1651,9 +1645,6 @@ let Poyo = new class {
     this.translateTransform(this.matrix, x, y);
 
     if (this.batch_drawing) {
-
-      // Scale instanced bitmap to its proper resolution.
-      this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
 
       this.addBitmapInstance(bitmap, texture_offset, undefined);
     }
@@ -1695,9 +1686,6 @@ let Poyo = new class {
 
     if (this.batch_drawing) {
 
-      // Scale instanced bitmap to its proper resolution.
-      this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
-
       this.addBitmapInstance(bitmap, texture_offset, tint);
     }
     else {
@@ -1728,9 +1716,6 @@ let Poyo = new class {
     this.translateTransform(this.matrix, -center_x, -center_y);
 
     if (this.batch_drawing) {
-
-      // Scale instanced bitmap to its proper resolution.
-      this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
 
       this.addBitmapInstance(bitmap, undefined, undefined);
     }
