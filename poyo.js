@@ -1764,12 +1764,6 @@ let Poyo = new class {
     this.matrix.value = transform.value;
   }
 
-  applyTransform(transform) {
-
-    // Compose internal matrices. This should not be used externally.
-    this.matrix.value = this.multiplyMatrices(this.matrix.value, transform.value);
-  }
-
   scaleTransform(transform, scale_x, scale_y) {
 
     let scaled_matrix = [
