@@ -937,18 +937,27 @@ let Poyo = new class {
 
   createGameLoop(loop_procedure) {
 
+    let then = performance.now();
+
     let animation_request = () => {
 
       window.requestAnimationFrame(animation_request);
 
-      this.pushTransform(this.matrix);
+      let now = performance.now();
 
-      loop_procedure();
+      if (now - then >= 1000 / 60) {
 
-      // Reset matrix each frame.
-      this.popTransform(this.matrix);
+        then = now - (now - then) % (1000 / 60);
 
-      this.clearInputArrays();
+        this.pushTransform(this.matrix);
+
+        loop_procedure();
+
+        // Reset matrix each frame.
+        this.popTransform(this.matrix);
+
+        this.clearInputArrays();
+      }
     };
 
     window.requestAnimationFrame(animation_request);
