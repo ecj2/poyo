@@ -1,0 +1,27 @@
+body {
+
+  background: #fff;
+  font-family: Arial, sans-serif;
+  font-size: 25px;
+  color: #666;
+  line-height: 50px;
+}
+
+#wrap {
+
+  width: 768px;
+  margin: auto;
+}
+
+h1 {
+
+  font-size: 50px;
+  margin: 25px 0 25px 0;
+  font-weight: normal;
+  color: #2b2b2b;
+}
+
+canvas {
+
+  margin-top: 25px;
+}
