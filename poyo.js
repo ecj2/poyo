@@ -153,6 +153,13 @@ let Poyo = new class {
     return this.errors;
   }
 
+  displayError(message) {
+
+    alert(`Error: ${message}!`);
+
+    throw new Error(message + "!");
+  }
+
   initialize(canvas_width, canvas_height) {
 
     // Set the time in which the library was initialized.
