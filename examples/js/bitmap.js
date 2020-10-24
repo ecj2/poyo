@@ -10,7 +10,7 @@ async function loadResources() {
   if (!smile_bitmap) {
 
     // Error.
-    displayError("failed to load smile.png");
+    Poyo.displayError("failed to load smile.png");
   }
 }
 

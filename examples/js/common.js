@@ -38,12 +38,3 @@ function update() {}
 function render() {}
 
 async function loadResources() {}
-
-function displayError(message) {
-
-  // Display the error.
-  alert(`Error: ${message}!`);
-
-  // Kill the script.
-  throw new Error(message + "!");
-}
