@@ -412,9 +412,8 @@ let Poyo = new class {
       }
     `;
 
-    let vertex_shader = this.createShader(vertex_shader_source.trim(), this.WebGL2.VERTEX_SHADER);
-
-    let fragment_shader = this.createShader(fragment_shader_source.trim(), this.WebGL2.FRAGMENT_SHADER);
+    let vertex_shader = this.createShader(vertex_shader_source, this.WebGL2.VERTEX_SHADER);
+    let fragment_shader = this.createShader(fragment_shader_source, this.WebGL2.FRAGMENT_SHADER);
 
     this.shader_program = this.createProgram(vertex_shader, fragment_shader);
 
@@ -425,7 +424,7 @@ let Poyo = new class {
 
     let shader = this.WebGL2.createShader(type);
 
-    this.WebGL2.shaderSource(shader, source);
+    this.WebGL2.shaderSource(shader, source.trim());
 
     this.WebGL2.compileShader(shader);
 
