@@ -1586,45 +1586,7 @@ let Poyo = new class {
     this.WebGL2.drawArrays(this.WebGL2.TRIANGLE_FAN, 0, 4);
   }
 
-  drawBitmap(bitmap, x, y) {
-
-    this.pushTransform(this.matrix);
-
-    this.translateTransform(this.matrix, x, y);
-
-    if (this.batch_drawing) {
-
-      this.addBitmapInstance(bitmap, undefined, undefined);
-    }
-    else {
-
-      this.drawConsolidatedBitmap(bitmap, undefined, undefined);
-    }
-
-    this.popTransform(this.matrix);
-  }
-
-  drawScaledBitmap(bitmap, origin_x, origin_y, scale_width, scale_height, draw_x, draw_y) {
-
-    this.pushTransform(this.matrix);
-
-    this.translateTransform(this.matrix, draw_x, draw_y);
-    this.scaleTransform(this.matrix, scale_width, scale_height);
-    this.translateTransform(this.matrix, -origin_x, -origin_y);
-
-    if (this.batch_drawing) {
-
-      this.addBitmapInstance(bitmap, undefined, undefined);
-    }
-    else {
-
-      this.drawConsolidatedBitmap(bitmap, undefined, undefined);
-    }
-
-    this.popTransform(this.matrix);
-  }
-
-  drawTintedBitmap(bitmap, tint, x, y) {
+  drawBitmap(bitmap, x, y, tint) {
 
     this.pushTransform(this.matrix);
 
@@ -1642,47 +1604,27 @@ let Poyo = new class {
     this.popTransform(this.matrix);
   }
 
-  drawClippedBitmap(bitmap, start_x, start_y, width, height, x, y) {
-
-    let texture_offset = [
-
-      start_x / bitmap.width,
-
-      start_y / bitmap.height,
-
-      (start_x + width) / bitmap.width,
-
-      (start_y + height) / bitmap.height
-    ];
+  drawScaledBitmap(bitmap, origin_x, origin_y, scale_width, scale_height, draw_x, draw_y, tint) {
 
     this.pushTransform(this.matrix);
 
-    this.translateTransform(this.matrix, x, y);
+    this.translateTransform(this.matrix, draw_x, draw_y);
+    this.scaleTransform(this.matrix, scale_width, scale_height);
+    this.translateTransform(this.matrix, -origin_x, -origin_y);
 
     if (this.batch_drawing) {
 
-      this.addBitmapInstance(bitmap, texture_offset, undefined);
+      this.addBitmapInstance(bitmap, undefined, tint);
     }
     else {
 
-      if (bitmap.must_be_flipped) {
-
-        bitmap.must_be_flipped = false;
-
-        this.drawConsolidatedBitmap(bitmap, texture_offset, undefined, true);
-
-        bitmap.must_be_flipped = true;
-      }
-      else {
-
-        this.drawConsolidatedBitmap(bitmap, texture_offset, undefined, false);
-      }
+      this.drawConsolidatedBitmap(bitmap, undefined, tint);
     }
 
     this.popTransform(this.matrix);
   }
 
-  drawTintedClippedBitmap(bitmap, tint, start_x, start_y, width, height, x, y) {
+  drawClippedBitmap(bitmap, start_x, start_y, width, height, x, y, tint) {
 
     let texture_offset = [
 
@@ -1722,7 +1664,7 @@ let Poyo = new class {
     this.popTransform(this.matrix);
   }
 
-  drawRotatedBitmap(bitmap, center_x, center_y, draw_x, draw_y, theta) {
+  drawRotatedBitmap(bitmap, center_x, center_y, draw_x, draw_y, theta, tint) {
 
     this.pushTransform(this.matrix);
 
@@ -1732,11 +1674,11 @@ let Poyo = new class {
 
     if (this.batch_drawing) {
 
-      this.addBitmapInstance(bitmap, undefined, undefined);
+      this.addBitmapInstance(bitmap, undefined, tint);
     }
     else {
 
-      this.drawConsolidatedBitmap(bitmap, undefined, undefined);
+      this.drawConsolidatedBitmap(bitmap, undefined, tint);
     }
 
     this.popTransform(this.matrix);
