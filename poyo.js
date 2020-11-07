@@ -1322,9 +1322,9 @@ let Poyo = new class {
     }
   }
 
-  batchDrawing(hold) {
+  batchDrawing(batch) {
 
-    if (!hold) {
+    if (!batch) {
 
       if (this.batch_drawing) {
 
@@ -1346,7 +1346,7 @@ let Poyo = new class {
       }
     }
 
-    this.batch_drawing = hold;
+    this.batch_drawing = batch;
   }
 
   loadBitmap(file_name) {
