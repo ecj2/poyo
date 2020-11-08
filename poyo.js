@@ -238,7 +238,7 @@ let Poyo = new class {
     }
 
     // Use nearest filtering and clamp textures to edges.
-    this.setNewBitmapFlags([this.MIN_NEAREST, this.MAG_NEAREST, this.WRAP_CLAMP]);
+    this.setNewBitmapFlags(this.MIN_NEAREST, this.MAG_NEAREST, this.WRAP_CLAMP);
 
     // Set default blend mode.
     this.WebGL2.enable(this.WebGL2.BLEND);
@@ -1408,7 +1408,7 @@ let Poyo = new class {
     );
   }
 
-  setNewBitmapFlags(flags) {
+  setNewBitmapFlags(... flags) {
 
     flags.forEach(
 
