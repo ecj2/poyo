@@ -1192,7 +1192,7 @@ let Poyo = new class {
     );
   }
 
-  playSample(sample, volume, speed, repeat, identifier) {
+  playSample(sample, gain, speed, repeat, identifier) {
 
     if (this.sample_instances[identifier] == undefined) {
 
@@ -1202,18 +1202,18 @@ let Poyo = new class {
 
     if (!this.isSamplePlaying(identifier)) {
 
-      this.adjustSample(identifier, volume, speed, repeat);
+      this.adjustSample(identifier, gain, speed, repeat);
 
       this.sample_instances[identifier].play();
     }
   }
 
-  adjustSample(identifier, volume, speed, repeat) {
+  adjustSample(identifier, gain, speed, repeat) {
 
     if (this.sample_instances[identifier] != undefined) {
 
       this.sample_instances[identifier].loop = repeat;
-      this.sample_instances[identifier].volume = volume;
+      this.sample_instances[identifier].volume = gain;
       this.sample_instances[identifier].playbackRate = speed;
     }
   }
@@ -1287,7 +1287,7 @@ let Poyo = new class {
     return this.sample_instances[identifier].playbackRate;
   }
 
-  getSampleVolume(identifier) {
+  getSampleGain(identifier) {
 
     return this.sample_instances[identifier].volume;
   }
