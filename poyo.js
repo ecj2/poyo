@@ -146,6 +146,13 @@ let Poyo = new class {
 
       context: undefined
     };
+
+    this.texture_wrap_s = undefined;
+    this.texture_wrap_t = undefined;
+
+    this.REPEAT = undefined;
+    this.CLAMP_TO_EDGE = undefined;
+    this.MIRRORED_REPEAT = undefined;
   }
 
   getErrors() {
@@ -234,6 +241,14 @@ let Poyo = new class {
 
     // Default to nearest filtering.
     this.setNewBitmapFiltering(this.BITMAP_FILTER_NEAREST, this.BITMAP_FILTER_NEAREST);
+
+    // Define texture wrap enumerations.
+    this.REPEAT = this.WebGL2.REPEAT;
+    this.CLAMP_TO_EDGE = this.WebGL2.CLAMP_TO_EDGE;
+    this.MIRRORED_REPEAT = this.WebGL2.MIRRORED_REPEAT;
+
+    // Default to clamping textures to edge.
+    this.setNewBitmapWrap(this.CLAMP_TO_EDGE, this.CLAMP_TO_EDGE);
 
     // Set default blend mode.
     this.WebGL2.enable(this.WebGL2.BLEND);
@@ -1409,6 +1424,12 @@ let Poyo = new class {
     this.texture_filtering.magnification = magnification;
   }
 
+  setNewBitmapWrap(s, t) {
+
+    this.texture_wrap_s = s;
+    this.texture_wrap_t = t;
+  }
+
   getBitmapWidth(bitmap) {
 
     return bitmap.width;
@@ -1796,8 +1817,8 @@ let Poyo = new class {
 
     this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA, width, height, 0, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, null);
 
-    this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_WRAP_S, this.WebGL2.CLAMP_TO_EDGE);
-    this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_WRAP_T, this.WebGL2.CLAMP_TO_EDGE);
+    this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_WRAP_S, this.texture_wrap_s);
+    this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_WRAP_T, this.texture_wrap_t);
 
     this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_MIN_FILTER, this.texture_filtering.minification);
     this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_MAG_FILTER, this.texture_filtering.magnification);
