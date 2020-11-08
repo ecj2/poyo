@@ -126,9 +126,6 @@ let Poyo = new class {
       magnification: undefined
     };
 
-    this.BITMAP_FILTER_LINEAR = undefined;
-    this.BITMAP_FILTER_NEAREST = undefined;
-
     this.batch_drawing = false;
 
     this.instanced_drawing_buffer = undefined;
@@ -150,9 +147,14 @@ let Poyo = new class {
     this.texture_wrap_s = undefined;
     this.texture_wrap_t = undefined;
 
-    this.REPEAT = undefined;
-    this.CLAMP_TO_EDGE = undefined;
-    this.MIRRORED_REPEAT = undefined;
+    this.MIN_LINEAR = 0;
+    this.MAG_LINEAR = 1;
+    this.MIN_NEAREST = 2;
+    this.MAG_NEAREST = 3;
+
+    this.WRAP_CLAMP = 4;
+    this.WRAP_REPEAT = 5;
+    this.WRAP_MIRROR = 6;
   }
 
   getErrors() {
@@ -235,20 +237,8 @@ let Poyo = new class {
       return;
     }
 
-    // Define filtering enumerations.
-    this.BITMAP_FILTER_LINEAR = this.WebGL2.LINEAR;
-    this.BITMAP_FILTER_NEAREST = this.WebGL2.NEAREST;
-
-    // Default to nearest filtering.
-    this.setNewBitmapFiltering(this.BITMAP_FILTER_NEAREST, this.BITMAP_FILTER_NEAREST);
-
-    // Define texture wrap enumerations.
-    this.REPEAT = this.WebGL2.REPEAT;
-    this.CLAMP_TO_EDGE = this.WebGL2.CLAMP_TO_EDGE;
-    this.MIRRORED_REPEAT = this.WebGL2.MIRRORED_REPEAT;
-
-    // Default to clamping textures to edge.
-    this.setNewBitmapWrap(this.CLAMP_TO_EDGE, this.CLAMP_TO_EDGE);
+    // Use nearest filtering and clamp textures to edges.
+    this.setNewBitmapFlags([this.MIN_NEAREST, this.MAG_NEAREST, this.WRAP_CLAMP]);
 
     // Set default blend mode.
     this.WebGL2.enable(this.WebGL2.BLEND);
@@ -1418,16 +1408,54 @@ let Poyo = new class {
     );
   }
 
-  setNewBitmapFiltering(minification, magnification) {
+  setNewBitmapFlags(flags) {
 
-    this.texture_filtering.minification = minification;
-    this.texture_filtering.magnification = magnification;
-  }
+    flags.forEach(
 
-  setNewBitmapWrap(s, t) {
+      (flag) => {
 
-    this.texture_wrap_s = s;
-    this.texture_wrap_t = t;
+        switch (flag) {
+
+          case this.MIN_LINEAR:
+
+            this.texture_filtering.minification = this.WebGL2.LINEAR;
+          break;
+
+          case this.MAG_LINEAR:
+
+            this.texture_filtering.magnification = this.WebGL2.LINEAR;
+          break;
+
+          case this.MIN_NEAREST:
+
+            this.texture_filtering.minification = this.WebGL2.NEAREST;
+          break;
+
+          case this.MAG_NEAREST:
+
+            this.texture_filtering.magnification = this.WebGL2.NEAREST;
+          break;
+
+          case this.WRAP_CLAMP:
+
+            this.texture_wrap_s = this.WebGL2.CLAMP_TO_EDGE;
+            this.texture_wrap_t = this.WebGL2.CLAMP_TO_EDGE;
+          break;
+
+          case this.WRAP_REPEAT:
+
+            this.texture_wrap_s = this.WebGL2.REPEAT;
+            this.texture_wrap_t = this.WebGL2.REPEAT;
+          break;
+
+          case this.WRAP_MIRROR:
+
+            this.texture_wrap_s = this.WebGL2.MIRRORED_REPEAT;
+            this.texture_wrap_t = this.WebGL2.MIRRORED_REPEAT;
+          break;
+        }
+      }
+    );
   }
 
   getBitmapWidth(bitmap) {
