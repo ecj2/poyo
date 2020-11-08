@@ -79,6 +79,7 @@ let Poyo = new class {
     this.KEY_DOWN = 40;
     this.KEY_LEFT = 37;
     this.KEY_RIGHT = 39;
+    this.KEY_SPACE = 32;
 
     this.TEXT_ALIGN_LEFT = "left";
     this.TEXT_ALIGN_RIGHT = "right";
