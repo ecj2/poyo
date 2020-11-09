@@ -118,8 +118,8 @@ function render() {
 
     case 4:
 
-      // Draw the bitmap with a red tint in the center of the canvas.
-      Poyo.drawBitmap(bitmap, (canvas_w - bitmap_w) / 2, (canvas_h - bitmap_h) / 2, Poyo.createColor(255, 0, 0));
+      // Draw the bitmap with a magenta tint in the center of the canvas.
+      Poyo.drawBitmap(bitmap, (canvas_w - bitmap_w) / 2, (canvas_h - bitmap_h) / 2, Poyo.createColor(255, 0, 255));
 
       text = "Tinted";
     break;
