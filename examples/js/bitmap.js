@@ -47,6 +47,7 @@ function update() {
 
     // Reset scale and rotation.
     scale = 1;
+    scale_direction = -1;
     theta = 0.0;
 
     if (state > 4) {
@@ -69,7 +70,7 @@ function update() {
 
     case 2:
 
-      theta = Poyo.getTime();
+      theta += 0.01;
     break;
   }
 }
