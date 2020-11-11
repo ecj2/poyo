@@ -77,7 +77,7 @@ Returns a `WebGLTexture` object belonging to `bitmap`.
 **Poyo.getBitmapFramebuffer()**
 
 ```js
-Poyo.getBitmapFramebuffer()**
+Poyo.getBitmapFramebuffer()
 ```
 
 Returns a `WebGLFramebuffer` object belonging to `bitmap`.
@@ -213,3 +213,22 @@ Poyo.batchDrawing(false);
 ```
 
 This method can only be used to batch a single texture from a single bitmap at a time. In other words, you can not interweave multiple bitmaps in a batch, as only the final source texture is sent to the GPU. This method can be used when drawing text as well.
+
+---
+
+**Poyo.setNewBitmapFlags()**
+
+```js
+Poyo.setNewBitmapFlags(... flags)
+```
+
+Sets flags to be applied when loading or creating new bitmaps. Values include `Poyo.MIN_NEAREST`, `Poyo.MIN_LINEAR`, `Poyo.MAG_NEAREST`, `Poyo.MAG_LINEAR`, `Poyo.WRAP_CLAMP`, `Poyo.WRAP_REPEAT`, and `Poyo.WRAP_MIRROR`.
+
+```js
+// Use linear magnification filtering and mirrored texture wrapping.
+Poyo.setNewBitmapFlags(Poyo.MAG_LINEAR, Poyo.WRAP_MIRROR);
+
+let bitmap = await Poyo.loadBitmap("example.png");
+```
+
+Bitmaps default to `Poyo.MIN_NEAREST`, `Poyo.MAG_NEAREST`, and `Poyo.WRAP_CLAMP`. The wrap constants only make a difference when used in bespoke shaders.
