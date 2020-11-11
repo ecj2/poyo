@@ -1193,89 +1193,89 @@ let Poyo = new class {
     );
   }
 
-  playSample(sample, gain, speed, repeat, identifier) {
+  playSample(sample, gain, speed, repeat, reference) {
 
-    if (this.sample_instances[identifier] == undefined) {
+    if (this.sample_instances[reference] == undefined) {
 
       // Create a new instance of the sample.
-      this.sample_instances[identifier] = sample.element.cloneNode();
+      this.sample_instances[reference] = sample.element.cloneNode();
     }
 
-    if (!this.isSamplePlaying(identifier)) {
+    if (!this.isSamplePlaying(reference)) {
 
-      this.adjustSample(identifier, gain, speed, repeat);
+      this.adjustSample(reference, gain, speed, repeat);
 
-      this.sample_instances[identifier].play();
-    }
-  }
-
-  adjustSample(identifier, gain, speed, repeat) {
-
-    if (this.sample_instances[identifier] != undefined) {
-
-      this.sample_instances[identifier].loop = repeat;
-      this.sample_instances[identifier].volume = gain;
-      this.sample_instances[identifier].playbackRate = speed;
+      this.sample_instances[reference].play();
     }
   }
 
-  stopSample(identifier) {
+  adjustSample(reference, gain, speed, repeat) {
 
-    if (this.sample_instances[identifier] != undefined) {
+    if (this.sample_instances[reference] != undefined) {
 
-      if (this.isSamplePlaying(identifier)) {
+      this.sample_instances[reference].loop = repeat;
+      this.sample_instances[reference].volume = gain;
+      this.sample_instances[reference].playbackRate = speed;
+    }
+  }
 
-        this.pauseSample(identifier);
+  stopSample(reference) {
 
-        this.sample_instances[identifier].currentTime = 0;
+    if (this.sample_instances[reference] != undefined) {
+
+      if (this.isSamplePlaying(reference)) {
+
+        this.pauseSample(reference);
+
+        this.sample_instances[reference].currentTime = 0;
       }
     }
   }
 
-  pauseSample(identifier) {
+  pauseSample(reference) {
 
-    if (this.sample_instances[identifier] != undefined) {
+    if (this.sample_instances[reference] != undefined) {
 
-      if (this.isSamplePlaying(identifier)) {
+      if (this.isSamplePlaying(reference)) {
 
-        this.sample_instances[identifier].pause();
+        this.sample_instances[reference].pause();
       }
     }
   }
 
-  resumeSample(identifier) {
+  resumeSample(reference) {
 
-    if (this.sample_instances[identifier] != undefined) {
+    if (this.sample_instances[reference] != undefined) {
 
-      this.sample_instances[identifier].play();
+      this.sample_instances[reference].play();
     }
   }
 
-  isSamplePaused(identifier) {
+  isSamplePaused(reference) {
 
-    if (this.sample_instances[identifier] == undefined) {
+    if (this.sample_instances[reference] == undefined) {
 
-      // There exists no sample instance matching the specified identifier.
+      // There exists no sample instance matching the specified reference.
       return false;
     }
 
-    return this.sample_instances[identifier].paused;
+    return this.sample_instances[reference].paused;
   }
 
-  isSamplePlaying(identifier) {
+  isSamplePlaying(reference) {
 
-    if (this.sample_instances[identifier] == undefined) {
+    if (this.sample_instances[reference] == undefined) {
 
-      // There exists no sample instance matching the specified identifier.
+      // There exists no sample instance matching the specified reference.
       return false;
     }
 
-    if (this.isSamplePaused(identifier)) {
+    if (this.isSamplePaused(reference)) {
 
       return false;
     }
 
-    if (this.sample_instances[identifier].currentTime < this.sample_instances[identifier].duration) {
+    if (this.sample_instances[reference].currentTime < this.sample_instances[reference].duration) {
 
       return true;
     }
@@ -1283,19 +1283,19 @@ let Poyo = new class {
     return false;
   }
 
-  getSampleSpeed(identifier) {
+  getSampleSpeed(reference) {
 
-    return this.sample_instances[identifier].playbackRate;
+    return this.sample_instances[reference].playbackRate;
   }
 
-  getSampleGain(identifier) {
+  getSampleGain(reference) {
 
-    return this.sample_instances[identifier].volume;
+    return this.sample_instances[reference].volume;
   }
 
-  getSampleRepeat(identifier) {
+  getSampleRepeat(reference) {
 
-    return this.sample_instances[identifier].loop;
+    return this.sample_instances[reference].loop;
   }
 
   getSampleDuration(sample) {
@@ -1309,22 +1309,22 @@ let Poyo = new class {
     return sample.element.duration;
   }
 
-  getSampleSeek(identifier) {
+  getSampleSeek(reference) {
 
-    if (this.sample_instances[identifier] == undefined) {
+    if (this.sample_instances[reference] == undefined) {
 
       // Invalid sample.
       return 0;
     }
 
-    return this.sample_instances[identifier].currentTime;
+    return this.sample_instances[reference].currentTime;
   }
 
-  setSampleSeek(identifier, seek) {
+  setSampleSeek(reference, seek) {
 
-    if (this.sample_instances[identifier] != undefined) {
+    if (this.sample_instances[reference] != undefined) {
 
-      this.sample_instances[identifier].currentTime = seek;
+      this.sample_instances[reference].currentTime = seek;
     }
   }
 
@@ -1654,12 +1654,12 @@ let Poyo = new class {
     this.popTransform(this.matrix);
   }
 
-  drawScaledBitmap(bitmap, origin_x, origin_y, scale_width, scale_height, draw_x, draw_y, tint) {
+  drawScaledBitmap(bitmap, origin_x, origin_y, scale_x, scale_y, draw_x, draw_y, tint) {
 
     this.pushTransform(this.matrix);
 
     this.translateTransform(this.matrix, draw_x, draw_y);
-    this.scaleTransform(this.matrix, scale_width, scale_height);
+    this.scaleTransform(this.matrix, scale_x, scale_y);
     this.translateTransform(this.matrix, -origin_x, -origin_y);
 
     if (this.batch_drawing) {
@@ -1807,13 +1807,13 @@ let Poyo = new class {
     transform.value = this.multiplyMatrices(transform.value, translated_matrix);
   }
 
-  shearTransform(transform, x_theta, y_theta) {
+  shearTransform(transform, theta_x, theta_y) {
 
     let sheared_matrix = [
 
-      1, Math.atan(y_theta), 0,
+      1, Math.atan(theta_y), 0,
 
-      -Math.atan(x_theta), 1, 0,
+      -Math.atan(theta_x), 1, 0,
 
       0, 0, 1
     ];

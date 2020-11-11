@@ -155,7 +155,7 @@ Poyo.drawBitmap(bitmap, 150, 400, Poyo.createColor(255, 255, 255, 128));
 **Poyo.drawScaledBitmap()**
 
 ```js
-Poyo.drawScaledBitmap(bitmap, origin_x, origin_y, scale_width, scale_height, draw_x, draw_y, tint)
+Poyo.drawScaledBitmap(bitmap, origin_x, origin_y, scale_x, scale_y, draw_x, draw_y, tint)
 ```
 
 Draws a scaled bitmap at the given coordinates relative to its own origin with an optional tint.
