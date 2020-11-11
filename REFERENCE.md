@@ -64,7 +64,7 @@ async function loadResources() {
 
   if (!bitmap) {
 
-    // Error.
+    // Error...
   }
 }
 ```
@@ -279,3 +279,70 @@ let bitmap = await Poyo.loadBitmap("example.png");
 ```
 
 Bitmaps default to `Poyo.MIN_NEAREST`, `Poyo.MAG_NEAREST`, and `Poyo.WRAP_CLAMP`. The wrap constants only make a difference when used in bespoke shaders.
+
+---
+
+## Fonts and Text
+
+Fonts can be used to draw text.
+
+**Poyo.loadFont()**
+
+```js
+Poyo.loadFont(file_name, style)
+```
+
+Loads the given font with an optional style. The suggested format is TTF. Styles include `Poyo.FONT_STYLE_BOLD`, `Poyo.FONT_STYLE_ITALIC`, and `Poyo.FONT_STYLE_NORMAL` (default). Returns an object literal upon success and `false` on failure.
+
+Like with `Poyo.loadBitmap()`, this method must be called within an `async` function using the `await` keyword, like so:
+
+```js
+let font;
+
+async function loadResources() {
+
+  font = await Poyo.loadFont("example.ttf");
+
+  if (!font) {
+
+    // Error...
+  }
+}
+```
+
+---
+
+**Poyo.loadFontFace()**
+
+```js
+Poyo.loadFontFace(font_family_name, style)
+```
+
+Loads the given font family already known to the browser with an optional style. The style options are the same as with `Poyo.loadFont()`, and this always returns an object literal. Unlike `Poyo.loadFont()`, this can be called outside of an `async` function and without the `await` keyword.
+
+```js
+let font;
+
+function loadResources() {
+
+  // Load the Arial font family, which is already known to the browser, with a bold style.
+  font = Poyo.loadFontFace("Arial", Poyo.FONT_STYLE_BOLD);
+}
+```
+
+---
+
+**Poyo.drawText()**
+
+```js
+Poyo.drawText(font, color, size, x, y, alignment, text)
+```
+
+Draws text of a given color, size, and alignment, at the given coordinates, using the given font.
+
+```js
+// Draw left-aligned "Hello!" in red at the target's origin, 50 pixels in size.
+Poyo.drawText(font, Poyo.createColor(255, 0, 0), 50, 0, 0, Poyo.TEXT_ALIGN_LEFT, "Hello!")
+```
+
+Values for `alignment` include `Poyo.TEXT_ALIGN_LEFT`, `Poyo.TEXT_ALIGN_RIGHT`, and `Poyo.TEXT_ALIGN_CENTER`.
