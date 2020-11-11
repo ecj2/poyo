@@ -1,3 +1,50 @@
+# Poyo Reference
+
+Welcome to Poyo's reference document. This document briefly details the library's core methods and functionality.
+
+---
+
+## Colors
+
+Colors are used to clear draw targets, tint bitmaps, and shade text.
+
+**Poyo.createColor()**
+
+```js
+Poyo.createColor(r, g, b, a)
+```
+
+Returns an object literal containing color values. Each channel ranges from 0 to 255, with `a` representing an optional alpha.
+
+```js
+let blue = Poyo.createColor(0, 0, 255);
+let translucent_yellow = Poyo.createColor(255, 255, 0, 128);
+```
+
+**Poyo.clearToColor()**
+
+```js
+Poyo.clearToColor(color)
+```
+
+Clears the current target to a given color.
+
+```js
+function render() {
+
+  // Clear the frame to black.
+  Poyo.clearToColor(Poyo.createColor(0, 0, 0));
+
+  // Draw the rest of the frame here...
+}
+```
+
+---
+
+## Bitmaps
+
+Bitmaps are images that can be drawn to the screen.
+
 **Poyo.loadBitmap()**
 
 ```js
