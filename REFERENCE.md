@@ -21,6 +21,8 @@ let blue = Poyo.createColor(0, 0, 255);
 let translucent_yellow = Poyo.createColor(255, 255, 0, 128);
 ```
 
+---
+
 **Poyo.clearToColor()**
 
 ```js
@@ -346,3 +348,185 @@ Poyo.drawText(font, Poyo.createColor(255, 0, 0), 50, 0, 0, Poyo.TEXT_ALIGN_LEFT,
 ```
 
 Values for `alignment` include `Poyo.TEXT_ALIGN_LEFT`, `Poyo.TEXT_ALIGN_RIGHT`, and `Poyo.TEXT_ALIGN_CENTER`.
+
+---
+
+## Samples
+
+As far as Poyo is concerned, a _sample_ is a catch-all referring to the management of an audio file.
+
+---
+
+**Poyo.loadSample()**
+
+```js
+Poyo.loadSample(file_name)
+```
+
+Loads an audio file and returns a `promise`. The `promise` resolves to an object literal that can be used with Poyo's sample methods on success, or `false` on error. MP3 is the suggested format.
+
+This method must be called from within an `async` function using the `await` keyword, like so:
+
+```js
+let sample;
+
+async function loadResources() {
+
+  sample = await Poyo.loadSample("example.mp3");
+
+  if (!sample) {
+
+    // Error...
+  }
+}
+```
+
+---
+
+**Poyo.playSample()**
+
+```js
+Poyo.playSample(sample, gain, speed, repeat, reference)
+```
+
+Plays a given sample at a given gain and speed, and dictates whether or not to repeat upon finishing play-back, and also specifies a reference to use with other sample methods.
+
+The value for `gain` can be anything between 0.0 and 1.0, with 0.0 being muted and 1.0 being full gain. The value for `speed` can be between 0.0 and 2.0, with 0.0 being stopped, 1.0 being normal speed, and 2.0 being twice the speed. The value for `repeat` must be `true` to repeat upon the sample finishing playing, or `false` to play only once. The value for `reference` should be a unique number, which can later be used to modify a playing sample.
+
+```js
+// Play the background sample at half gain, full speed, and repeat.
+Poyo.playSample(background_sample, 0.5, 1.0, true, 0);
+```
+
+---
+
+**Poyo.adjustSample()**
+
+```js
+Poyo.adjustSample(reference, gain, speed, repeat)
+```
+
+Adjusts the values of a sample that is being played by means of its `reference`.
+
+```js
+function update() {
+
+  // Increase gain as the mouse moves left and right across the canvas.
+  let gain = Poyo.getMouseX() / Poyo.getCanvasWidth();
+
+  // Increase speed as the mouse moves up and down the canvas.
+  let speed = (Poyo.getMouseY() / Poyo.getCanvasHeight()) * 2;
+
+  Poyo.adjustSample(0, gain, speed, true);
+}
+```
+
+---
+
+**Poyo.stopSample()**
+
+```js
+Poyo.stopSample(reference)
+```
+
+Stops a given sample.
+
+---
+
+**Poyo.pauseSample()**
+
+```js
+Poyo.pauseSample(reference)
+```
+
+Pauses a given sample at its current seek.
+
+---
+
+**Poyo.resumeSample()**
+
+```js
+Poyo.resumeSample(reference)
+```
+
+Resumes a given sample from where it left off.
+
+---
+
+**Poyo.isSamplePaused()**
+
+```js
+Poyo.isSamplePaused(reference)
+```
+
+Returns `true` if `reference` sample is paused, or `false` otherwise.
+
+---
+
+**Poyo.isSamplePlaying()**
+
+```js
+Poyo.isSamplePlaying(reference)
+```
+
+Returns `true` if `reference` sample is playing, or `false` otherwise.
+
+---
+
+**Poyo.getSampleSpeed()**
+
+```js
+Poyo.getSampleSpeed(reference)
+```
+
+Returns the play-back speed of the given `reference` sample. The value ranges from 0.0 to 2.0.
+
+---
+
+**Poyo.getSampleGain()**
+
+```js
+Poyo.getSampleGain(reference)
+```
+
+Returns the gain of the given `reference` sample, between 0.0 and 1.0.
+
+---
+
+**Poyo.getSampleRepeat()**
+
+```js
+Poyo.getSampleRepeat(reference)
+```
+
+Returns `true` if the given `reference` sample is set to repeat, or `false` otherwise.
+
+---
+
+**Poyo.getSampleDuration()**
+
+```js
+Poyo.getSampleDuration(sample)
+```
+
+Returns the duration in seconds of the given sample.
+
+---
+
+**Poyo.getSampleSeek()**
+
+```js
+Poyo.getSampleSeek(reference)
+```
+
+Returns the seek in seconds of the given `reference` sample.
+
+---
+
+**Poyo.setSampleSeek()**
+
+```js
+Poyo.setSampleSeek(reference, seek)
+```
+
+Sets the `reference` sample's seek to `seek`.
