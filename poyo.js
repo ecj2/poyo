@@ -18,7 +18,9 @@ let Poyo = new class {
 
       pressed: [],
 
-      released: []
+      released: [],
+
+      focused: false
     };
 
     this.keyboard = {
