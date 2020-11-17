@@ -76,7 +76,24 @@ Returns `true` if the mouse is hidden on the canvas, or `false` otherwise.
 Poyo.lockMouse()
 ```
 
-???
+Locks the mouse to the canvas, allowing the mouse's X and Y values to dip outside of the bounds of the canvas. For compatibility with Firefox, it is suggested to wrap this method call inside of an event listener, like so:
+
+```js
+function main() {
+
+  // Initialize, load resources, et cetera...
+
+  Poyo.getCanvas().addEventListener("click", handleMouseClick);
+}
+
+function handleMouseClick() {
+
+  if (condition_to_lock_mouse) {
+
+    Poyo.lockMouse();
+  }
+}
+```
 
 ---
 
