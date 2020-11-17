@@ -4,9 +4,167 @@ Welcome to Poyo's reference document. This document briefly details the library'
 
 ---
 
+## Mouse
+
+Poyo sports a multitude of easy-to-use methods to help you interface with the mouse.
+
+---
+
+**Poyo.getMouseX()**
+
+```js
+Poyo.getMouseX()
+```
+
+Returns the mouse's horizontal offset relative to the canvas.
+
+---
+
+**Poyo.getMouseY()**
+
+```js
+Poyo.getMouseY()
+```
+
+Returns the mouse's vertical offset relative to the canvas.
+
+---
+
+**Poyo.getMouseWheel()**
+
+```js
+Poyo.getMouseWheel()
+```
+
+Returns `1` when scrolling forward, `-1` when scrolling backward, and `0` when not scrolling the mouse wheel at all.
+
+---
+
+**Poyo.hideMouse()**
+
+```js
+Poyo.hideMouse()
+```
+
+Hides the mouse cursor on the canvas.
+
+---
+
+**Poyo.showMouse()**
+
+```js
+Poyo.showMouse()
+```
+
+Shows the mouse cursor on the canvas.
+
+---
+
+**Poyo.isMouseHidden()**
+
+```js
+Poyo.isMouseHidden()
+```
+
+Returns `true` if the mouse is hidden on the canvas, or `false` otherwise.
+
+---
+
+**Poyo.lockMouse()**
+
+```js
+Poyo.lockMouse()
+```
+
+???
+
+---
+
+**Poyo.unlockMouse()**
+
+```js
+Poyo.unlockMouse()
+```
+
+Unlocks the mouse from the canvas.
+
+---
+
+**Poyo.isMouseLocked()**
+
+```js
+Poyo.isMouseLocked()
+```
+
+Returns `true` if the mouse is locked to the canvas, or `false` otherwise.
+
+---
+
+**Poyo.isMouseFocused()**
+
+```js
+Poyo.isMouseFocused()
+```
+
+Returns `true` if the mouse is hovering over the canvas, or `false` if not.
+
+---
+
+**Poyo.isMouseUp()**
+
+```js
+Poyo.isMouseUp(button)
+```
+
+Returns `true` if the given mouse `button` is not being held down, or `false` otherwise. Values include `Poyo.MOUSE_LEFT`, `Poyo.MOUSE_MIDDLE`, `Poyo.MOUSE_RIGHT`, and `Poyo.MOUSE_ANY`.
+
+---
+
+**Poyo.isMouseDown()**
+
+```js
+Poyo.isMouseDown(button)
+```
+
+Returns `true` if the given mouse `button` is being held down, or `false` otherwise. Values include `Poyo.MOUSE_LEFT`, `Poyo.MOUSE_MIDDLE`, `Poyo.MOUSE_RIGHT`, and `Poyo.MOUSE_ANY`.
+
+```js
+function update() {
+
+  if (Poyo.isMouseDown(Poyo.MOUSE_LEFT)) {
+
+    Player.useWeapon();
+  }
+}
+```
+
+---
+
+**Poyo.isMousePressed()**
+
+```js
+Poyo.isMousePressed(button)
+```
+
+Returns `true` if the given mouse `button` was pressed since the last frame, or `false` otherwise. Values include `Poyo.MOUSE_LEFT`, `Poyo.MOUSE_MIDDLE`, `Poyo.MOUSE_RIGHT`, and `Poyo.MOUSE_ANY`.
+
+---
+
+**Poyo.isMouseReleased()**
+
+```js
+Poyo.isMouseReleased(button)
+```
+
+Returns `true` if the given mouse `button` was pressed and released since the last frame, or `false` otherwise. Values include `Poyo.MOUSE_LEFT`, `Poyo.MOUSE_MIDDLE`, `Poyo.MOUSE_RIGHT`, and `Poyo.MOUSE_ANY`.
+
+---
+
 ## Colors
 
 Colors are used to clear draw targets, tint bitmaps, and shade text.
+
+---
 
 **Poyo.createColor()**
 
@@ -46,6 +204,8 @@ function render() {
 ## Bitmaps
 
 Bitmaps are images that can be drawn to the screen.
+
+---
 
 **Poyo.loadBitmap()**
 
@@ -287,6 +447,8 @@ Bitmaps default to `Poyo.MIN_NEAREST`, `Poyo.MAG_NEAREST`, and `Poyo.WRAP_CLAMP`
 ## Fonts and Text
 
 Fonts can be used to draw text.
+
+---
 
 **Poyo.loadFont()**
 
