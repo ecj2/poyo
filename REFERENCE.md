@@ -177,6 +177,68 @@ Returns `true` if the given mouse `button` was pressed and released since the la
 
 ---
 
+## Keyboard
+
+Just like with mouse routines, Poyo sports several convenient methods for interfacing with the keyboard.
+
+---
+
+**Poyo.isKeyUp()**
+
+```js
+Poyo.isKeyUp(key)
+```
+
+Returns `true` if the given `key` is not being held down, or `false` otherwise.
+
+---
+
+**Poyo.isKeyDown()**
+
+```js
+Poyo.isKeyDown(key)
+```
+
+Returns `true` if the given `key` is being held down, or `false` otherwise.
+
+```js
+function update() {
+
+  if (Poyo.isKeyDown(Poyo.KEY_W)) {
+
+    Rocket.applyThrust();
+  }
+}
+```
+
+---
+
+**Poyo.isKeyPressed()**
+
+```js
+Poyo.isKeyPressed(key)
+```
+
+Returns `true` if the given `key` was pressed since the last frame, or `false` otherwise.
+
+---
+
+**Poyo.isKeyReleased()**
+
+```js
+Poyo.isKeyReleased(key)
+```
+
+Returns `true` if the given `key` was released since the last frame, or `false` otherwise.
+
+---
+
+**Poyo.KEY_\***
+
+Key codes include `Poyo.KEY_0` to `Poyo.KEY_9`; `Poyo.KEY_A` to `Poyo.KEY_Z`; `Poyo.KEY_UP`, `Poyo.KEY_DOWN`, `Poyo.KEY_LEFT`, and `Poyo.KEY_RIGHT` for the arrow keys; and `Poyo.KEY_SPACE` and `Poyo.KEY_ANY`.
+
+---
+
 ## Colors
 
 Colors are used to clear draw targets, tint bitmaps, and shade text.
@@ -404,7 +466,7 @@ Poyo.getDefaultDrawTarget()
 Returns a value representing the default framebuffer. This is equivalent to `null`.
 
 ```js
-// Set future drawing to take place on bitmap rathern than the canvas.
+// Set future drawing to take place on bitmap rather than the canvas.
 Poyo.setDrawTarget(bitmap);
 
 // Draw here...
