@@ -938,3 +938,96 @@ Poyo.setSampleSeek(reference, seek)
 ```
 
 Sets the `reference` sample's seek to `seek`.
+
+---
+
+## Shaders
+
+A `shader` is a small program that is executed by the GPU. Fundamentally, a vertex shader and a fragment shader are required to produce a shader program. Poyo offers a few methods to aid in creating shaders.
+
+---
+
+**Poyo.getContext()**
+
+```js
+Poyo.getContext()
+```
+
+Returns a `WebGL2` context, which can be used to interface with the WebGL 2 API.
+
+---
+
+**Poyo.createShader()**
+
+```js
+Poyo.createShader(source, type)
+```
+
+Attempts to create a shader from the given `source` of the given `type`. The `type` can be `WebGL2.VERTEX_SHADER` or `WebGL2.FRAGMENT_SHADER`. This method returns a compiled shader object upon success, or `false` on failure.
+
+```js
+// Get the WebGL 2 context.
+let WebGL2 = Poyo.getContext();
+
+let fragment_shader_source = `
+
+  #version 300 es
+
+  precision mediump float;
+
+  out vec4 output_color;
+
+  void main(void) {
+
+    output_color = vec4(1.0, 0.0, 0.0, 1.0);
+  }
+`;
+
+let fragment_shader = Poyo.createShader(fragment_shader_source, WebGL2.FRAGMENT_SHADER);
+
+if (!fragment_shader) {
+
+  // Error...
+}
+```
+
+---
+
+**Poyo.createProgram()**
+
+```js
+Poyo.createProgram(vertex_shader, fragment_shader)
+```
+
+Links compiled `vertex_shader` and `fragment_shader` and returns a shader program upon success, or `false` on failure.
+
+```js
+// Get the WebGL 2 context.
+let WebGL2 = Poyo.getContext();
+
+// Define shader sources.
+let vertex_shader_source = "...";
+let fragment_shader_source = "...";
+
+// Compile shaders.
+let vertex_shader = Poyo.createShader(vertex_shader_source, WebGL2.VERTEX_SHADER);
+let fragment_shader = Poyo.createShader(fragment_shader_source, WebGL2.FRAGMENT_SHADER);
+
+if (!vertex_shader || !fragment_shader) {
+
+  // Error...
+}
+
+// Link the shaders into a program.
+let program = Poyo.createProgram(vertex_shader, fragment_shader);
+
+if (!program) {
+
+  // Error...
+}
+
+// Use the program.
+WebGL2.useProgram(program);
+
+// ...
+```
