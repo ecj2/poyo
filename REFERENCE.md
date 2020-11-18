@@ -1162,3 +1162,27 @@ Poyo.getTargetHeight()
 ```
 
 Returns the current draw target's height in pixels.
+
+---
+
+**Poyo.createGameLoop()**
+
+```js
+Poyo.createGameLoop(loop_procedure)
+```
+
+Sets the function to be called 60 times per second as the game-loop.
+
+```js
+function main() {
+
+  // ...
+
+  Poyo.createGameLoop(loop);
+}
+
+function loop() {
+
+  // Update and render here...
+}
+```
