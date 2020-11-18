@@ -1122,3 +1122,43 @@ Poyo.getCanvas()
 ```
 
 Returns a reference to the HTML canvas element. This is equivalent to `document.getElementById("poyo")`.
+
+---
+
+**Poyo.getCanvasWidth()**
+
+```js
+Poyo.getCanvasWidth()
+```
+
+Returns the width of the canvas in pixels.
+
+---
+
+**Poyo.getCanvasHeight()**
+
+```js
+Poyo.getCanvasHeight()
+```
+
+Returns the height of the canvas in pixels.
+
+---
+
+**Poyo.getTargetWidth()**
+
+```js
+Poyo.getTargetWidth()
+```
+
+Returns the current draw target's width in pixels.
+
+---
+
+**Poyo.getTargetHeight()**
+
+```js
+Poyo.getTargetHeight()
+```
+
+Returns the current draw target's height in pixels.
