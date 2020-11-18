@@ -1031,3 +1031,83 @@ WebGL2.useProgram(program);
 
 // ...
 ```
+
+---
+
+## Miscellaneous
+
+Here are some other methods that don't quite fit into their own categories.
+
+---
+
+**Poyo.initialize()**
+
+```js
+Poyo.initialize(canvas_width, canvas_height)
+```
+
+Initializes the library and sets the canvas' dimensions to `canvas_width` and `canvas_height` in pixels. It returns `true` upon success, or `false` upon failure. This method must be called before most of the library's other methods and properties can be used.
+
+---
+
+**Poyo.getErrors()**
+
+```js
+Poyo.getErrors()
+```
+
+Returns an array of errors collected during initialization.
+
+```js
+if (!Poyo.initialize(768, 432)) {
+
+  Poyo.getErrors().forEach(
+
+    (error) => {
+
+      // Cycle through the errors.
+      Poyo.displayError(error);
+    }
+  );
+}
+```
+
+---
+
+**Poyo.displayError()**
+
+```js
+Poyo.displayError(message)
+```
+
+Produces an alert with the message of `message`, and throws an error to kill the script. This should be used when catastrophic errors occur, like during initialization failure or when resources fail to load.
+
+---
+
+**Poyo.getVersion()**
+
+```js
+Poyo.getVersion()
+```
+
+Returns a number representing the library's version.
+
+---
+
+**Poyo.getTime()**
+
+```js
+Poyo.getTime()
+```
+
+Returns the number of seconds elapsed since `Poyo.initialize()` was called.
+
+---
+
+**Poyo.getCanvas()**
+
+```js
+Poyo.getCanvas()
+```
+
+Returns a reference to the HTML canvas element. This is equivalent to `document.getElementById("poyo")`.
