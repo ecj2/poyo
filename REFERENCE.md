@@ -2,6 +2,17 @@
 
 Welcome to Poyo's reference document. This document briefly details the library's core methods and functionality.
 
+**Table of Contents**
+- [Mouse](#mouse)
+- [Keyboard](#keyboard)
+- [Colors](#colors)
+- [Bitmaps](#bitmaps)
+- [Fonts and Text](#fonts-and-text)
+- [Transformations](#transformations)
+- [Samples](#samples)
+- [Shaders](#shaders)
+- [Miscellaneous](#miscellaneous)
+
 ---
 
 ## Mouse
