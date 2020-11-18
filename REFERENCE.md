@@ -592,6 +592,173 @@ Values for `alignment` include `Poyo.TEXT_ALIGN_LEFT`, `Poyo.TEXT_ALIGN_RIGHT`, 
 
 ---
 
+## Transformations
+
+Poyo sports a handful of methods to perform affine transformations, like translation, scaling, rotation, and shearing.
+
+---
+
+**Poyo.createTransform()**
+
+```js
+Poyo.createTransform()
+```
+
+Returns an object literal containing an identity transform and an empty stack array.
+
+```js
+let transform = Poyo.createTransform();
+```
+
+---
+
+**Poyo.useTransform()**
+
+```js
+Poyo.useTransform(transform)
+```
+
+Applies the given `transform` to future drawing routines.
+
+```js
+function render() {
+
+  // Clear to black.
+  Poyo.clearToColor(Poyo.createColor(0, 0, 0));
+
+  let transform = Poyo.createTransform();
+
+  // Translate, rotate, scale, shear, et cetera...
+
+  // Use the transformation.
+  Poyo.useTransform(transform);
+
+  // Draw here...
+}
+```
+
+---
+
+**Poyo.translateTransform()**
+
+```js
+Poyo.translateTransform(transform, translate_x, translate_y)
+```
+
+Translates (moves) the origin of the given `transform` by `translate_x` and `translate_y` in pixel space.
+
+```js
+let transform = Poyo.createTransform();
+
+// Move right 30 pixels and down 50 pixels.
+Poyo.translateTransform(transform, 30, 50);
+
+// Apply the transformation to future drawing routines.
+Poyo.useTransform(transform);
+```
+
+---
+
+**Poyo.scaleTransform()**
+
+```js
+Poyo.scaleTransform(transform, scale_x, scale_y)
+```
+
+Scales the given `transform` by a factor of `scale_x` and `scale_y`.
+
+```js
+let transform = Poyo.createTransform();
+
+// Make future drawing calls be twice as wide and thrice as tall.
+Poyo.scaleTransform(transform, 2, 3);
+
+Poyo.useTransform(transform);
+```
+
+---
+
+**Poyo.rotateTransform()**
+
+```js
+Poyo.rotateTransform(transform, theta)
+```
+
+Rotates the given `transform` on its origin by `theta` radians clock-wise.
+
+```js
+let transform = Poyo.createTransform();
+
+// Rotate the origin by pi.
+Poyo.rotateTransform(transform, Math.PI);
+
+Poyo.useTransform(transform);
+```
+
+---
+
+**Poyo.shearTransform()**
+
+```js
+Poyo.shearTransform(transform, theta_x, theta_y)
+```
+
+Shears the given `transform` by `theta_x` and `theta_y`.
+
+---
+
+**Poyo.saveTransform()**
+
+```js
+Poyo.saveTransform(transform)
+```
+
+Saves the given `transform` by pushing it onto Poyo's matrix stack.
+
+---
+
+**Poyo.restoreTransform()**
+
+```js
+Poyo.restoreTransform(transform)
+```
+
+Pops the given `transform` from Poyo's matrix stack, and uses `transform`'s value from when `Poyo.saveTransform()` was called.
+
+```js
+function render() {
+
+  // ...
+
+
+  let transform = Poyo.createTransform();
+
+  // Move right by 30 pixels and down by 50 pixels.
+  Poyo.translateTransform(transform, 30, 50);
+
+  // Save the transformation in its current state.
+  Poyo.saveTransform(transform);
+
+  Poyo.useTransform(transform);
+
+  // Draw stuff here with the transformation applied...
+
+  // Scale everything by a factor of 2 on both axes.
+  Poyo.scaleTransform(transform, 2, 2);
+
+  Poyo.useTransform(transform);
+
+  // Draw more stuff here now using the scale applied to the translation...
+
+  // Restore the transformation at its translation-only state.
+  Poyo.restoreTransform(transform);
+
+  // Draw more stuff here without the scaling applied...
+}
+```
+
+---
+
 ## Samples
 
 As far as Poyo is concerned, a _sample_ is a catch-all referring to the management of an audio file.
