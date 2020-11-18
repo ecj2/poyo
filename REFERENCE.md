@@ -1186,3 +1186,13 @@ function loop() {
   // Update and render here...
 }
 ```
+
+---
+
+**Poyo.setEntryPoint()**
+
+```js
+Poyo.setEntryPoint(function_name)
+```
+
+Invokes `function_name` once the window has finished loading.
