@@ -11,6 +11,9 @@ let buffer_bitmap;
 
 async function loadResources() {
 
+  // Use linear texture filtering to reduce jagged edges.
+  Poyo.setNewBitmapFlags(Poyo.MIN_LINEAR, Poyo.MAG_LINEAR);
+
   bitmap = await Poyo.loadBitmap("data/png/bee.png");
 
   if (!bitmap) {
