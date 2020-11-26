@@ -4,9 +4,9 @@ Poyo is a simple 2D game-making library written in JavaScript. It abstracts comm
 
 Poyo works on modern Web browsers which support WebGL 2, such as desktop versions of Chrome and Firefox.
 
-## Getting Started
+## How to Use
 
-Due to security concerns and limitations imposed by [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS), loading resources via the `file://` scheme is not possible. As a result, installing a local a Web server is necessary for loading fonts, bitmaps, and samples. I recommend [WAMP](https://www.wampserver.com/en/) for Windows users.
+Due to security concerns and limitations imposed by [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS), loading resources via the `file://` scheme is not possible. As a result, installing a local a Web server is necessary for loading fonts, bitmaps, and samples.
 
 To begin, you'll need to include the library in the head of an HTML document and add a canvas element to the body for drawing to take place:
 
@@ -73,3 +73,7 @@ Here's the result:
 ![The result.](https://i.ibb.co/3C4H6mT/helloworld.png)
 
 You can consult the [reference document](REFERENCE.md) and the [examples directory](./examples) to learn more.
+
+## Special Thanks
+
+Much of Poyo's design was heavily inspired by [Allegro 5](https://github.com/liballeg/allegro5), so a big "thank you" to all who contributed to that project.
