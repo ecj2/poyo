@@ -15,7 +15,7 @@ async function main() {
       (error) => {
 
         // Cycle through initialization errors.
-        displayError(error);
+        Poyo.displayError(error);
       }
     );
   }
