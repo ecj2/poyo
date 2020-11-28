@@ -87,9 +87,9 @@ let Poyo = new class {
     this.ALIGN_RIGHT = "right";
     this.ALIGN_CENTER = "center";
 
-    this.FONT_STYLE_BOLD = "bold";
-    this.FONT_STYLE_ITALIC = "italic";
-    this.FONT_STYLE_NORMAL = "normal";
+    this.STYLE_BOLD = "bold";
+    this.STYLE_ITALIC = "italic";
+    this.STYLE_NORMAL = "normal";
 
     this.canvas = {
 
@@ -1020,7 +1020,7 @@ let Poyo = new class {
     );
   }
 
-  loadFont(file_name, style = this.FONT_STYLE_NORMAL) {
+  loadFont(file_name, style = this.STYLE_NORMAL) {
 
     return fetch(file_name).then(
 
@@ -1052,7 +1052,7 @@ let Poyo = new class {
     );
   }
 
-  loadFontFace(font_family_name, style = this.FONT_STYLE_NORMAL) {
+  loadFontFace(font_family_name, style = this.STYLE_NORMAL) {
 
     let font = {
 

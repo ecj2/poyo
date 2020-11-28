@@ -7,8 +7,8 @@ async function loadResources() {
   // Load font-faces known to the browser. Error-checking is not necessary with this method.
   font_face[0] = Poyo.loadFontFace("tahoma, geneva, sans-serif");
   font_face[1] = Poyo.loadFontFace("courier new, courier, monospace");
-  font_face[2] = Poyo.loadFontFace("impact, charcoal, sans-serif", Poyo.FONT_STYLE_BOLD);
-  font_face[3] = Poyo.loadFontFace("comic sans ms, cursive, sans-serif", Poyo.FONT_STYLE_ITALIC);
+  font_face[2] = Poyo.loadFontFace("impact, charcoal, sans-serif", Poyo.STYLE_BOLD);
+  font_face[3] = Poyo.loadFontFace("comic sans ms, cursive, sans-serif", Poyo.STYLE_ITALIC);
   font_face[4] = Poyo.loadFontFace("georgia, serif");
 }
 

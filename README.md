@@ -47,7 +47,7 @@ function main() {
   }
 
   // Load a bold sans-serif font known to the browser.
-  font = Poyo.loadFontFace("sans-serif", Poyo.FONT_STYLE_BOLD);
+  font = Poyo.loadFontFace("sans-serif", Poyo.STYLE_BOLD);
 
   // Call loop() 60 times per second.
   Poyo.createGameLoop(loop);

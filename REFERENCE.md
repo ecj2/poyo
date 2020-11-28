@@ -546,7 +546,7 @@ Fonts can be used to draw text.
 Poyo.loadFont(file_name, style)
 ```
 
-Loads the given font with an optional style. The suggested format is TTF. Styles include `Poyo.FONT_STYLE_BOLD`, `Poyo.FONT_STYLE_ITALIC`, and `Poyo.FONT_STYLE_NORMAL` (default). Returns an object literal upon success and `false` on failure.
+Loads the given font with an optional style. The suggested format is TTF. Styles include `Poyo.STYLE_BOLD`, `Poyo.STYLE_ITALIC`, and `Poyo.STYLE_NORMAL` (default). Returns an object literal upon success and `false` on failure.
 
 Like with `Poyo.loadBitmap()`, this method must be called within an `async` function using the `await` keyword, like so:
 
@@ -580,7 +580,7 @@ let font;
 function loadResources() {
 
   // Load the Arial font family, which is already known to the browser, with a bold style.
-  font = Poyo.loadFontFace("Arial", Poyo.FONT_STYLE_BOLD);
+  font = Poyo.loadFontFace("Arial", Poyo.STYLE_BOLD);
 }
 ```
 
