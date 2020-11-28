@@ -530,7 +530,7 @@ Poyo.setNewBitmapFlags(Poyo.MAG_LINEAR, Poyo.WRAP_MIRROR);
 let bitmap = await Poyo.loadBitmap("example.png");
 ```
 
-Bitmaps default to `Poyo.MIN_NEAREST`, `Poyo.MAG_NEAREST`, and `Poyo.WRAP_CLAMP`. The wrap constants only make a difference when used in bespoke shaders.
+Bitmaps default to `Poyo.MIN_NEAREST`, `Poyo.MAG_NEAREST`, and `Poyo.WRAP_REPEAT`. The wrap constants only make a difference when used in bespoke shaders.
 
 ---
 
