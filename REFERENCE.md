@@ -546,7 +546,7 @@ Fonts can be used to draw text.
 Poyo.loadFont(file_name, style)
 ```
 
-Loads the given font with an optional style. The suggested format is TTF. Styles include `Poyo.STYLE_BOLD`, `Poyo.STYLE_ITALIC`, and `Poyo.STYLE_NORMAL` (default). Returns an object literal upon success and `false` on failure.
+Loads the given font with an optional style. The suggested format is TTF. Styles include `Poyo.STYLE_BOLD`, `Poyo.STYLE_ITALIC`, `Poyo.STYLE_BOLD_ITALIC`, and `Poyo.STYLE_NORMAL` (default). Returns an object literal upon success and `false` on failure.
 
 Like with `Poyo.loadBitmap()`, this method must be called within an `async` function using the `await` keyword, like so:
 

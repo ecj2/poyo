@@ -90,6 +90,7 @@ let Poyo = new class {
     this.STYLE_BOLD = "bold";
     this.STYLE_ITALIC = "italic";
     this.STYLE_NORMAL = "normal";
+    this.STYLE_BOLD_ITALIC = "bold italic";
 
     this.canvas = {
 
