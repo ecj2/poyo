@@ -47,5 +47,5 @@ function render() {
   let canvas_h = Poyo.getCanvasHeight();
 
   // Display instructions.
-  Poyo.drawText(font, Poyo.createColor(255, 255, 255), 50, canvas_w / 2, canvas_h / 2 - 50, Poyo.TEXT_ALIGN_CENTER, "Press space to toggle play-back.");
+  Poyo.drawText(font, Poyo.createColor(255, 255, 255), 50, canvas_w / 2, canvas_h / 2 - 50, Poyo.ALIGN_CENTER, "Press space to toggle play-back.");
 }

@@ -83,9 +83,9 @@ let Poyo = new class {
     this.KEY_RIGHT = 39;
     this.KEY_SPACE = 32;
 
-    this.TEXT_ALIGN_LEFT = "left";
-    this.TEXT_ALIGN_RIGHT = "right";
-    this.TEXT_ALIGN_CENTER = "center";
+    this.ALIGN_LEFT = "left";
+    this.ALIGN_RIGHT = "right";
+    this.ALIGN_CENTER = "center";
 
     this.FONT_STYLE_BOLD = "bold";
     this.FONT_STYLE_ITALIC = "italic";
@@ -1062,7 +1062,7 @@ let Poyo = new class {
     };
 
     // Pre-load the font.
-    this.drawText(font, this.createColor(0, 0, 0, 0), 0, 0, 0, this.TEXT_ALIGN_LEFT, "");
+    this.drawText(font, this.createColor(0, 0, 0, 0), 0, 0, 0, this.ALIGN_LEFT, "");
 
     return font;
   }

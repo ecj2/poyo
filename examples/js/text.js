@@ -24,11 +24,11 @@ function render() {
   Poyo.batchDrawing(true);
 
   // Draw the fonts with various colors, sizes, and alignments.
-  Poyo.drawText(font_face[0], Poyo.createColor(255, 255, 0), 50, 5, 0, Poyo.TEXT_ALIGN_LEFT, "Tahoma");
-  Poyo.drawText(font_face[1], Poyo.createColor(0, 255, 0), 25, canvas_w - 5, 0, Poyo.TEXT_ALIGN_RIGHT, "Courier New");
-  Poyo.drawText(font_face[2], Poyo.createColor(0, 0, 255), 75, canvas_w / 2, canvas_h / 2 - 50, Poyo.TEXT_ALIGN_CENTER, "Impact");
-  Poyo.drawText(font_face[3], Poyo.createColor(255, 0, 0), 35, 0, canvas_h - 45, Poyo.TEXT_ALIGN_LEFT, "Comic Sans MS");
-  Poyo.drawText(font_face[4], Poyo.createColor(255, 128, 128), 60, canvas_w - 5, canvas_h - 80, Poyo.TEXT_ALIGN_RIGHT, "Georgia");
+  Poyo.drawText(font_face[0], Poyo.createColor(255, 255, 0), 50, 5, 0, Poyo.ALIGN_LEFT, "Tahoma");
+  Poyo.drawText(font_face[1], Poyo.createColor(0, 255, 0), 25, canvas_w - 5, 0, Poyo.ALIGN_RIGHT, "Courier New");
+  Poyo.drawText(font_face[2], Poyo.createColor(0, 0, 255), 75, canvas_w / 2, canvas_h / 2 - 50, Poyo.ALIGN_CENTER, "Impact");
+  Poyo.drawText(font_face[3], Poyo.createColor(255, 0, 0), 35, 0, canvas_h - 45, Poyo.ALIGN_LEFT, "Comic Sans MS");
+  Poyo.drawText(font_face[4], Poyo.createColor(255, 128, 128), 60, canvas_w - 5, canvas_h - 80, Poyo.ALIGN_RIGHT, "Georgia");
 
   Poyo.batchDrawing(false);
 }

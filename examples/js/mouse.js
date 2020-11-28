@@ -41,5 +41,5 @@ function render() {
   // Draw the custom cursor.
   Poyo.drawBitmap(cursor, x, y);
 
-  Poyo.drawText(font, Poyo.createColor(255, 255, 255), 30, 0, 0, Poyo.TEXT_ALIGN_LEFT, `X: ${x}, Y: ${y}`);
+  Poyo.drawText(font, Poyo.createColor(255, 255, 255), 30, 0, 0, Poyo.ALIGN_LEFT, `X: ${x}, Y: ${y}`);
 }

@@ -596,10 +596,10 @@ Draws text of a given color, size, and alignment, at the given coordinates, usin
 
 ```js
 // Draw left-aligned "Hello!" in red at the target's origin, 50 pixels in size.
-Poyo.drawText(font, Poyo.createColor(255, 0, 0), 50, 0, 0, Poyo.TEXT_ALIGN_LEFT, "Hello!")
+Poyo.drawText(font, Poyo.createColor(255, 0, 0), 50, 0, 0, Poyo.ALIGN_LEFT, "Hello!")
 ```
 
-Values for `alignment` include `Poyo.TEXT_ALIGN_LEFT`, `Poyo.TEXT_ALIGN_RIGHT`, and `Poyo.TEXT_ALIGN_CENTER`.
+Values for `alignment` include `Poyo.ALIGN_LEFT`, `Poyo.ALIGN_RIGHT`, and `Poyo.ALIGN_CENTER`.
 
 ---
 

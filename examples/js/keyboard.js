@@ -49,8 +49,8 @@ function render() {
   Poyo.clearToColor(Poyo.createColor(0, 0, 0));
 
   // Draw instructions.
-  Poyo.drawText(font, Poyo.createColor(255, 255, 255), 30, 768 / 2, 0, Poyo.TEXT_ALIGN_CENTER, "Press the arrow keys to move the smile.");
+  Poyo.drawText(font, Poyo.createColor(255, 255, 255), 30, 768 / 2, 0, Poyo.ALIGN_CENTER, "Press the arrow keys to move the smile.");
 
   // Draw the smile.
-  Poyo.drawText(font, color, 30, x, y, Poyo.TEXT_ALIGN_LEFT, ":)");
+  Poyo.drawText(font, color, 30, x, y, Poyo.ALIGN_LEFT, ":)");
 }

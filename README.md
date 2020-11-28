@@ -61,7 +61,7 @@ function loop() {
   let yellow = Poyo.createColor(255, 255, 0);
 
   // Draw "Hello, world!" in the center of the canvas in yellow.
-  Poyo.drawText(font, yellow, 100, 768 / 2, 432 / 2 - 50, Poyo.TEXT_ALIGN_CENTER, "Hello, world!");
+  Poyo.drawText(font, yellow, 100, 768 / 2, 432 / 2 - 50, Poyo.ALIGN_CENTER, "Hello, world!");
 }
 
 // Call main() once the window has fully loaded.
