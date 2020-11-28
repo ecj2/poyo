@@ -118,6 +118,7 @@ let Poyo = new class {
     this.uniforms = [];
 
     this.matrix = this.createTransform();
+    this.texture_matrix = this.createTransform();
 
     this.WebGL2 = undefined;
 
@@ -159,6 +160,11 @@ let Poyo = new class {
     this.WRAP_CLAMP = 4;
     this.WRAP_REPEAT = 5;
     this.WRAP_MIRROR = 6;
+
+    this.MODE_TEXTURE = 0;
+    this.MODE_GEOMETRY = 1;
+
+    this.transform_mode = this.MODE_GEOMETRY;
   }
 
   getErrors() {
@@ -379,6 +385,9 @@ let Poyo = new class {
       in vec4 v_instance_tint;
       in vec4 v_instance_texture_offset;
 
+      uniform mat3 u_texture_matrix;
+      uniform vec2 u_texture_resolution;
+
       out vec4 output_color;
 
       void main(void) {
@@ -416,6 +425,15 @@ let Poyo = new class {
 
         // Don't draw texels outside of the clipped offsets.
         if (reject) discard;
+
+        mat3 matrix = u_texture_matrix;
+
+        // Invert translations.
+        matrix[2][0] *= -1.0;
+        matrix[2][1] *= -1.0;
+
+        // Convert pixel space to texture space.
+        position = vec2(matrix * vec3(position, 1.0)) / u_texture_resolution;
 
         output_color = texture(u_texture, position) * tint;
       }
@@ -480,6 +498,9 @@ let Poyo = new class {
   }
 
   getUniformLocations() {
+
+    this.uniforms["u_texture_resolution"] = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_resolution");
+    this.uniforms["u_texture_matrix"] = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_matrix");
 
     this.uniforms["u_tint"] = this.WebGL2.getUniformLocation(this.shader_program, "u_tint");
     this.uniforms["u_matrix"] = this.WebGL2.getUniformLocation(this.shader_program, "u_matrix");
@@ -1130,8 +1151,15 @@ let Poyo = new class {
     // Transformations were applied to the text canvas, not to the final bitmap.
     this.useTransform(this.createTransform());
 
+    this.pushTransform(this.texture_matrix);
+
+    // Prevent texture transformations from messing with drawing text.
+    this.texture_matrix.value = this.getIdentityTransform();
+
     // Draw the font bitmap.
     this.drawBitmap(this.font.bitmap, 0, 0);
+
+    this.popTransform(this.texture_matrix);
 
     this.popTransform(this.matrix);
 
@@ -1543,6 +1571,9 @@ let Poyo = new class {
       // Flip texture offsets back without affecting cache.
       this.WebGL2.uniform1i(this.uniforms["u_flip_texture_offset"], false);
     }
+
+    // @TODO: Make texture transformations work in batches.
+    // @TODO: Document texture transformations.
   }
 
   addBitmapInstance(bitmap, offsets = [0, 0, 1, 1], tint = this.createColor(255, 255, 255)) {
@@ -1627,6 +1658,10 @@ let Poyo = new class {
       this.translateTransform(this.matrix, 0, -bitmap.height);
     }
 
+    let mode = this.transform_mode;
+
+    this.setTransformMode(this.MODE_GEOMETRY);
+
     // Scale the bitmap to its proper resolution.
     this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
 
@@ -1634,6 +1669,21 @@ let Poyo = new class {
     this.WebGL2.uniformMatrix3fv(this.uniforms["u_matrix"], false, this.matrix.value);
 
     this.popTransform(this.matrix);
+
+    this.pushTransform(this.texture_matrix);
+
+    // Scale the texture so it appears properly.
+    this.scaleTransform(this.texture_matrix, bitmap.width, bitmap.height);
+
+    // Upload the texture transformation matrix.
+    this.WebGL2.uniformMatrix3fv(this.uniforms["u_texture_matrix"], false, this.texture_matrix.value);
+
+    this.popTransform(this.texture_matrix);
+
+    // @TODO: Cache this.
+    this.WebGL2.uniform2fv(this.uniforms["u_texture_resolution"], [bitmap.width, bitmap.height]);
+
+    this.setTransformMode(mode);
 
     // Draw the bitmap.
     this.WebGL2.drawArrays(this.WebGL2.TRIANGLE_FAN, 0, 4);
@@ -1761,11 +1811,28 @@ let Poyo = new class {
 
   useTransform(transform) {
 
-    // Use the given matrix. This should only be used externally.
-    this.matrix.value = transform.value;
+    switch (this.transform_mode) {
+
+      case this.MODE_TEXTURE:
+
+        this.texture_matrix.value = transform.value;
+      break;
+
+      case this.MODE_GEOMETRY:
+
+        this.matrix.value = transform.value;
+      break;
+    }
   }
 
   scaleTransform(transform, scale_x, scale_y) {
+
+    if (this.transform_mode == this.MODE_TEXTURE) {
+
+      // Fix scaling when applied to textures.
+      scale_x = 1 / scale_x;
+      scale_y = 1 / scale_y;
+    }
 
     let scaled_matrix = [
 
@@ -1781,8 +1848,16 @@ let Poyo = new class {
 
   rotateTransform(transform, theta) {
 
-    let sine = Math.sin(theta);
-    let cosine = Math.cos(theta);
+    let direction = 1;
+
+    if  (this.transform_mode == this.MODE_TEXTURE) {
+
+      // Fix rotation direction when applied to textures, lest it be counter-clockwise.
+      direction = -1;
+    }
+
+    let sine = Math.sin(theta * direction);
+    let cosine = Math.cos(theta * direction);
 
     let rotated_matrix = [
 
@@ -1837,6 +1912,11 @@ let Poyo = new class {
     multiplied_matrix[7] = a[1] * b[6] + a[4] * b[7] + a[7];
 
     return multiplied_matrix;
+  }
+
+  setTransformMode(mode) {
+
+    this.transform_mode = mode;
   }
 
   createBitmap(width, height) {
