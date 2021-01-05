@@ -112,7 +112,7 @@ let Poyo = new class {
 
     this.sample_instances = [];
 
-    this.version = 1;
+    this.version = 2;
 
     this.shader_program = undefined;
     this.uniforms = [];
