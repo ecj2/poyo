@@ -1709,6 +1709,12 @@ let Poyo = new class {
 
   drawScaledBitmap(bitmap, origin_x, origin_y, scale_x, scale_y, draw_x, draw_y, tint) {
 
+    // Cache the current transform mode.
+    let cached_transform_mode = this.transform_mode;
+
+    // Use geometry mode to prevent contamination from texture transformations.
+    this.setTransformMode(Poyo.MODE_GEOMETRY);
+
     this.pushTransform(this.matrix);
 
     this.translateTransform(this.matrix, draw_x, draw_y);
@@ -1725,6 +1731,9 @@ let Poyo = new class {
     }
 
     this.popTransform(this.matrix);
+
+    // Return to the previous transform mode.
+    this.setTransformMode(cached_transform_mode);
   }
 
   drawClippedBitmap(bitmap, start_x, start_y, width, height, x, y, tint) {
