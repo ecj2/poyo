@@ -1179,6 +1179,9 @@ let Poyo = new class {
 
     element.src = file_name;
 
+    // Pre-load audio files. This fixes a bug in Firefox which may arise when loading big samples.
+    element.preload = "auto";
+
     let reject_function = undefined;
     let resolve_function = undefined;
 
