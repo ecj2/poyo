@@ -1769,6 +1769,12 @@ let Poyo = new class {
 
   drawRotatedBitmap(bitmap, center_x, center_y, draw_x, draw_y, theta, tint) {
 
+    // Cache the current transform mode.
+    let cached_transform_mode = this.transform_mode;
+
+    // Use geometry mode to prevent contamination from texture transformations.
+    this.setTransformMode(Poyo.MODE_GEOMETRY);
+
     this.pushTransform(this.matrix);
 
     this.translateTransform(this.matrix, draw_x, draw_y);
@@ -1785,6 +1791,9 @@ let Poyo = new class {
     }
 
     this.popTransform(this.matrix);
+
+    // Return to the previous transform mode.
+    this.setTransformMode(cached_transform_mode);
   }
 
   getIdentityTransform() {
