@@ -1949,6 +1949,11 @@ let Poyo = new class {
     this.transform_mode = mode;
   }
 
+  getTransformMode() {
+
+    return this.transform_mode;
+  }
+
   createBitmap(width, height) {
 
     let framebuffer = this.WebGL2.createFramebuffer();
