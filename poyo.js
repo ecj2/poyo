@@ -1583,8 +1583,17 @@ let Poyo = new class {
 
     this.instanced_bitmap = bitmap;
 
+    // Cache the current transform mode.
+    let cached_transform_mode = this.transform_mode;
+
+    // Use geometry mode to prevent contamination from texture transformations.
+    this.setTransformMode(Poyo.MODE_GEOMETRY);
+
     // Scale instanced bitmap to its proper resolution.
     this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
+
+    // Return to the previous transform mode.
+    this.setTransformMode(cached_transform_mode);
 
     this.instanced_drawing_buffer_data.push(
 
