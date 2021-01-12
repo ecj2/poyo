@@ -599,7 +599,23 @@ Draws text of a given color, size, and alignment, at the given coordinates, usin
 Poyo.drawText(font, Poyo.createColor(255, 0, 0), 50, 0, 0, Poyo.ALIGN_LEFT, "Hello!")
 ```
 
-Values for `alignment` include `Poyo.ALIGN_LEFT`, `Poyo.ALIGN_RIGHT`, and `Poyo.ALIGN_CENTER`.
+Values for `alignment` include `Poyo.ALIGN_LEFT`, `Poyo.ALIGN_RIGHT`, and `Poyo.ALIGN_CENTER`. Also, drawing text is expensive, so it is suggested that you leverage batching when making several `Poyo.drawText()` calls.
+
+```js
+// Start batching draw calls.
+Poyo.batchDrawing(true);
+
+// Draw several lines of text.
+Poyo.drawText(...);
+Poyo.drawText(...);
+Poyo.drawText(...);
+Poyo.drawText(...);
+Poyo.drawText(...);
+
+// Release the batch, thus drawing all the text in one fell swoop.
+// This improves performance, especially on the CPU.
+Poyo.batchDrawing(false);
+```
 
 ---
 
