@@ -530,7 +530,7 @@ Poyo.setNewBitmapFlags(Poyo.MAG_LINEAR, Poyo.WRAP_MIRROR);
 let bitmap = await Poyo.loadBitmap("example.png");
 ```
 
-Bitmaps default to `Poyo.MIN_NEAREST`, `Poyo.MAG_NEAREST`, and `Poyo.WRAP_REPEAT`. The wrap constants only make a difference when used in bespoke shaders.
+Bitmaps default to `Poyo.MIN_NEAREST`, `Poyo.MAG_NEAREST`, and `Poyo.WRAP_REPEAT`.
 
 ---
 
@@ -620,6 +620,86 @@ Returns an object literal containing an identity transform and an empty stack ar
 ```js
 let transform = Poyo.createTransform();
 ```
+
+---
+
+**Poyo.setTransformMode()**
+
+```js
+Poyo.setTransformMode(mode)
+```
+
+Changes the transform mode to `mode`. Options include `Poyo.MODE_VERTEX` and `Poyo.MODE_TEXTURE`. Poyo initializes to `Poyo.MODE_VERTEX` by default, where transforms are applied to the vertices of objects drawn to the canvas. `Poyo.MODE_TEXTURE` applies transforms to textures, but are not supported within batches.
+
+The two modes can be used to achieve interesting effects, such as an infinitely repeating background through one draw call:
+
+```js
+function render() {
+
+  // Clear to black.
+  Poyo.clearToColor(Poyo.createColor(0, 0, 0));
+
+  let transform_vertex = Poyo.createTransform();
+  let transform_texture = Poyo.createTransform();
+
+  // Get the draw target's dimensions.
+  let t_w = Poyo.getTargetWidth();
+  let t_h = Poyo.getTargetHeight();
+
+  // Get the bitmap's dimensions.
+  let b_w = Poyo.getBitmapWidth(bitmap);
+  let b_h = Poyo.getBitmapHeight(bitmap);
+
+  // Save transforms to be later restored.
+  Poyo.saveTransform(transform_vertex);
+  Poyo.saveTransform(transform_texture);
+
+  // Scale vertices up to fill target.
+  // Note that setting the transform mode here is unnecessary, as
+  // the transform mode is set to Poyo.MODE_VERTEX by default.
+  Poyo.scaleTransform(transform_vertex, t_w / b_w, t_h / b_h);
+  Poyo.useTransform(transform_vertex);
+
+  // Apply future transforms to textures rather than vertices.
+  Poyo.setTransformMode(Poyo.MODE_TEXTURE);
+
+  // Animate the texture like a scrolling background.
+  Poyo.translateTransform(transform_texture, Poyo.getTime() * 32, Poyo.getTime() * 32);
+
+  // Scale texture down to retain resolution within scaled-up geometry.
+  Poyo.scaleTransform(transform_texture, b_w / t_w, b_h / t_h);
+
+  // Apply the texture transform.
+  Poyo.useTransform(transform_texture);
+
+  // Draw the bitmap. Its vertices are now scaled-up to fill the draw target,
+  // but its texture is scaled-down to retain its native resolution. All the
+  // while, the texture is scrolling diagonally, repeating indefinitely
+  // (assumes default bitmap flag of Poyo.WRAP_REPEAT).
+  Poyo.drawBitmap(bitmap, 0, 0);
+
+  // Restore texture transform so as not to apply it to other draw calls.
+  Poyo.restoreTransform(transform_texture);
+  Poyo.useTransform(transform_texture);
+
+  // Restore vertex transform so as not to apply the scaling to other draw calls.
+  Poyo.restoreTransform(transform_vertex);
+  Poyo.useTransform(transform_vertex);
+
+  // Set the transform mode back to Poyo.MODE_VERTEX, the default.
+  Poyo.setTransformMode(Poyo.MODE_VERTEX);
+}
+```
+
+---
+
+**Poyo.getTransformMode()**
+
+```js
+Poyo.getTransformMode()
+```
+
+Returns the current transform mode, either `Poyo.MODE_VERTEX` (default) or `Poyo.MODE_TEXTURE`.
 
 ---
 

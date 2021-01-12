@@ -1578,7 +1578,6 @@ let Poyo = new class {
     }
 
     // @TODO: Make texture transformations work in batches.
-    // @TODO: Document texture transformations.
   }
 
   addBitmapInstance(bitmap, offsets = [0, 0, 1, 1], tint = this.createColor(255, 255, 255)) {
