@@ -1225,6 +1225,41 @@ Returns the height of the canvas in pixels.
 
 ---
 
+**Poyo.setCanvasWidth()**
+
+```js
+Poyo.setCanvasWidth(width)
+```
+
+Sets the canvas' width to `width` in pixels.
+
+---
+
+**Poyo.setCanvasHeight()**
+
+```js
+Poyo.setCanvasHeight(height)
+```
+
+Sets the canvas' height to `height` in pixels.
+
+---
+
+**Poyo.resizeCanvas()**
+
+```js
+Poyo.resizeCanvas(width, height)
+```
+
+Resizes the canvas to `width` and `height` in pixels. This is equivalent to:
+
+```js
+Poyo.setCanvasWidth(width);
+Poyo.setCanvasHeight(height);
+```
+
+---
+
 **Poyo.getTargetWidth()**
 
 ```js
