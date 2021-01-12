@@ -198,7 +198,9 @@ let Poyo = new class {
 
       font_canvas_context: undefined,
 
-      flip_texture_offset: false
+      flip_texture_offset: false,
+
+      texture_resolution: []
     };
 
     this.canvas.canvas = document.getElementById("poyo");
@@ -1692,8 +1694,14 @@ let Poyo = new class {
 
     this.popTransform(this.texture_matrix);
 
-    // @TODO: Cache this.
-    this.WebGL2.uniform2fv(this.uniforms["u_texture_resolution"], [bitmap.width, bitmap.height]);
+    if (bitmap.width != this.cache.texture_resolution[0] || bitmap.height != this.cache.texture_resolution[1]) {
+
+      // Upload texture resolution.
+      this.WebGL2.uniform2fv(this.uniforms["u_texture_resolution"], [bitmap.width, bitmap.height]);
+
+      // Cache it for next time.
+      this.cache.texture_resolution = [bitmap.width, bitmap.height];
+    }
 
     this.setTransformMode(mode);
 
