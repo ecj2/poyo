@@ -161,10 +161,10 @@ let Poyo = new class {
     this.WRAP_REPEAT = 5;
     this.WRAP_MIRROR = 6;
 
-    this.MODE_TEXTURE = 0;
-    this.MODE_GEOMETRY = 1;
+    this.MODE_VERTEX = 0;
+    this.MODE_TEXTURE = 1;
 
-    this.transform_mode = this.MODE_GEOMETRY;
+    this.transform_mode = this.MODE_VERTEX;
   }
 
   getErrors() {
@@ -1586,8 +1586,8 @@ let Poyo = new class {
     // Cache the current transform mode.
     let cached_transform_mode = this.transform_mode;
 
-    // Use geometry mode to prevent contamination from texture transformations.
-    this.setTransformMode(Poyo.MODE_GEOMETRY);
+    // Use vertex mode to prevent contamination from texture transformations.
+    this.setTransformMode(Poyo.MODE_VERTEX);
 
     // Scale instanced bitmap to its proper resolution.
     this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
@@ -1672,7 +1672,7 @@ let Poyo = new class {
 
     let mode = this.transform_mode;
 
-    this.setTransformMode(this.MODE_GEOMETRY);
+    this.setTransformMode(this.MODE_VERTEX);
 
     // Scale the bitmap to its proper resolution.
     this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
@@ -1724,8 +1724,8 @@ let Poyo = new class {
     // Cache the current transform mode.
     let cached_transform_mode = this.transform_mode;
 
-    // Use geometry mode to prevent contamination from texture transformations.
-    this.setTransformMode(Poyo.MODE_GEOMETRY);
+    // Use vertex mode to prevent contamination from texture transformations.
+    this.setTransformMode(Poyo.MODE_VERTEX);
 
     this.pushTransform(this.matrix);
 
@@ -1793,8 +1793,8 @@ let Poyo = new class {
     // Cache the current transform mode.
     let cached_transform_mode = this.transform_mode;
 
-    // Use geometry mode to prevent contamination from texture transformations.
-    this.setTransformMode(Poyo.MODE_GEOMETRY);
+    // Use vertex mode to prevent contamination from texture transformations.
+    this.setTransformMode(Poyo.MODE_VERTEX);
 
     this.pushTransform(this.matrix);
 
@@ -1848,7 +1848,7 @@ let Poyo = new class {
         this.texture_matrix.value = transform.value;
       break;
 
-      case this.MODE_GEOMETRY:
+      case this.MODE_VERTEX:
 
         this.matrix.value = transform.value;
       break;
