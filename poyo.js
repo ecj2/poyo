@@ -430,7 +430,7 @@ let Poyo = new class {
 
         mat3 matrix = u_texture_matrix;
 
-        // Invert translations.
+        // Invert texture translations.
         matrix[2][0] *= -1.0;
         matrix[2][1] *= -1.0;
 
@@ -1646,6 +1646,12 @@ let Poyo = new class {
       }
     }
 
+    if (bitmap.must_be_flipped && this.transform_mode == this.MODE_TEXTURE) {
+
+      // Flip texture offset in texture transformations.
+      flip_texture_offset = true;
+    }
+
     if (this.cache.flip_texture_offset != flip_texture_offset) {
 
       // Flip the texture offset.
@@ -1664,11 +1670,19 @@ let Poyo = new class {
 
     this.pushTransform(this.matrix);
 
+    let texture_matrix = this.texture_matrix;
+
     if (bitmap.must_be_flipped) {
 
       // Flip framebuffer textures right-side up.
       this.scaleTransform(this.matrix, 1, -1);
       this.translateTransform(this.matrix, 0, -bitmap.height);
+
+      // Flip vertical axis right-side up on texture transformations.
+      let t = this.createTransform();
+      this.scaleTransform(t, 1, -1);
+      this.translateTransform(t, 0, bitmap.height);
+      texture_matrix.value = this.multiplyMatrices(t.value, texture_matrix.value);
     }
 
     let mode = this.transform_mode;
@@ -1689,7 +1703,7 @@ let Poyo = new class {
     this.scaleTransform(this.texture_matrix, bitmap.width, bitmap.height);
 
     // Upload the texture transformation matrix.
-    this.WebGL2.uniformMatrix3fv(this.uniforms["u_texture_matrix"], false, this.texture_matrix.value);
+    this.WebGL2.uniformMatrix3fv(this.uniforms["u_texture_matrix"], false, texture_matrix.value);
 
     this.popTransform(this.texture_matrix);
 
