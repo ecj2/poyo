@@ -1646,10 +1646,18 @@ let Poyo = new class {
       }
     }
 
+    let texture_matrix = this.texture_matrix;
+
     if (bitmap.must_be_flipped && this.transform_mode == this.MODE_TEXTURE) {
 
       // Flip texture offset in texture transformations.
       flip_texture_offset = true;
+
+      // Flip vertical axis right-side up on texture transformations.
+      let t = this.createTransform();
+      this.scaleTransform(t, 1, -1);
+      this.translateTransform(t, 0, bitmap.height);
+      texture_matrix.value = this.multiplyMatrices(t.value, texture_matrix.value);
     }
 
     if (this.cache.flip_texture_offset != flip_texture_offset) {
@@ -1670,19 +1678,11 @@ let Poyo = new class {
 
     this.pushTransform(this.matrix);
 
-    let texture_matrix = this.texture_matrix;
-
     if (bitmap.must_be_flipped) {
 
       // Flip framebuffer textures right-side up.
       this.scaleTransform(this.matrix, 1, -1);
       this.translateTransform(this.matrix, 0, -bitmap.height);
-
-      // Flip vertical axis right-side up on texture transformations.
-      let t = this.createTransform();
-      this.scaleTransform(t, 1, -1);
-      this.translateTransform(t, 0, bitmap.height);
-      texture_matrix.value = this.multiplyMatrices(t.value, texture_matrix.value);
     }
 
     let mode = this.transform_mode;
