@@ -501,15 +501,14 @@ let Poyo = new class {
 
   getUniformLocations() {
 
-    this.uniforms["u_texture_resolution"] = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_resolution");
-    this.uniforms["u_texture_matrix"] = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_matrix");
-
     this.uniforms["u_tint"] = this.WebGL2.getUniformLocation(this.shader_program, "u_tint");
     this.uniforms["u_matrix"] = this.WebGL2.getUniformLocation(this.shader_program, "u_matrix");
     this.uniforms["u_texture"] = this.WebGL2.getUniformLocation(this.shader_program, "u_texture");
     this.uniforms["u_instance"] = this.WebGL2.getUniformLocation(this.shader_program, "u_instance");
     this.uniforms["u_resolution"] = this.WebGL2.getUniformLocation(this.shader_program, "u_resolution");
+    this.uniforms["u_texture_matrix"] = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_matrix");
     this.uniforms["u_texture_offset"] = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_offset");
+    this.uniforms["u_texture_resolution"] = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_resolution");
     this.uniforms["u_flip_texture_offset"] = this.WebGL2.getUniformLocation(this.shader_program, "u_flip_texture_offset");
 
     let key = undefined;
@@ -1151,7 +1150,7 @@ let Poyo = new class {
     this.pushTransform(this.matrix);
 
     // Transformations were applied to the text canvas, not to the final bitmap.
-    this.useTransform(this.createTransform());
+    this.useTransform(this.createTransform()); // @TODO: Set VERTEX_MODE first?
 
     this.pushTransform(this.texture_matrix);
 
@@ -1588,7 +1587,7 @@ let Poyo = new class {
     let cached_transform_mode = this.transform_mode;
 
     // Use vertex mode to prevent contamination from texture transformations.
-    this.setTransformMode(Poyo.MODE_VERTEX);
+    this.setTransformMode(this.MODE_VERTEX);
 
     // Scale instanced bitmap to its proper resolution.
     this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
@@ -1754,6 +1753,9 @@ let Poyo = new class {
     this.scaleTransform(this.matrix, scale_x, scale_y);
     this.translateTransform(this.matrix, -origin_x, -origin_y);
 
+    // Return to the previous transform mode.
+    this.setTransformMode(cached_transform_mode);
+
     if (this.batch_drawing) {
 
       this.addBitmapInstance(bitmap, undefined, tint);
@@ -1764,12 +1766,11 @@ let Poyo = new class {
     }
 
     this.popTransform(this.matrix);
-
-    // Return to the previous transform mode.
-    this.setTransformMode(cached_transform_mode);
   }
 
   drawClippedBitmap(bitmap, start_x, start_y, width, height, x, y, tint) {
+
+    // @FIXME: rotation direction, vertical translation, and vertical scale are broken.
 
     let texture_offset = [
 
@@ -1811,12 +1812,6 @@ let Poyo = new class {
 
   drawRotatedBitmap(bitmap, center_x, center_y, draw_x, draw_y, theta, tint) {
 
-    // Cache the current transform mode.
-    let cached_transform_mode = this.transform_mode;
-
-    // Use vertex mode to prevent contamination from texture transformations.
-    this.setTransformMode(Poyo.MODE_VERTEX);
-
     this.pushTransform(this.matrix);
 
     this.translateTransform(this.matrix, draw_x, draw_y);
@@ -1833,9 +1828,6 @@ let Poyo = new class {
     }
 
     this.popTransform(this.matrix);
-
-    // Return to the previous transform mode.
-    this.setTransformMode(cached_transform_mode);
   }
 
   getIdentityTransform() {
@@ -1899,16 +1891,8 @@ let Poyo = new class {
 
   rotateTransform(transform, theta) {
 
-    let direction = 1;
-
-    if  (this.transform_mode == this.MODE_TEXTURE) {
-
-      // Fix rotation direction when applied to textures, lest it be counter-clockwise.
-      direction = -1;
-    }
-
-    let sine = Math.sin(theta * direction);
-    let cosine = Math.cos(theta * direction);
+    let sine = Math.sin(theta);
+    let cosine = Math.cos(theta);
 
     let rotated_matrix = [
 
