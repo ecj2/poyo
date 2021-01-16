@@ -1747,6 +1747,12 @@ let Poyo = new class {
 
   drawRotatedBitmap(bitmap, center_x, center_y, draw_x, draw_y, theta, tint) {
 
+    // Cache the current transform mode.
+    let cached_transform_mode = this.transform_mode;
+
+    // Use vertex mode to prevent contamination from texture transformations.
+    this.setTransformMode(Poyo.MODE_VERTEX);
+
     this.pushTransform(this.matrix);
 
     this.translateTransform(this.matrix, draw_x, draw_y);
@@ -1763,6 +1769,9 @@ let Poyo = new class {
     }
 
     this.popTransform(this.matrix);
+
+    // Return to the previous transform mode.
+    this.setTransformMode(cached_transform_mode);
   }
 
   getIdentityTransform() {
@@ -1826,8 +1835,16 @@ let Poyo = new class {
 
   rotateTransform(transform, theta) {
 
-    let sine = Math.sin(theta);
-    let cosine = Math.cos(theta);
+    let direction = 1;
+
+    if (this.transform_mode == this.MODE_TEXTURE) {
+
+      // Fix rotation direction when applied to textures, lest it be counter-clockwise.
+      direction = -1;
+    }
+
+    let sine = Math.sin(theta * direction);
+    let cosine = Math.cos(theta * direction);
 
     let rotated_matrix = [
 
