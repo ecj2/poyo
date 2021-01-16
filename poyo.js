@@ -382,6 +382,9 @@ let Poyo = new class {
 
         vec2 position = v_texture_position;
 
+        // Flip texture.
+        position.t = 1.0 - position.t;
+
         vec4 tint = u_tint;
         vec2 texture_offset = u_texture_offset;
 
@@ -956,6 +959,10 @@ let Poyo = new class {
 
         this.pushTransform(this.matrix);
 
+        // Flip the canvas right-side-up.
+        this.scaleTransform(this.matrix, 1, -1);
+        this.translateTransform(this.matrix, 0, -this.target.height);
+
         loop_procedure();
 
         // Reset matrix each frame.
@@ -1118,7 +1125,7 @@ let Poyo = new class {
     this.pushTransform(this.matrix);
 
     // Transformations were applied to the text canvas, not to the final bitmap.
-    this.useTransform(this.createTransform()); // @TODO: Set VERTEX_MODE first?
+    this.useTransform(this.createTransform());
 
     this.pushTransform(this.texture_matrix);
 
@@ -1613,6 +1620,7 @@ let Poyo = new class {
       }
     }
 
+    this.pushTransform(this.matrix);
     this.pushTransform(this.texture_matrix);
 
     if (bitmap.must_be_flipped) {
@@ -1620,6 +1628,10 @@ let Poyo = new class {
       // Flip textures right-side-up.
       this.scaleTransform(this.texture_matrix, 1, -1);
       this.translateTransform(this.texture_matrix, 0, bitmap.height);
+
+      // Vertically flip vertices as well.
+      this.scaleTransform(this.matrix, 1, -1);
+      this.translateTransform(this.matrix, 0, -bitmap.height);
     }
 
     // Offset texture.
@@ -1631,8 +1643,6 @@ let Poyo = new class {
 
       this.cache.instance = this.batch_drawing;
     }
-
-    this.pushTransform(this.matrix);
 
     let mode = this.transform_mode;
 
@@ -1835,7 +1845,7 @@ let Poyo = new class {
 
   rotateTransform(transform, theta) {
 
-    let direction = 1;
+    let direction = -1;
 
     if (this.transform_mode == this.MODE_TEXTURE) {
 
