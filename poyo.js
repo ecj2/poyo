@@ -1614,8 +1614,6 @@ let Poyo = new class {
 
   drawConsolidatedBitmap(bitmap, texture_offset = [0, 0, 1, 1], tint = this.createColor(255, 255, 255)) {
 
-    // @FIXME: Vertex translations are inverted?
-
     if (this.cache.tint != "" + tint.r + tint.g + tint.b + tint.a) {
 
       // Upload the tint.
@@ -1693,7 +1691,7 @@ let Poyo = new class {
 
     let mode = this.transform_mode;
 
-    this.setTransformMode(this.MODE_VERTEX); // @TODO: Necessary?
+    this.setTransformMode(this.MODE_VERTEX);
 
     // Scale the bitmap to its proper resolution.
     this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
@@ -1730,7 +1728,7 @@ let Poyo = new class {
 
     this.pushTransform(this.matrix);
 
-    this.translateTransform(this.matrix, x, y);
+    this.translateTransform(this.matrix, x, -y + this.target.height - bitmap.height);
 
     if (this.batch_drawing) {
 
@@ -1754,7 +1752,7 @@ let Poyo = new class {
 
     this.pushTransform(this.matrix);
 
-    this.translateTransform(this.matrix, draw_x, draw_y);
+    this.translateTransform(this.matrix, draw_x, -draw_y + this.target.height - bitmap.height * scale_y);
     this.scaleTransform(this.matrix, scale_x, scale_y);
     this.translateTransform(this.matrix, -origin_x, -origin_y);
 
@@ -1788,7 +1786,7 @@ let Poyo = new class {
 
     this.pushTransform(this.matrix);
 
-    this.translateTransform(this.matrix, x, y);
+    this.translateTransform(this.matrix, x, -y + this.target.height - bitmap.height);
 
     if (this.batch_drawing) {
 
@@ -1804,6 +1802,8 @@ let Poyo = new class {
 
   drawRotatedBitmap(bitmap, center_x, center_y, draw_x, draw_y, theta, tint) {
 
+    center_y = bitmap.height - center_y;
+
     // Cache the current transform mode.
     let cached_transform_mode = this.transform_mode;
 
@@ -1812,7 +1812,7 @@ let Poyo = new class {
 
     this.pushTransform(this.matrix);
 
-    this.translateTransform(this.matrix, draw_x, draw_y);
+    this.translateTransform(this.matrix, draw_x, -draw_y + this.target.height);
     this.rotateTransform(this.matrix, theta);
     this.translateTransform(this.matrix, -center_x, -center_y);
 
