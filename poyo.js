@@ -1067,6 +1067,10 @@ let Poyo = new class {
 
   drawText(font, color, size, x, y, alignment, text) {
 
+    let cached_transform_mode = this.transform_mode;
+
+    this.setTransformMode(this.MODE_TEXTURE);
+
     if (this.batch_drawing) {
 
       this.batch_text = true;
@@ -1095,7 +1099,15 @@ let Poyo = new class {
 
     this.pushTransform(this.matrix);
 
+    this.setTransformMode(this.MODE_VERTEX);
+
+    // Flip text right-side-up.
+    this.scaleTransform(this.matrix, 1, -1);
     this.translateTransform(this.matrix, x, y + size);
+
+    this.translateTransform(this.matrix, 0, -this.target.height);
+
+    this.setTransformMode(this.MODE_TEXTURE);
 
     let t = this.matrix.value;
 
@@ -1114,6 +1126,8 @@ let Poyo = new class {
 
       this.actuallyDrawText();
     }
+
+    this.setTransformMode(cached_transform_mode);
   }
 
   actuallyDrawText() {
