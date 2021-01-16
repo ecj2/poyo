@@ -198,7 +198,9 @@ let Poyo = new class {
 
       font_canvas_context: undefined,
 
-      texture_resolution: []
+      texture_resolution: [],
+
+      flip_vertical_reject: false
     };
 
     this.canvas.canvas = document.getElementById("poyo");
@@ -363,6 +365,7 @@ let Poyo = new class {
       uniform vec4 u_tint;
 
       uniform bool u_instance;
+      uniform bool u_flip_vertical_reject;
 
       uniform sampler2D u_texture;
 
@@ -394,8 +397,17 @@ let Poyo = new class {
           texture_offset = v_instance_texture_offset;
         }
 
+        if (u_flip_vertical_reject) {
+
+          reject = position.t < texture_offset[1] * -1.0 + 1.0;
+        }
+        else {
+
+          reject = position.t > texture_offset[1];
+        }
+
         reject = reject || position.s < 0.0 || position.s > 1.0 || position.s > texture_offset[0];
-        reject = reject || position.t < 0.0 || position.t > 1.0 || position.t > texture_offset[1];
+        reject = reject || position.t < 0.0 || position.t > 1.0;
 
         // Don't draw texels outside of the clipped offsets.
         if (reject) discard;
@@ -481,6 +493,7 @@ let Poyo = new class {
     this.uniforms["u_texture_matrix"] = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_matrix");
     this.uniforms["u_texture_offset"] = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_offset");
     this.uniforms["u_texture_resolution"] = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_resolution");
+    this.uniforms["u_flip_vertical_reject"] = this.WebGL2.getUniformLocation(this.shader_program, "u_flip_vertical_reject");
 
     let key = undefined;
 
@@ -958,6 +971,7 @@ let Poyo = new class {
         then = now - (now - then) % (1000 / 60);
 
         this.pushTransform(this.matrix);
+        this.pushTransform(this.texture_matrix);
 
         // Flip the canvas right-side-up.
         this.scaleTransform(this.matrix, 1, -1);
@@ -965,8 +979,9 @@ let Poyo = new class {
 
         loop_procedure();
 
-        // Reset matrix each frame.
+        // Reset matrices each frame.
         this.popTransform(this.matrix);
+        this.popTransform(this.texture_matrix);
 
         this.clearInputArrays();
       }
@@ -1566,6 +1581,7 @@ let Poyo = new class {
     }
 
     // @TODO: Make texture transformations work in batches.
+    // @TODO: Make batches work again after the past few commits broke them.
   }
 
   addBitmapInstance(bitmap, offsets = [0, 0, 1, 1], tint = this.createColor(255, 255, 255)) {
@@ -1597,6 +1613,8 @@ let Poyo = new class {
   }
 
   drawConsolidatedBitmap(bitmap, texture_offset = [0, 0, 1, 1], tint = this.createColor(255, 255, 255)) {
+
+    // @FIXME: Vertex translations are inverted?
 
     if (this.cache.tint != "" + tint.r + tint.g + tint.b + tint.a) {
 
@@ -1637,6 +1655,10 @@ let Poyo = new class {
     this.pushTransform(this.matrix);
     this.pushTransform(this.texture_matrix);
 
+    let flip_vertical_reject = false;
+
+    let vertical_offset = -texture_offset[1];
+
     if (bitmap.must_be_flipped) {
 
       // Flip textures right-side-up.
@@ -1646,10 +1668,21 @@ let Poyo = new class {
       // Vertically flip vertices as well.
       this.scaleTransform(this.matrix, 1, -1);
       this.translateTransform(this.matrix, 0, -bitmap.height);
+
+      flip_vertical_reject = true;
+
+      vertical_offset *= -1;
     }
 
     // Offset texture.
-    this.translateTransform(this.texture_matrix, -texture_offset[0], -texture_offset[1]);
+    this.translateTransform(this.texture_matrix, -texture_offset[0], vertical_offset);
+
+    if (this.cache.flip_vertical_reject != flip_vertical_reject) {
+
+      this.WebGL2.uniform1i(this.uniforms["u_flip_vertical_reject"], flip_vertical_reject);
+
+      this.cache.flip_vertical_reject = flip_vertical_reject;
+    }
 
     if (this.cache.instance != this.batch_drawing) {
 
@@ -1859,16 +1892,8 @@ let Poyo = new class {
 
   rotateTransform(transform, theta) {
 
-    let direction = -1;
-
-    if (this.transform_mode == this.MODE_TEXTURE) {
-
-      // Fix rotation direction when applied to textures, lest it be counter-clockwise.
-      direction = -1;
-    }
-
-    let sine = Math.sin(theta * direction);
-    let cosine = Math.cos(theta * direction);
+    let sine = Math.sin(-theta);
+    let cosine = Math.cos(-theta);
 
     let rotated_matrix = [
 
