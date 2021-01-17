@@ -1126,8 +1126,6 @@ let Poyo = new class {
 
     this.translateTransform(this.matrix, 0, -this.target.height);
 
-    this.setTransformMode(this.MODE_TEXTURE);
-
     let t = this.matrix.value;
 
     this.font.context.save();
