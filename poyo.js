@@ -1936,9 +1936,11 @@ let Poyo = new class {
 
   rotateTransform(transform, theta) {
 
+    // @FIXME: Broken in texture transforms.
+
     let direction = -1;
 
-    if (this.fix_bespoke_transformations) {
+    if (this.fix_bespoke_transformations && this.transform_mode != this.MODE_TEXTURE) {
 
       direction *= -1;
     }
@@ -1973,6 +1975,8 @@ let Poyo = new class {
   }
 
   shearTransform(transform, theta_x, theta_y) {
+
+    // @TODO: Remove me? Test to see if this still works.
 
     let sheared_matrix = [
 
