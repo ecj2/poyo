@@ -165,6 +165,8 @@ let Poyo = new class {
     this.MODE_TEXTURE = 1;
 
     this.transform_mode = this.MODE_VERTEX;
+
+    this.fix_bespoke_transformations = true;
   }
 
   getErrors() {
@@ -1726,6 +1728,14 @@ let Poyo = new class {
 
   drawBitmap(bitmap, x, y, tint) {
 
+    this.fix_bespoke_transformations = false;
+
+    // Cache the current transform mode.
+    let cached_transform_mode = this.transform_mode;
+
+    // Use vertex mode to prevent contamination from texture transformations.
+    this.setTransformMode(Poyo.MODE_VERTEX);
+
     this.pushTransform(this.matrix);
 
     this.translateTransform(this.matrix, x, -y + this.target.height - bitmap.height);
@@ -1740,9 +1750,16 @@ let Poyo = new class {
     }
 
     this.popTransform(this.matrix);
+
+    // Return to the previous transform mode.
+    this.setTransformMode(cached_transform_mode);
+
+    this.fix_bespoke_transformations = true;
   }
 
   drawScaledBitmap(bitmap, origin_x, origin_y, scale_x, scale_y, draw_x, draw_y, tint) {
+
+    this.fix_bespoke_transformations = false;
 
     // Cache the current transform mode.
     let cached_transform_mode = this.transform_mode;
@@ -1752,12 +1769,10 @@ let Poyo = new class {
 
     this.pushTransform(this.matrix);
 
+    // @FIXME: Translated to wrong place at times.
     this.translateTransform(this.matrix, draw_x, -draw_y + this.target.height - bitmap.height * scale_y);
     this.scaleTransform(this.matrix, scale_x, scale_y);
     this.translateTransform(this.matrix, -origin_x, -origin_y);
-
-    // Return to the previous transform mode.
-    this.setTransformMode(cached_transform_mode);
 
     if (this.batch_drawing) {
 
@@ -1769,9 +1784,16 @@ let Poyo = new class {
     }
 
     this.popTransform(this.matrix);
+
+    // Return to the previous transform mode.
+    this.setTransformMode(cached_transform_mode);
+
+    this.fix_bespoke_transformations = true;
   }
 
   drawClippedBitmap(bitmap, start_x, start_y, width, height, x, y, tint) {
+
+    this.fix_bespoke_transformations = false;
 
     let texture_offset = [
 
@@ -1798,11 +1820,13 @@ let Poyo = new class {
     }
 
     this.popTransform(this.matrix);
+
+    this.fix_bespoke_transformations = true;
   }
 
   drawRotatedBitmap(bitmap, center_x, center_y, draw_x, draw_y, theta, tint) {
 
-    center_y = bitmap.height - center_y;
+    this.fix_bespoke_transformations = false;
 
     // Cache the current transform mode.
     let cached_transform_mode = this.transform_mode;
@@ -1814,7 +1838,7 @@ let Poyo = new class {
 
     this.translateTransform(this.matrix, draw_x, -draw_y + this.target.height);
     this.rotateTransform(this.matrix, theta);
-    this.translateTransform(this.matrix, -center_x, -center_y);
+    this.translateTransform(this.matrix, -center_x, -bitmap.height + center_y);
 
     if (this.batch_drawing) {
 
@@ -1829,6 +1853,8 @@ let Poyo = new class {
 
     // Return to the previous transform mode.
     this.setTransformMode(cached_transform_mode);
+
+    this.fix_bespoke_transformations = true;
   }
 
   getIdentityTransform() {
@@ -1864,7 +1890,17 @@ let Poyo = new class {
 
       case this.MODE_VERTEX:
 
+        this.pushTransform(transform);
+
+        if (this.fix_bespoke_transformations) {
+
+          this.scaleTransform(transform, 1, -1);
+          this.translateTransform(transform, 0, -this.target.height);
+        }
+
         this.matrix.value = transform.value;
+
+        this.popTransform(transform);
       break;
     }
   }
@@ -1892,8 +1928,15 @@ let Poyo = new class {
 
   rotateTransform(transform, theta) {
 
-    let sine = Math.sin(-theta);
-    let cosine = Math.cos(-theta);
+    let direction = -1;
+
+    if (this.fix_bespoke_transformations) {
+
+      direction *= -1;
+    }
+
+    let sine = Math.sin(theta * direction);
+    let cosine = Math.cos(theta * direction);
 
     let rotated_matrix = [
 
