@@ -408,11 +408,7 @@ let Poyo = new class {
           reject = position.t > texture_offset[1];
         }
 
-        reject = reject || position.s < 0.0 || position.s > 1.0 || position.s > texture_offset[0];
-        reject = reject || position.t < 0.0 || position.t > 1.0;
-
-        // Don't draw texels outside of the clipped offsets.
-        if (reject) discard;
+        reject = reject || position.s > texture_offset[0];
 
         mat3 matrix = u_texture_matrix;
 
@@ -422,6 +418,12 @@ let Poyo = new class {
 
         // Convert pixel space to texture space.
         position = vec2(matrix * vec3(position, 1.0)) / u_texture_resolution;
+
+        reject = reject || position.s < 0.0 || position.s > 1.0;
+        reject = reject || position.t < 0.0 || position.t > 1.0;
+
+        // Don't draw texels outside of the clipped offsets.
+        if (reject) discard;
 
         output_color = texture(u_texture, position) * tint;
       }
