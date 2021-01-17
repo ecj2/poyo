@@ -194,15 +194,11 @@ let Poyo = new class {
 
       texture_offset: [],
 
-      font_bitmap: undefined,
-
-      font_canvas: undefined,
-
-      font_canvas_context: undefined,
-
       texture_resolution: [],
 
-      flip_vertical_reject: false
+      flip_vertical_reject: false,
+
+      discard_boundaries: false
     };
 
     this.canvas.canvas = document.getElementById("poyo");
@@ -367,6 +363,7 @@ let Poyo = new class {
       uniform vec4 u_tint;
 
       uniform bool u_instance;
+      uniform bool u_discard_boundaries;
       uniform bool u_flip_vertical_reject;
 
       uniform sampler2D u_texture;
@@ -419,8 +416,12 @@ let Poyo = new class {
         // Convert pixel space to texture space.
         position = vec2(matrix * vec3(position, 1.0)) / u_texture_resolution;
 
-        reject = reject || position.s < 0.0 || position.s > 1.0;
-        reject = reject || position.t < 0.0 || position.t > 1.0;
+        if (u_discard_boundaries) {
+
+          // Discard out-of-bounds texels on clamped textures.
+          reject = reject || position.s < 0.0 || position.s > 1.0;
+          reject = reject || position.t < 0.0 || position.t > 1.0;
+        }
 
         // Don't draw texels outside of the clipped offsets.
         if (reject) discard;
@@ -496,6 +497,7 @@ let Poyo = new class {
     this.uniforms["u_resolution"] = this.WebGL2.getUniformLocation(this.shader_program, "u_resolution");
     this.uniforms["u_texture_matrix"] = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_matrix");
     this.uniforms["u_texture_offset"] = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_offset");
+    this.uniforms["u_discard_boundaries"] = this.WebGL2.getUniformLocation(this.shader_program, "u_discard_boundaries");
     this.uniforms["u_texture_resolution"] = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_resolution");
     this.uniforms["u_flip_vertical_reject"] = this.WebGL2.getUniformLocation(this.shader_program, "u_flip_vertical_reject");
 
@@ -1722,6 +1724,13 @@ let Poyo = new class {
 
     this.setTransformMode(mode);
 
+    if (this.cache.discard_boundaries != bitmap.discard_boundaries) {
+
+      this.WebGL2.uniform1i(this.uniforms["u_discard_boundaries"], bitmap.discard_boundaries);
+
+      this.cache.discard_boundaries = bitmap.discard_boundaries;
+    }
+
     // Draw the bitmap.
     this.WebGL2.drawArrays(this.WebGL2.TRIANGLE_FAN, 0, 4);
   }
@@ -2028,6 +2037,13 @@ let Poyo = new class {
     // Clear texture cache to force a re-bind.
     this.cache.texture = undefined;
 
+    let discard_boundaries = false;
+
+    if (this.texture_wrap_s == this.WebGL2.CLAMP_TO_EDGE) {
+
+      discard_boundaries = true;
+    }
+
     return {
 
       width: width,
@@ -2038,7 +2054,9 @@ let Poyo = new class {
 
       framebuffer: framebuffer,
 
-      must_be_flipped: true
+      must_be_flipped: true,
+
+      discard_boundaries: discard_boundaries
     };
   }
 
