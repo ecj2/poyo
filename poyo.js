@@ -1769,10 +1769,9 @@ let Poyo = new class {
 
     this.pushTransform(this.matrix);
 
-    // @FIXME: Translated to wrong place at times.
     this.translateTransform(this.matrix, draw_x, -draw_y + this.target.height - bitmap.height * scale_y);
     this.scaleTransform(this.matrix, scale_x, scale_y);
-    this.translateTransform(this.matrix, -origin_x, -origin_y);
+    this.translateTransform(this.matrix, -origin_x, origin_y);
 
     if (this.batch_drawing) {
 
