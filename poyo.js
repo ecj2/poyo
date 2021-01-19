@@ -310,6 +310,8 @@ let Poyo = new class {
       layout(location = 3) in vec3 a_instance_matrix_part_1;
       layout(location = 4) in vec3 a_instance_matrix_part_2;
       layout(location = 5) in vec2 a_instance_texture_offset;
+      layout(location = 6) in vec3 a_instance_texture_matrix_part_1;
+      layout(location = 7) in vec3 a_instance_texture_matrix_part_2;
 
       uniform mat3 u_matrix;
 
@@ -320,11 +322,13 @@ let Poyo = new class {
       out vec2 v_texture_position;
 
       out vec4 v_instance_tint;
+      out mat3 v_texture_matrix;
       out vec2 v_instance_texture_offset;
 
       void main(void) {
 
         mat3 matrix = u_matrix;
+        mat3 texture_matrix;
         vec2 position = a_vertex_position;
 
         if (u_instance) {
@@ -336,7 +340,15 @@ let Poyo = new class {
           matrix[1][1] = a_instance_matrix_part_2[0];
           matrix[2][1] = a_instance_matrix_part_1[2];
 
+          texture_matrix[0][0] = a_instance_texture_matrix_part_1[0];
+          texture_matrix[1][0] = a_instance_texture_matrix_part_2[2];
+          texture_matrix[2][0] = a_instance_texture_matrix_part_1[1];
+          texture_matrix[0][1] = a_instance_texture_matrix_part_2[1];
+          texture_matrix[1][1] = a_instance_texture_matrix_part_2[0];
+          texture_matrix[2][1] = a_instance_texture_matrix_part_1[2];
+
           v_instance_tint = a_instance_tint;
+          v_texture_matrix = texture_matrix;
           v_instance_texture_offset = a_instance_texture_offset;
         }
 
@@ -371,6 +383,7 @@ let Poyo = new class {
       uniform vec2 u_texture_offset;
 
       in vec4 v_instance_tint;
+      in mat3 v_texture_matrix;
       in vec2 v_instance_texture_offset;
 
       uniform mat3 u_texture_matrix;
@@ -390,9 +403,12 @@ let Poyo = new class {
         vec4 tint = u_tint;
         vec2 texture_offset = u_texture_offset;
 
+        mat3 matrix = u_texture_matrix;
+
         if (u_instance) {
 
           tint = v_instance_tint;
+          matrix = v_texture_matrix;
           texture_offset = v_instance_texture_offset;
         }
 
@@ -406,8 +422,6 @@ let Poyo = new class {
         }
 
         reject = reject || position.s > texture_offset[0];
-
-        mat3 matrix = u_texture_matrix;
 
         // Invert texture translations.
         matrix[2][0] *= -1.0;
@@ -1541,25 +1555,35 @@ let Poyo = new class {
     this.WebGL2.bindBuffer(this.WebGL2.ARRAY_BUFFER, this.instanced_drawing_buffer);
     this.WebGL2.bufferData(this.WebGL2.ARRAY_BUFFER, new Float32Array(this.instanced_drawing_buffer_data), this.WebGL2.STATIC_DRAW);
 
-    // Tints.
-    this.WebGL2.vertexAttribPointer(2, 4, this.WebGL2.FLOAT, false, 4 * 14, 40);
-    this.WebGL2.vertexAttribDivisor(2, 1);
-    this.WebGL2.enableVertexAttribArray(2);
-
     // Matrices part 1.
-    this.WebGL2.vertexAttribPointer(3, 3, this.WebGL2.FLOAT, false, 4 * 14, 0);
+    this.WebGL2.vertexAttribPointer(3, 3, this.WebGL2.FLOAT, false, 4 * 18, 4 * 0);
     this.WebGL2.vertexAttribDivisor(3, 1);
     this.WebGL2.enableVertexAttribArray(3);
 
     // Matrices part 2.
-    this.WebGL2.vertexAttribPointer(4, 3, this.WebGL2.FLOAT, false, 4 * 14, 12);
+    this.WebGL2.vertexAttribPointer(4, 3, this.WebGL2.FLOAT, false, 4 * 18, 4 * 3);
     this.WebGL2.vertexAttribDivisor(4, 1);
     this.WebGL2.enableVertexAttribArray(4);
 
+    // Tints.
+    this.WebGL2.vertexAttribPointer(2, 4, this.WebGL2.FLOAT, false, 4 * 18, 4 * 6);
+    this.WebGL2.vertexAttribDivisor(2, 1);
+    this.WebGL2.enableVertexAttribArray(2);
+
     // Texture offsets.
-    this.WebGL2.vertexAttribPointer(5, 4, this.WebGL2.FLOAT, false, 4 * 14, 24);
+    this.WebGL2.vertexAttribPointer(5, 2, this.WebGL2.FLOAT, false, 4 * 18, 4 * 10);
     this.WebGL2.vertexAttribDivisor(5, 1);
     this.WebGL2.enableVertexAttribArray(5);
+
+    // Texture matrices part 1.
+    this.WebGL2.vertexAttribPointer(6, 3, this.WebGL2.FLOAT, false, 4 * 18, 4 * 12);
+    this.WebGL2.vertexAttribDivisor(6, 1);
+    this.WebGL2.enableVertexAttribArray(6);
+
+    // Texture matrices part 2.
+    this.WebGL2.vertexAttribPointer(7, 3, this.WebGL2.FLOAT, false, 4 * 18, 4 * 15);
+    this.WebGL2.vertexAttribDivisor(7, 1);
+    this.WebGL2.enableVertexAttribArray(7);
 
     if (this.cache.instance != this.batch_drawing) {
 
@@ -1568,24 +1592,37 @@ let Poyo = new class {
       this.cache.instance = this.batch_drawing;
     }
 
-    let flip_it = this.instanced_bitmap.must_be_flipped && !this.cache.flip_texture_offset;
+    if (this.instanced_bitmap.width != this.cache.texture_resolution[0] || this.instanced_bitmap.height != this.cache.texture_resolution[1]) {
 
-    if (flip_it) {
+      // Upload texture resolution.
+      this.WebGL2.uniform2fv(this.uniforms["u_texture_resolution"], [this.instanced_bitmap.width, this.instanced_bitmap.height]);
 
-      // Flip the texture offsets.
-      this.WebGL2.uniform1i(this.uniforms["u_flip_texture_offset"], true);
+      // Cache it for next time.
+      this.cache.texture_resolution = [this.instanced_bitmap.width, this.instanced_bitmap.height];
     }
 
-    this.WebGL2.drawArraysInstanced(this.WebGL2.TRIANGLE_FAN, 0, 4, this.instanced_drawing_buffer_data.length / 14);
+    if (this.cache.discard_boundaries != this.instanced_bitmap.discard_boundaries) {
 
-    if (flip_it) {
+      this.WebGL2.uniform1i(this.uniforms["u_discard_boundaries"], this.instanced_bitmap.discard_boundaries);
 
-      // Flip texture offsets back without affecting cache.
-      this.WebGL2.uniform1i(this.uniforms["u_flip_texture_offset"], false);
+      this.cache.discard_boundaries = this.instanced_bitmap.discard_boundaries;
     }
 
-    // @TODO: Make texture transformations work in batches.
-    // @TODO: Make batches work again after the past few commits broke them.
+    let flip_vertical_reject = false;
+
+    if (this.instanced_bitmap.must_be_flipped) {
+
+      flip_vertical_reject = true;
+    }
+
+    if (this.cache.flip_vertical_reject != flip_vertical_reject) {
+
+      this.WebGL2.uniform1i(this.uniforms["u_flip_vertical_reject"], flip_vertical_reject);
+
+      this.cache.flip_vertical_reject = flip_vertical_reject;
+    }
+
+    this.WebGL2.drawArraysInstanced(this.WebGL2.TRIANGLE_FAN, 0, 4, this.instanced_drawing_buffer_data.length / 18);
   }
 
   addBitmapInstance(bitmap, offsets = [0, 0, 1, 1], tint = this.createColor(255, 255, 255)) {
@@ -1595,11 +1632,33 @@ let Poyo = new class {
     // Cache the current transform mode.
     let cached_transform_mode = this.transform_mode;
 
+    this.pushTransform(this.texture_matrix);
+
     // Use vertex mode to prevent contamination from texture transformations.
     this.setTransformMode(this.MODE_VERTEX);
 
+    let vertical_offset = -offsets[1];
+
+    if (bitmap.must_be_flipped) {
+
+      // Flip textures right-side-up.
+      this.scaleTransform(this.texture_matrix, 1, -1);
+      this.translateTransform(this.texture_matrix, 0, this.instanced_bitmap.height);
+
+      // Vertically flip vertices as well.
+      this.scaleTransform(this.matrix, 1, -1);
+      this.translateTransform(this.matrix, 0, -this.instanced_bitmap.height);
+
+      vertical_offset *= -1;
+    }
+
+    this.translateTransform(this.texture_matrix, -offsets[0], vertical_offset);
+
     // Scale instanced bitmap to its proper resolution.
     this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
+
+    // Scale the texture so it appears properly.
+    this.scaleTransform(this.texture_matrix, this.instanced_bitmap.width, this.instanced_bitmap.height);
 
     // Return to the previous transform mode.
     this.setTransformMode(cached_transform_mode);
@@ -1610,10 +1669,16 @@ let Poyo = new class {
 
       this.matrix.value[4], this.matrix.value[1], this.matrix.value[3],
 
-      offsets[0], offsets[1], offsets[2], offsets[3],
+      tint.r, tint.g, tint.b, tint.a,
 
-      tint.r, tint.g, tint.b, tint.a
+      offsets[2], offsets[3],
+
+      this.texture_matrix.value[0], this.texture_matrix.value[6], this.texture_matrix.value[7],
+
+      this.texture_matrix.value[4], this.texture_matrix.value[1], this.texture_matrix.value[3]
     );
+
+    this.popTransform(this.texture_matrix);
   }
 
   drawConsolidatedBitmap(bitmap, texture_offset = [0, 0, 1, 1], tint = this.createColor(255, 255, 255)) {
