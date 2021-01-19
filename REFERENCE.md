@@ -645,7 +645,7 @@ let transform = Poyo.createTransform();
 Poyo.setTransformMode(mode)
 ```
 
-Changes the transform mode to `mode`. Options include `Poyo.MODE_VERTEX` and `Poyo.MODE_TEXTURE`. Poyo initializes to `Poyo.MODE_VERTEX` by default, where transforms are applied to the vertices of objects drawn to the canvas. `Poyo.MODE_TEXTURE` applies transforms to textures, but are not supported within batches.
+Changes the transform mode to `mode`. Options include `Poyo.MODE_VERTEX` and `Poyo.MODE_TEXTURE`. Poyo initializes to `Poyo.MODE_VERTEX` by default, where transforms are applied to the vertices of objects drawn to the canvas, but `Poyo.MODE_TEXTURE` applies transforms to textures.
 
 The two modes can be used to achieve interesting effects, such as an infinitely repeating background through one draw call:
 
@@ -696,11 +696,9 @@ function render() {
 
   // Restore texture transform so as not to apply it to other draw calls.
   Poyo.restoreTransform(transform_texture);
-  Poyo.useTransform(transform_texture);
 
   // Restore vertex transform so as not to apply the scaling to other draw calls.
   Poyo.restoreTransform(transform_vertex);
-  Poyo.useTransform(transform_vertex);
 
   // Set the transform mode back to Poyo.MODE_VERTEX, the default.
   Poyo.setTransformMode(Poyo.MODE_VERTEX);
@@ -836,7 +834,6 @@ Pops the given `transform` from Poyo's matrix stack, and uses `transform`'s valu
 function render() {
 
   // ...
-
 
   let transform = Poyo.createTransform();
 
