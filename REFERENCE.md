@@ -515,6 +515,42 @@ This method can only be used to batch a single texture from a single bitmap at a
 
 ---
 
+**Poyo.drawBatch()**
+
+```js
+Poyo.drawBatch(procedure)
+```
+
+Executes `procedure` with batching enabled.
+
+```js
+Poyo.drawBatch(
+
+  () => {
+
+    for (let i = 0; i < 1000; ++i) {
+
+      // Draw a bitmap 1000 times.
+      Poyo.drawBitmap(bitmap, x, y);
+    }
+  }
+);
+```
+
+This is equivalent to:
+
+```js
+Poyo.batchDrawing(true);
+
+procedure();
+
+Poyo.batchDrawing(false);
+```
+
+The same restrictions applied to `Poyo.batchDrawing()` apply here, in that you can not interweave multiple bitmaps in a single batch.
+
+---
+
 **Poyo.setNewBitmapFlags()**
 
 ```js

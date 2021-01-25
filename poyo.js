@@ -1930,6 +1930,15 @@ let Poyo = new class {
     this.fix_bespoke_transformations = true;
   }
 
+  drawBatch(procedure) {
+
+    this.batchDrawing(true);
+
+    procedure();
+
+    this.batchDrawing(false);
+  }
+
   getIdentityTransform() {
 
     return [
