@@ -36,7 +36,7 @@ function main() {
   // Initialize Poyo and set the canvas' dimensions to 768x432 pixels.
   if (!Poyo.initialize(768, 432)) {
 
-    Poyo.getErrors.forEach(
+    Poyo.getErrors().forEach(
 
       (error) => {
 
