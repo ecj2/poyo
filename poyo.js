@@ -1808,7 +1808,7 @@ let Poyo = new class {
     let cached_transform_mode = this.transform_mode;
 
     // Use vertex mode to prevent contamination from texture transformations.
-    this.setTransformMode(Poyo.MODE_VERTEX);
+    this.setTransformMode(this.MODE_VERTEX);
 
     this.pushTransform(this.matrix);
 
@@ -1839,7 +1839,7 @@ let Poyo = new class {
     let cached_transform_mode = this.transform_mode;
 
     // Use vertex mode to prevent contamination from texture transformations.
-    this.setTransformMode(Poyo.MODE_VERTEX);
+    this.setTransformMode(this.MODE_VERTEX);
 
     this.pushTransform(this.matrix);
 
@@ -1905,7 +1905,7 @@ let Poyo = new class {
     let cached_transform_mode = this.transform_mode;
 
     // Use vertex mode to prevent contamination from texture transformations.
-    this.setTransformMode(Poyo.MODE_VERTEX);
+    this.setTransformMode(this.MODE_VERTEX);
 
     this.pushTransform(this.matrix);
 
