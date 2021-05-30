@@ -262,34 +262,12 @@ Colors are used to clear draw targets, tint bitmaps, and shade text.
 Poyo.createColor(r, g, b, a)
 ```
 
-Returns an integer representing the color values. Each channel ranges from 0 to 255, with `a` representing an optional alpha.
+Returns an object literal containing color values. Each channel ranges from 0 to 255, with `a` representing an optional alpha.
 
 ```js
 let blue = Poyo.createColor(0, 0, 255);
 let translucent_yellow = Poyo.createColor(255, 255, 0, 128);
 ```
-
----
-
-**Poyo.reverseColor()**
-
-```js
-Poyo.reverseColor(color)
-```
-
-Converts an integer color previously created by `Poyo.createColor()` to an object literal containing discrete color channels in decimal form.
-
-```js
-return Poyo.reverseColor(297805567);
-```
-
-Expected output:
-
-```js
-{r: 0.06666666666666667, g: 0.7529411764705882, b: 0.14901960784313725, a: 1}
-```
-
-The values could then be multiplied by `255` to retrieve the originally-passed whole values.
 
 ---
 

@@ -59,7 +59,7 @@ function createCustomShader() {
 
     uniform sampler2D u_texture;
 
-    out vec4 output_color;
+    out vec4 final_color;
 
     void main(void) {
 
@@ -71,7 +71,7 @@ function createCustomShader() {
       position.s += sin(position.t * 10.0 * PI + u_time * 10.0) / 100.0;
       position.t += cos(position.s * 10.0 * PI + u_time * 10.0) / 100.0;
 
-      output_color = texture(u_texture, position);
+      final_color = texture(u_texture, position);
     }
   `;
 

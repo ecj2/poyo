@@ -296,7 +296,7 @@ let Poyo = new class {
       layout(location = 0) in vec2 a_vertex_position;
       layout(location = 1) in vec2 a_texture_position;
 
-      layout(location = 2) in float a_instance_tint;
+      layout(location = 2) in vec4 a_instance_tint;
       layout(location = 3) in vec3 a_instance_matrix_part_1;
       layout(location = 4) in vec3 a_instance_matrix_part_2;
       layout(location = 5) in vec4 a_instance_texture_offset;
@@ -309,9 +309,9 @@ let Poyo = new class {
 
       uniform bool u_flip_texture_offset;
 
+      out vec4 v_instance_tint;
       out vec2 v_texture_position;
 
-      flat out int v_instance_tint;
       flat out int v_flip_texture_offset;
 
       out vec4 v_instance_texture_offset;
@@ -336,7 +336,7 @@ let Poyo = new class {
             position.y += u_resolution.y;
           }
 
-          v_instance_tint = int(a_instance_tint);
+          v_instance_tint = a_instance_tint;
           v_instance_texture_offset = a_instance_texture_offset;
         }
 
@@ -362,7 +362,7 @@ let Poyo = new class {
 
       in vec2 v_texture_position;
 
-      uniform int u_tint;
+      uniform vec4 u_tint;
 
       uniform bool u_instance;
 
@@ -370,12 +370,12 @@ let Poyo = new class {
 
       uniform vec4 u_texture_offset;
 
-      flat in int v_instance_tint;
       flat in int v_flip_texture_offset;
 
+      in vec4 v_instance_tint;
       in vec4 v_instance_texture_offset;
 
-      out vec4 output_color;
+      out vec4 final_color;
 
       void main(void) {
 
@@ -383,7 +383,7 @@ let Poyo = new class {
 
         vec2 position = v_texture_position;
 
-        int tint = u_tint;
+        vec4 tint = u_tint;
         vec4 texture_offset = u_texture_offset;
 
         if (u_instance) {
@@ -413,13 +413,7 @@ let Poyo = new class {
         // Don't draw texels outside of the clipped offsets.
         if (reject) discard;
 
-        // Retrieve color channels from tint.
-        int r = tint >> 24 & 255;
-        int g = tint >> 16 & 255;
-        int b = tint >> 8 & 255;
-        int a = tint >> 0 & 255;
-
-        output_color = texture(u_texture, position) * vec4(r, g, b, a) / 255.0;
+        final_color = texture(u_texture, position) * tint;
       }
     `;
 
@@ -857,8 +851,6 @@ let Poyo = new class {
 
   clearToColor(color) {
 
-    color = this.reverseColor(color);
-
     this.WebGL2.clearColor(color.r, color.g, color.b, color.a);
 
     this.WebGL2.clear(this.WebGL2.COLOR_BUFFER_BIT);
@@ -1001,21 +993,7 @@ let Poyo = new class {
 
   createColor(r, g, b, a = 255) {
 
-    return r << 24 | g << 16 | b << 8 | a << 0;
-  }
-
-  reverseColor(color) {
-
-    return {
-
-      r: (color >> 24 & 255) / 255,
-
-      g: (color >> 16 & 255) / 255,
-
-      b: (color >> 8 & 255) / 255,
-
-      a: (color >> 0 & 255) / 255
-    };
+    return {r: r / 255, g: g / 255, b: b / 255, a: a / 255};
   }
 
   setEntryPoint(function_name) {
@@ -1096,8 +1074,6 @@ let Poyo = new class {
       this.font.canvas.width = this.target.width;
       this.font.canvas.height = this.target.height;
     }
-
-    color = this.reverseColor(color);
 
     let r = color.r * 255;
     let g = color.g * 255;
@@ -1519,22 +1495,22 @@ let Poyo = new class {
     this.WebGL2.bufferData(this.WebGL2.ARRAY_BUFFER, new Float32Array(this.instanced_drawing_buffer_data), this.WebGL2.STATIC_DRAW);
 
     // Tints.
-    this.WebGL2.vertexAttribPointer(2, 1, this.WebGL2.FLOAT, false, 4 * 1, 40);
+    this.WebGL2.vertexAttribPointer(2, 4, this.WebGL2.FLOAT, false, 4 * 14, 40);
     this.WebGL2.vertexAttribDivisor(2, 1);
     this.WebGL2.enableVertexAttribArray(2);
 
     // Matrices part 1.
-    this.WebGL2.vertexAttribPointer(3, 3, this.WebGL2.FLOAT, false, 4 * 1, 0);
+    this.WebGL2.vertexAttribPointer(3, 3, this.WebGL2.FLOAT, false, 4 * 14, 0);
     this.WebGL2.vertexAttribDivisor(3, 1);
     this.WebGL2.enableVertexAttribArray(3);
 
     // Matrices part 2.
-    this.WebGL2.vertexAttribPointer(4, 3, this.WebGL2.FLOAT, false, 4 * 1, 12);
+    this.WebGL2.vertexAttribPointer(4, 3, this.WebGL2.FLOAT, false, 4 * 14, 12);
     this.WebGL2.vertexAttribDivisor(4, 1);
     this.WebGL2.enableVertexAttribArray(4);
 
     // Texture offsets.
-    this.WebGL2.vertexAttribPointer(5, 4, this.WebGL2.FLOAT, false, 4 * 1, 24);
+    this.WebGL2.vertexAttribPointer(5, 4, this.WebGL2.FLOAT, false, 4 * 14, 24);
     this.WebGL2.vertexAttribDivisor(5, 1);
     this.WebGL2.enableVertexAttribArray(5);
 
@@ -1553,7 +1529,7 @@ let Poyo = new class {
       this.WebGL2.uniform1i(this.uniforms.u_flip_texture_offset, true);
     }
 
-    this.WebGL2.drawArraysInstanced(this.WebGL2.TRIANGLE_FAN, 0, 4, this.instanced_drawing_buffer_data.length / 1);
+    this.WebGL2.drawArraysInstanced(this.WebGL2.TRIANGLE_FAN, 0, 4, this.instanced_drawing_buffer_data.length / 14);
 
     if (flip_it) {
 
@@ -1577,19 +1553,21 @@ let Poyo = new class {
 
       offsets[0], offsets[1], offsets[2], offsets[3],
 
-      tint
+      tint.r, tint.g, tint.b, tint.a
     );
   }
 
   drawConsolidatedBitmap(bitmap, texture_offset = [0, 0, 1, 1], tint = this.createColor(255, 255, 255), flip_texture_offset = false) {
 
-    if (this.cache.tint != tint) {
+    let crunched_tint = tint.r << 24 | tint.g << 16 | tint.b << 8 | tint.a << 0;
+
+    if (this.cache.tint != crunched_tint) {
 
       // Upload the tint.
-      this.WebGL2.uniform1i(this.uniforms.u_tint, tint);
+      this.WebGL2.uniform4fv(this.uniforms.u_tint, [tint.r, tint.g, tint.b, tint.a]);
 
       // Cache the tint for next time.
-      this.cache.tint = tint;
+      this.cache.tint = crunched_tint;
     }
 
     if (this.cache.texture != bitmap.reference) {
