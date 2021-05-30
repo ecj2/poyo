@@ -1118,6 +1118,16 @@ WebGL2.useProgram(program);
 
 ---
 
+**Poyo.clearCache()**
+
+```js
+Poyo.clearCache();
+```
+
+Clears GPU cache and reverts to the default shader program and draw target. This should be called when you want to return control back to Poyo after creating or using a bespoke shader.
+
+---
+
 ## Miscellaneous
 
 Here are some other methods that don't quite fit into their own categories.

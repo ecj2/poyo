@@ -125,7 +125,7 @@ function createCustomShader() {
 
   // Clear cache and tell Poyo to use its default program.
   // Without this, future Poyo drawing calls would throw errors.
-  Poyo.setDrawTarget(Poyo.getDefaultDrawTarget());
+  Poyo.clearCache();
 }
 
 function render() {
@@ -175,5 +175,5 @@ function drawWobblyBitmap(bitmap) {
 
   WebGL2.drawArrays(WebGL2.TRIANGLE_FAN, 0, 4);
 
-  Poyo.setDrawTarget(Poyo.getDefaultDrawTarget());
+  Poyo.clearCache();
 }

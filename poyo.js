@@ -4,7 +4,18 @@ let Poyo = new class {
 
   constructor() {
 
-    this.cache = {};
+    this.cache = {
+
+      tint: 0,
+
+      texture: 0,
+
+      instance: false,
+
+      texture_offset: [],
+
+      flip_texture_offset: false,
+    };
 
     this.mouse = {
 
@@ -179,17 +190,6 @@ let Poyo = new class {
 
     // Set the time in which the library was initialized.
     this.time_initialized = Date.now();
-
-    this.cache = {
-
-      tint: 0,
-
-      texture: 0,
-
-      texture_offset: [],
-
-      flip_texture_offset: false
-    };
 
     this.canvas.canvas = document.getElementById("poyo");
 
@@ -516,23 +516,15 @@ let Poyo = new class {
       [
 
         // Vertex data.
-
         0, 0,
-
         this.target.width, 0,
-
         this.target.width, this.target.height,
-
         0, this.target.height,
 
         // Texture data.
-
         0, 0,
-
         1, 0,
-
         1, 1,
-
         0, 1
       ]
     );
@@ -1941,5 +1933,25 @@ let Poyo = new class {
   getDefaultDrawTarget() {
 
     return null;
+  }
+
+  clearCache() {
+
+    // Reset cache to defaults.
+    this.cache = {
+
+      tint: 0,
+
+      texture: 0,
+
+      instance: false,
+
+      texture_offset: [],
+
+      flip_texture_offset: false,
+    };
+
+    // Revert to default shader program and draw target.
+    this.setDrawTarget(this.getDefaultDrawTarget());
   }
 };
