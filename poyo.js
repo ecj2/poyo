@@ -159,6 +159,8 @@ let Poyo = new class {
     this.WRAP_CLAMP = 4;
     this.WRAP_REPEAT = 5;
     this.WRAP_MIRROR = 6;
+
+    this.bitmap_reference_counter = 0;
   }
 
   getErrors() {
@@ -182,7 +184,7 @@ let Poyo = new class {
 
       tint: 0,
 
-      texture: undefined,
+      texture: 0,
 
       texture_offset: [],
 
@@ -1508,15 +1510,15 @@ let Poyo = new class {
     // Don't attempt to draw anything if the buffer data is empty.
     if (this.instanced_drawing_buffer_data.length == 0) return;
 
-    if (this.cache.texture != this.instanced_bitmap.texture) {
+    if (this.cache.texture != this.instanced_bitmap.reference) {
 
       // Set the active texture.
       this.WebGL2.activeTexture(this.WebGL2.TEXTURE0);
       this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, this.instanced_bitmap.texture);
       this.WebGL2.uniform1i(this.uniforms["u_texture"], 0);
 
-      // Cache the texture for next time.
-      this.cache.texture = this.instanced_bitmap.texture;
+      // Cache the texture reference for next time.
+      this.cache.texture = this.instanced_bitmap.reference;
     }
 
     this.WebGL2.bindBuffer(this.WebGL2.ARRAY_BUFFER, this.instanced_drawing_buffer);
@@ -1596,15 +1598,15 @@ let Poyo = new class {
       this.cache.tint = tint;
     }
 
-    if (this.cache.texture != bitmap.texture) {
+    if (this.cache.texture != bitmap.reference) {
 
       // Set the active texture.
       this.WebGL2.activeTexture(this.WebGL2.TEXTURE0);
       this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, bitmap.texture);
       this.WebGL2.uniform1i(this.uniforms["u_texture"], 0);
 
-      // Cache the texture for next time.
-      this.cache.texture = bitmap.texture;
+      // Cache the texture reference for next time.
+      this.cache.texture = bitmap.reference;
     }
 
     let i = 0;
@@ -1905,7 +1907,9 @@ let Poyo = new class {
 
       framebuffer: framebuffer,
 
-      must_be_flipped: true
+      must_be_flipped: true,
+
+      reference: ++this.bitmap_reference_counter
     };
   }
 
