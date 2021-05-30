@@ -115,7 +115,7 @@ let Poyo = new class {
     this.version = 2;
 
     this.shader_program = undefined;
-    this.uniforms = [];
+    this.uniforms = {};
 
     this.matrix = this.createTransform();
 
@@ -483,13 +483,13 @@ let Poyo = new class {
 
   getUniformLocations() {
 
-    this.uniforms["u_tint"] = this.WebGL2.getUniformLocation(this.shader_program, "u_tint");
-    this.uniforms["u_matrix"] = this.WebGL2.getUniformLocation(this.shader_program, "u_matrix");
-    this.uniforms["u_texture"] = this.WebGL2.getUniformLocation(this.shader_program, "u_texture");
-    this.uniforms["u_instance"] = this.WebGL2.getUniformLocation(this.shader_program, "u_instance");
-    this.uniforms["u_resolution"] = this.WebGL2.getUniformLocation(this.shader_program, "u_resolution");
-    this.uniforms["u_texture_offset"] = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_offset");
-    this.uniforms["u_flip_texture_offset"] = this.WebGL2.getUniformLocation(this.shader_program, "u_flip_texture_offset");
+    this.uniforms.u_tint = this.WebGL2.getUniformLocation(this.shader_program, "u_tint");
+    this.uniforms.u_matrix = this.WebGL2.getUniformLocation(this.shader_program, "u_matrix");
+    this.uniforms.u_texture = this.WebGL2.getUniformLocation(this.shader_program, "u_texture");
+    this.uniforms.u_instance = this.WebGL2.getUniformLocation(this.shader_program, "u_instance");
+    this.uniforms.u_resolution = this.WebGL2.getUniformLocation(this.shader_program, "u_resolution");
+    this.uniforms.u_texture_offset = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_offset");
+    this.uniforms.u_flip_texture_offset = this.WebGL2.getUniformLocation(this.shader_program, "u_flip_texture_offset");
 
     let key = undefined;
 
@@ -547,7 +547,7 @@ let Poyo = new class {
     this.WebGL2.enableVertexAttribArray(1);
 
     // Upload the target's resolution.
-    this.WebGL2.uniform2fv(this.uniforms["u_resolution"], [this.target.width, this.target.height]);
+    this.WebGL2.uniform2fv(this.uniforms.u_resolution, [this.target.width, this.target.height]);
 
     // Restrict the viewport to the target's resolution.
     this.WebGL2.viewport(0, 0, this.target.width, this.target.height);
@@ -1515,7 +1515,7 @@ let Poyo = new class {
       // Set the active texture.
       this.WebGL2.activeTexture(this.WebGL2.TEXTURE0);
       this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, this.instanced_bitmap.texture);
-      this.WebGL2.uniform1i(this.uniforms["u_texture"], 0);
+      this.WebGL2.uniform1i(this.uniforms.u_texture, 0);
 
       // Cache the texture reference for next time.
       this.cache.texture = this.instanced_bitmap.reference;
@@ -1546,7 +1546,7 @@ let Poyo = new class {
 
     if (this.cache.instance != this.batch_drawing) {
 
-      this.WebGL2.uniform1i(this.uniforms["u_instance"], this.batch_drawing);
+      this.WebGL2.uniform1i(this.uniforms.u_instance, this.batch_drawing);
 
       this.cache.instance = this.batch_drawing;
     }
@@ -1556,7 +1556,7 @@ let Poyo = new class {
     if (flip_it) {
 
       // Flip the texture offsets.
-      this.WebGL2.uniform1i(this.uniforms["u_flip_texture_offset"], true);
+      this.WebGL2.uniform1i(this.uniforms.u_flip_texture_offset, true);
     }
 
     this.WebGL2.drawArraysInstanced(this.WebGL2.TRIANGLE_FAN, 0, 4, this.instanced_drawing_buffer_data.length / 1);
@@ -1564,7 +1564,7 @@ let Poyo = new class {
     if (flip_it) {
 
       // Flip texture offsets back without affecting cache.
-      this.WebGL2.uniform1i(this.uniforms["u_flip_texture_offset"], false);
+      this.WebGL2.uniform1i(this.uniforms.u_flip_texture_offset, false);
     }
   }
 
@@ -1592,7 +1592,7 @@ let Poyo = new class {
     if (this.cache.tint != tint) {
 
       // Upload the tint.
-      this.WebGL2.uniform1i(this.uniforms["u_tint"], tint);
+      this.WebGL2.uniform1i(this.uniforms.u_tint, tint);
 
       // Cache the tint for next time.
       this.cache.tint = tint;
@@ -1603,7 +1603,7 @@ let Poyo = new class {
       // Set the active texture.
       this.WebGL2.activeTexture(this.WebGL2.TEXTURE0);
       this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, bitmap.texture);
-      this.WebGL2.uniform1i(this.uniforms["u_texture"], 0);
+      this.WebGL2.uniform1i(this.uniforms.u_texture, 0);
 
       // Cache the texture reference for next time.
       this.cache.texture = bitmap.reference;
@@ -1616,7 +1616,7 @@ let Poyo = new class {
       if (this.cache.texture_offset[i] != texture_offset[i]) {
 
         // Upload the texture offset.
-        this.WebGL2.uniform4fv(this.uniforms["u_texture_offset"], texture_offset);
+        this.WebGL2.uniform4fv(this.uniforms.u_texture_offset, texture_offset);
 
         // Cache the texture offset for next time.
         this.cache.texture_offset = texture_offset;
@@ -1628,7 +1628,7 @@ let Poyo = new class {
     if (this.cache.flip_texture_offset != flip_texture_offset) {
 
       // Flip the texture offset.
-      this.WebGL2.uniform1i(this.uniforms["u_flip_texture_offset"], flip_texture_offset);
+      this.WebGL2.uniform1i(this.uniforms.u_flip_texture_offset, flip_texture_offset);
 
       // Cache this for next time.
       this.cache.flip_texture_offset = flip_texture_offset;
@@ -1636,7 +1636,7 @@ let Poyo = new class {
 
     if (this.cache.instance != this.batch_drawing) {
 
-      this.WebGL2.uniform1i(this.uniforms["u_instance"], this.batch_drawing);
+      this.WebGL2.uniform1i(this.uniforms.u_instance, this.batch_drawing);
 
       this.cache.instance = this.batch_drawing;
     }
@@ -1654,7 +1654,7 @@ let Poyo = new class {
     this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
 
     // Upload the transformation matrix.
-    this.WebGL2.uniformMatrix3fv(this.uniforms["u_matrix"], false, this.matrix.value);
+    this.WebGL2.uniformMatrix3fv(this.uniforms.u_matrix, false, this.matrix.value);
 
     this.popTransform(this.matrix);
 
