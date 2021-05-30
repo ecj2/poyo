@@ -792,13 +792,33 @@ Shears the given `transform` by `theta_x` and `theta_y`.
 
 ---
 
+**Poyo.pushTransform()**
+
+```js
+Poyo.pushTransform(transform)
+```
+
+Pushes the given `transform` onto Poyo's matrix stack.
+
+---
+
 **Poyo.saveTransform()**
 
 ```js
 Poyo.saveTransform(transform)
 ```
 
-Saves the given `transform` by pushing it onto Poyo's matrix stack.
+An alias for `Poyo.pushTransform()`.
+
+---
+
+**Poyo.popTransform()**
+
+```js
+Poyo.popTransform(transform)
+```
+
+Pops the given `transform` from Poyo's matrix stack.
 
 ---
 
@@ -808,7 +828,16 @@ Saves the given `transform` by pushing it onto Poyo's matrix stack.
 Poyo.restoreTransform(transform)
 ```
 
-Pops the given `transform` from Poyo's matrix stack, and uses `transform`'s value from when `Poyo.saveTransform()` was called.
+Similar to `Poyo.popTransform()` in that it pops the given `transform` from Poyo's matrix stack, but this also uses `transform`'s value from when `Poyo.saveTransform()` was called.
+
+Equivalent to calling:
+
+```js
+Poyo.popTransform(transform);
+Poyo.useTransform(transform);
+```
+
+Example:
 
 ```js
 function render() {

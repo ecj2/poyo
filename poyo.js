@@ -14,7 +14,7 @@ let Poyo = new class {
 
       texture_offset: [],
 
-      flip_texture_offset: false,
+      flip_texture_offset: false
     };
 
     this.mouse = {
@@ -956,6 +956,7 @@ let Poyo = new class {
 
       let now = performance.now();
 
+      // Limit loop to a maximum of 60 calls per second.
       if (now - then >= 1000 / 60) {
 
         then = now - (now - then) % (1000 / 60);
@@ -1087,7 +1088,7 @@ let Poyo = new class {
 
     if (this.font.canvas.width != this.target.width || this.font.canvas.height != this.target.height) {
 
-      // Resize font bitmap and canvas.
+      // The target's dimensions changed; resize font bitmap and canvas to match.
 
       this.font.bitmap.width = this.target.width;
       this.font.bitmap.height = this.target.height;
@@ -1394,6 +1395,7 @@ let Poyo = new class {
           this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, bitmap.texture);
           this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, element);
 
+          // No need to flip bitmaps loaded from disk.
           bitmap.must_be_flipped = false;
 
           resolve(bitmap);
@@ -1770,7 +1772,7 @@ let Poyo = new class {
       0, 1, 0,
 
       0, 0, 1
-    ]
+    ];
   }
 
   createTransform() {
@@ -1785,7 +1787,6 @@ let Poyo = new class {
 
   useTransform(transform) {
 
-    // Use the given matrix. This should only be used externally.
     this.matrix.value = transform.value;
   }
 
@@ -1870,12 +1871,10 @@ let Poyo = new class {
     let texture = this.WebGL2.createTexture();
 
     this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, texture);
-
     this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA, width, height, 0, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, null);
 
     this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_WRAP_S, this.texture_wrap_s);
     this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_WRAP_T, this.texture_wrap_t);
-
     this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_MIN_FILTER, this.texture_filtering.minification);
     this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_MAG_FILTER, this.texture_filtering.magnification);
 
@@ -1948,7 +1947,7 @@ let Poyo = new class {
 
       texture_offset: [],
 
-      flip_texture_offset: false,
+      flip_texture_offset: false
     };
 
     // Revert to default shader program and draw target.
