@@ -29,6 +29,8 @@ To begin, you'll need to include the library in the head of an HTML document and
 Then you can move on to actually initializing Poyo, creating the game-loop, and clearing the canvas in JavaScript:
 
 ```js
+"use strict";
+
 let font;
 
 function main() {
