@@ -6,7 +6,7 @@ let Poyo = new class {
 
     this.cache = {
 
-      tint: 0,
+      tint: [],
 
       texture: 0,
 
@@ -1559,15 +1559,16 @@ let Poyo = new class {
 
   drawConsolidatedBitmap(bitmap, texture_offset = [0, 0, 1, 1], tint = this.createColor(255, 255, 255), flip_texture_offset = false) {
 
-    let crunched_tint = tint.r << 24 | tint.g << 16 | tint.b << 8 | tint.a << 0;
+    let t = tint;
+    let c = this.cache.tint;
 
-    if (this.cache.tint != crunched_tint) {
+    if (c[0] != t.r || c[1] != t.g || c[2] != t.b || c[3] != t.a)  {
 
       // Upload the tint.
       this.WebGL2.uniform4fv(this.uniforms.u_tint, [tint.r, tint.g, tint.b, tint.a]);
 
       // Cache the tint for next time.
-      this.cache.tint = crunched_tint;
+      this.cache.tint = [t.r, t.g, t.b, t.a];
     }
 
     if (this.cache.texture != bitmap.reference) {
@@ -1917,7 +1918,7 @@ let Poyo = new class {
     // Reset cache to defaults.
     this.cache = {
 
-      tint: 0,
+      tint: [],
 
       texture: 0,
 
