@@ -68,8 +68,8 @@ function createCustomShader() {
       const float PI = 3.1415926535897932384626433832795;
 
       // Adjust the texture position to achieve a "wobble" effect.
-      position.s += sin(position.t * 10.0 * PI + u_time * 10.0) / 100.0;
-      position.t += cos(position.s * 10.0 * PI + u_time * 10.0) / 100.0;
+      position.s += cos(position.t * 10.0 * PI + u_time * 10.0) / 100.0;
+      position.t += sin(position.s * 10.0 * PI + u_time * 10.0) / 100.0;
 
       final_color = texture(u_texture, position);
     }
