@@ -1,7 +1,16 @@
 "use strict";
 
-// Call main() once the window has finished loading.
-Poyo.setEntryPoint(main);
+function start() {
+
+  // Show canvas.
+  document.getElementById("poyo").style = "display: inherit";
+
+  // Hide toggle link.
+  document.getElementById("toggle").style = "display: none";
+
+  // Start the example.
+  main();
+}
 
 async function main() {
 

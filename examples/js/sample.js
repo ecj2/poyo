@@ -23,7 +23,7 @@ function update() {
     if (!Poyo.isSamplePlaying(0)) {
 
       // Begin playing the sample.
-      Poyo.playSample(sample, 1, 1, -1, true, 0);
+      Poyo.playSample(sample, 1, 1, 0, true, 0);
     }
     else if (Poyo.isSamplePaused(0)) {
 
