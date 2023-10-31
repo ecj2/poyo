@@ -1321,3 +1321,13 @@ Poyo.setEntryPoint(function_name)
 ```
 
 Invokes `function_name` once the window has finished loading.
+
+---
+
+**Poyo.setClippingRectangle()**
+
+```js
+Poyo.setClippingRectangle(x, y, w, h)
+```
+
+Sets the clipping rectangle for the canvas. Nothing is drawn beyond its boundaries. `x` and `y` define the starting boundaries and `w` and `h` define its width and height, all in pixels.

@@ -237,6 +237,8 @@ let Poyo = new class {
       return;
     }
 
+    this.WebGL2.enable(this.WebGL2.SCISSOR_TEST);
+
     // Use nearest filtering and repeat textures.
     this.setNewBitmapFlags(this.MIN_NEAREST, this.MAG_NEAREST, this.WRAP_REPEAT);
 
@@ -1931,5 +1933,13 @@ let Poyo = new class {
 
     // Revert to default shader program and draw target.
     this.setDrawTarget(this.getDefaultDrawTarget());
+  }
+
+  setClippingRectangle(x, y, w, h) {
+
+    // Move the scissor's origin to the top.
+    y = this.target.height - h - y;
+
+    this.WebGL2.scissor(x, y, w, h);
   }
 };
