@@ -859,7 +859,7 @@ As far as Poyo is concerned, a _sample_ is a catch-all referring to the manageme
 **Poyo.loadSample()**
 
 ```js
-Poyo.loadSample(file_name)
+Poyo.loadSample(path)
 ```
 
 Loads an audio file and returns a `promise`. The `promise` resolves to an object literal that can be used with Poyo's sample methods on success, or `false` on error. MP3 is the suggested format.
@@ -885,16 +885,16 @@ async function loadResources() {
 **Poyo.playSample()**
 
 ```js
-Poyo.playSample(sample, gain, speed, repeat, reference)
+Poyo.playSample(sample, gain, speed, pan, repeat, reference)
 ```
 
-Plays a given sample at a given gain and speed, and dictates whether or not to repeat upon finishing play-back, and also specifies a reference to use with other sample methods.
+Plays a given sample at a given gain, pan, and speed, and dictates whether or not to repeat upon finishing play-back, and also specifies a reference to use with other sample methods.
 
-The value for `gain` can be anything between 0.0 and 1.0, with 0.0 being muted and 1.0 being full gain. The value for `speed` can be between 0.0 and 2.0, with 0.0 being stopped, 1.0 being normal speed, and 2.0 being twice the speed. The value for `repeat` must be `true` to repeat upon the sample finishing playing, or `false` to play only once. The value for `reference` should be a unique number, which can later be used to modify a playing sample.
+The value for `gain` can be anything between 0.0 and 1.0, with 0.0 being muted and 1.0 being full gain. The value for `speed` can be between 0.0 and 2.0, with 0.0 being stopped, 1.0 being normal speed, and 2.0 being twice the speed. The value for `pan` ranges from -1 to 1, with -1 being left, 1 being right, and 0 being no pan. The value for `repeat` must be `true` to repeat upon the sample finishing playing, or `false` to play only once. The value for `reference` should be a unique number, which can later be used to modify a playing sample.
 
 ```js
-// Play the background sample at half gain, full speed, and repeat.
-Poyo.playSample(background_sample, 0.5, 1.0, true, 0);
+// Play the background sample at half gain, full speed, no pan, and repeat.
+Poyo.playSample(background_sample, 0.5, 1.0, 0, true, 0);
 ```
 
 ---
@@ -902,7 +902,7 @@ Poyo.playSample(background_sample, 0.5, 1.0, true, 0);
 **Poyo.adjustSample()**
 
 ```js
-Poyo.adjustSample(reference, gain, speed, repeat)
+Poyo.adjustSample(reference, gain, speed, pan, repeat)
 ```
 
 Adjusts the values of a sample that is being played by means of its `reference`.
@@ -916,7 +916,7 @@ function update() {
   // Increase speed as the mouse moves up and down the canvas.
   let speed = (Poyo.getMouseY() / Poyo.getCanvasHeight()) * 2;
 
-  Poyo.adjustSample(0, gain, speed, true);
+  Poyo.adjustSample(0, gain, speed, 0, true);
 }
 ```
 
@@ -969,6 +969,16 @@ Poyo.isSamplePlaying(reference)
 ```
 
 Returns `true` if `reference` sample is playing, or `false` otherwise.
+
+---
+
+**Poyo.getSamplePan()**
+
+```js
+Poyo.getSamplePan(reference)
+```
+
+Returns the pan of the given `reference` sample, between -1 and 1.
 
 ---
 

@@ -119,6 +119,8 @@ let Poyo = new class {
       height: 0
     };
 
+    this.audio_context = undefined;
+
     this.time_initialized = undefined;
 
     this.sample_instances = [];
@@ -190,6 +192,8 @@ let Poyo = new class {
 
     // Set the time in which the library was initialized.
     this.time_initialized = Date.now();
+
+    this.audio_context = new AudioContext();
 
     this.canvas.canvas = document.getElementById("poyo");
 
@@ -1130,17 +1134,17 @@ let Poyo = new class {
     this.font.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
-  loadSample(file_name) {
+  loadSample(path) {
 
     let element = document.createElement("audio");
 
-    if (!!!element.canPlayType("audio/" + file_name.split(".").pop())) {
+    if (!!!element.canPlayType("audio/" + path.split(".").pop())) {
 
       // The browser can not play this audio format.
       return false;
     }
 
-    element.src = file_name;
+    element.src = path;
 
     // Pre-load audio files. This fixes a bug in Firefox which may arise when loading big samples.
     element.preload = "auto";
@@ -1156,7 +1160,11 @@ let Poyo = new class {
 
           let sample = {
 
-            element: element
+            element: element,
+
+            track: undefined,
+
+            panner: undefined
           };
 
           resolve(sample);
@@ -1190,29 +1198,47 @@ let Poyo = new class {
     );
   }
 
-  playSample(sample, gain, speed, repeat, reference) {
+  playSample(sample, gain, speed, pan, repeat, reference) {
 
     if (this.sample_instances[reference] == undefined) {
 
       // Create a new instance of the sample.
-      this.sample_instances[reference] = sample.element.cloneNode();
+
+      let element_clone = sample.element.cloneNode();
+
+      let track = this.audio_context.createMediaElementSource(element_clone);
+      let panner = new StereoPannerNode(this.audio_context, {pan: pan});
+
+      this.sample_instances[reference] = {
+
+        element: element_clone,
+
+        track: track,
+
+        panner: panner
+      };
     }
+
+    let instance = this.sample_instances[reference];
+
+    instance.track.connect(instance.panner).connect(this.audio_context.destination);
 
     if (!this.isSamplePlaying(reference)) {
 
-      this.adjustSample(reference, gain, speed, repeat);
-
-      this.sample_instances[reference].play();
+      this.adjustSample(reference, gain, speed, pan, repeat);
     }
+
+    instance.element.play();
   }
 
-  adjustSample(reference, gain, speed, repeat) {
+  adjustSample(reference, gain, speed, pan, repeat) {
 
     if (this.sample_instances[reference] != undefined) {
 
-      this.sample_instances[reference].loop = repeat;
-      this.sample_instances[reference].volume = gain;
-      this.sample_instances[reference].playbackRate = speed;
+      this.sample_instances[reference].element.loop = repeat;
+      this.sample_instances[reference].element.volume = gain;
+      this.sample_instances[reference].panner.pan.value = pan;
+      this.sample_instances[reference].element.playbackRate = speed;
     }
   }
 
@@ -1224,7 +1250,7 @@ let Poyo = new class {
 
         this.pauseSample(reference);
 
-        this.sample_instances[reference].currentTime = 0;
+        this.sample_instances[reference].element.currentTime = 0;
       }
     }
   }
@@ -1235,7 +1261,7 @@ let Poyo = new class {
 
       if (this.isSamplePlaying(reference)) {
 
-        this.sample_instances[reference].pause();
+        this.sample_instances[reference].element.pause();
       }
     }
   }
@@ -1244,7 +1270,7 @@ let Poyo = new class {
 
     if (this.sample_instances[reference] != undefined) {
 
-      this.sample_instances[reference].play();
+      this.sample_instances[reference].element.play();
     }
   }
 
@@ -1256,7 +1282,7 @@ let Poyo = new class {
       return false;
     }
 
-    return this.sample_instances[reference].paused;
+    return this.sample_instances[reference].element.paused;
   }
 
   isSamplePlaying(reference) {
@@ -1272,7 +1298,7 @@ let Poyo = new class {
       return false;
     }
 
-    if (this.sample_instances[reference].currentTime < this.sample_instances[reference].duration) {
+    if (this.sample_instances[reference].element.currentTime < this.sample_instances[reference].element.duration) {
 
       return true;
     }
@@ -1280,19 +1306,24 @@ let Poyo = new class {
     return false;
   }
 
+  getSamplePan(reference) {
+
+    return this.sample_instances[reference].panner.pan.value;
+  }
+
   getSampleSpeed(reference) {
 
-    return this.sample_instances[reference].playbackRate;
+    return this.sample_instances[reference].element.playbackRate;
   }
 
   getSampleGain(reference) {
 
-    return this.sample_instances[reference].volume;
+    return this.sample_instances[reference].element.volume;
   }
 
   getSampleRepeat(reference) {
 
-    return this.sample_instances[reference].loop;
+    return this.sample_instances[reference].element.loop;
   }
 
   getSampleDuration(sample) {
@@ -1314,14 +1345,14 @@ let Poyo = new class {
       return 0;
     }
 
-    return this.sample_instances[reference].currentTime;
+    return this.sample_instances[reference].element.currentTime;
   }
 
   setSampleSeek(reference, seek) {
 
     if (this.sample_instances[reference] != undefined) {
 
-      this.sample_instances[reference].currentTime = seek;
+      this.sample_instances[reference].element.currentTime = seek;
     }
   }
 
