@@ -303,7 +303,7 @@ Bitmaps are images that can be drawn to the screen.
 Poyo.loadBitmap(path)
 ```
 
-Loads an image file and returns a `promise`. The `promise` resolves to an object literal that can be used with Poyo's drawing methods on success, or `false` on error. Suggested formats include PNG and JPG.
+Loads an image file and returns a `promise`. The `promise` resolves to an object literal that can be used with Poyo's drawing methods on success, or `false` on error. PNG is the suggested format.
 
 This method must be called from within an `async` function using the `await` keyword, like so:
 
@@ -888,14 +888,16 @@ async function loadResources() {
 Poyo.playSample(sample, gain, speed, pan, repeat, reference)
 ```
 
-Plays a given sample at a given gain, pan, and speed, and dictates whether or not to repeat upon finishing play-back, and also specifies a reference to use with other sample methods.
+Plays a given sample at a given gain, speed, and pan, and dictates whether or not to repeat upon finishing play-back, and also specifies a reference to use with other sample methods.
 
-The value for `gain` can be anything between 0.0 and 1.0, with 0.0 being muted and 1.0 being full gain. The value for `speed` can be between 0.0 and 2.0, with 0.0 being stopped, 1.0 being normal speed, and 2.0 being twice the speed. The value for `pan` ranges from -1 to 1, with -1 being left, 1 being right, and 0 being no pan. The value for `repeat` must be `true` to repeat upon the sample finishing playing, or `false` to play only once. The value for `reference` should be a unique number, which can later be used to modify a playing sample.
+The value for `gain` can be anything between 0.0 and 1.0, with 0.0 being muted and 1.0 being full gain. The value for `speed` can be between 0.0 and 4.0, with 0.0 being stopped, 1.0 being normal speed, and 2.0 being twice the speed (values beyond 4.0 may be supported by some browsers, but it is a best practice to not exceed 4.0 for compatibility reasons). The value for `pan` ranges from -1 to 1, with -1 being left, 1 being right, and 0 being no pan. The value for `repeat` must be `true` to repeat upon the sample finishing playing, or `false` to play only once. The value for `reference` should be a unique number, which can later be used to modify a playing sample.
 
 ```js
 // Play the background sample at half gain, full speed, no pan, and repeat.
 Poyo.playSample(background_sample, 0.5, 1.0, 0, true, 0);
 ```
+
+Audio may stop if too many sample references are created. It is a good idea to limit the number of references to a reasonable value (Chrome throws an error around 500, for example).
 
 ---
 
@@ -1167,7 +1169,7 @@ Initializes the library and sets the canvas' dimensions to `canvas_width` and `c
 Poyo.getErrors()
 ```
 
-Returns an array of errors collected during initialization.
+Returns an array of errors collected during initialization. Poyo may throw an error if the canvas element with an ID of `poyo` is missing, if WebGL 2 is not supported, or if shaders fail to compile.
 
 ```js
 if (!Poyo.initialize(768, 432)) {

@@ -21,6 +21,7 @@ To begin, you'll need to include the library in the head of an HTML document and
   </head>
   <body>
     <div id="toggle">
+      <!-- It's ideal to start Poyo with a user gesture, like a click. -->
       <a href="#" onclick="start()">Load Example</a>
     </div>
     <!-- Poyo will draw to this canvas. The ID must always be "poyo". -->
