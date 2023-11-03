@@ -1002,9 +1002,9 @@ let Poyo = new class {
     return {r: r / 255, g: g / 255, b: b / 255, a: a / 255};
   }
 
-  loadFont(file_name, style = this.STYLE_NORMAL) {
+  loadFont(path, style = this.STYLE_NORMAL) {
 
-    return fetch(file_name).then(
+    return fetch(path).then(
 
       (response) => {
 
@@ -1018,7 +1018,7 @@ let Poyo = new class {
             @font-face {
 
               font-family: "${font_name}";
-              src: url("${file_name}");
+              src: url("${path}");
             }
           `;
 
@@ -1369,11 +1369,11 @@ let Poyo = new class {
     this.batch_drawing = batch;
   }
 
-  loadBitmap(file_name) {
+  loadBitmap(path) {
 
     let element = new Image();
 
-    element.src = file_name;
+    element.src = path;
 
     let reject_function = undefined;
     let resolve_function = undefined;

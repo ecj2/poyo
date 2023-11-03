@@ -300,7 +300,7 @@ Bitmaps are images that can be drawn to the screen.
 **Poyo.loadBitmap()**
 
 ```js
-Poyo.loadBitmap(file_name)
+Poyo.loadBitmap(path)
 ```
 
 Loads an image file and returns a `promise`. The `promise` resolves to an object literal that can be used with Poyo's drawing methods on success, or `false` on error. Suggested formats include PNG and JPG.
@@ -579,7 +579,7 @@ Fonts can be used to draw text.
 **Poyo.loadFont()**
 
 ```js
-Poyo.loadFont(file_name, style)
+Poyo.loadFont(path, style)
 ```
 
 Loads the given font with an optional style. The suggested format is TTF. Styles include `Poyo.STYLE_BOLD`, `Poyo.STYLE_ITALIC`, `Poyo.STYLE_BOLD_ITALIC`, and `Poyo.STYLE_NORMAL` (default). Returns an object literal upon success and `false` on failure.
