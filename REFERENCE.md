@@ -1324,16 +1324,6 @@ function loop() {
 
 ---
 
-**Poyo.setEntryPoint()**
-
-```js
-Poyo.setEntryPoint(function_name)
-```
-
-Invokes `function_name` once the window has finished loading.
-
----
-
 **Poyo.setClippingRectangle()**
 
 ```js

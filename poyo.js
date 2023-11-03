@@ -1002,20 +1002,6 @@ let Poyo = new class {
     return {r: r / 255, g: g / 255, b: b / 255, a: a / 255};
   }
 
-  setEntryPoint(function_name) {
-
-    // Call the specified function when the window loads.
-    window.addEventListener(
-
-      "load",
-
-      () => {
-
-        function_name();
-      }
-    );
-  }
-
   loadFont(file_name, style = this.STYLE_NORMAL) {
 
     return fetch(file_name).then(

@@ -20,6 +20,9 @@ To begin, you'll need to include the library in the head of an HTML document and
     <script src="example.js"></script>
   </head>
   <body>
+    <div id="toggle">
+      <a href="#" onclick="start()">Load Example</a>
+    </div>
     <!-- Poyo will draw to this canvas. The ID must always be "poyo". -->
     <canvas id="poyo"></canvas>
   </body>
@@ -32,6 +35,18 @@ Then you can move on to actually initializing Poyo, creating the game-loop, and 
 "use strict";
 
 let font;
+
+function start() {
+
+  // Show canvas.
+  document.getElementById("poyo").style = "display: inherit";
+
+  // Hide toggle link.
+  document.getElementById("toggle").style = "display: none";
+
+  // Start the example.
+  main();
+}
 
 function main() {
 
@@ -65,9 +80,6 @@ function loop() {
   // Draw "Hello, world!" in the center of the canvas in yellow.
   Poyo.drawText(font, yellow, 100, 768 / 2, 432 / 2 - 50, Poyo.ALIGN_CENTER, "Hello, world!");
 }
-
-// Call main() once the window has fully loaded.
-Poyo.setEntryPoint(main);
 ```
 
 Here's the result:
