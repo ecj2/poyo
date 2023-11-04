@@ -125,7 +125,8 @@ function render() {
     break;
   }
 
-  Poyo.batchDrawing(true);
+  // Draw the text in a batch to boost performance.
+  Poyo.useInstancing(true);
 
   Poyo.drawText(font, Poyo.createColor(0, 0, 0), 25, canvas_w / 2 + 1, 1, Poyo.ALIGN_CENTER, text);
   Poyo.drawText(font, Poyo.createColor(255, 255, 255), 25, canvas_w / 2, 0, Poyo.ALIGN_CENTER, text);
@@ -133,5 +134,5 @@ function render() {
   Poyo.drawText(font, Poyo.createColor(0, 0, 0), 25, canvas_w / 2 + 1, canvas_h - 35 + 1, Poyo.ALIGN_CENTER, "Press space to toggle drawing routines.");
   Poyo.drawText(font, Poyo.createColor(255, 255, 255), 25, canvas_w / 2, canvas_h - 35, Poyo.ALIGN_CENTER, "Press space to toggle drawing routines.");
 
-  Poyo.batchDrawing(false);
+  Poyo.useInstancing(false);
 }

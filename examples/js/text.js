@@ -21,7 +21,7 @@ function render() {
   let canvas_h = Poyo.getCanvasHeight();
 
   // Draw the text in a batch to boost performance.
-  Poyo.batchDrawing(true);
+  Poyo.useInstancing(true);
 
   // Draw the fonts with various colors, sizes, and alignments.
   Poyo.drawText(font_face[0], Poyo.createColor(255, 255, 0), 50, 5, 0, Poyo.ALIGN_LEFT, "Tahoma");
@@ -30,5 +30,5 @@ function render() {
   Poyo.drawText(font_face[3], Poyo.createColor(255, 0, 0), 35, 0, canvas_h - 45, Poyo.ALIGN_LEFT, "Comic Sans MS");
   Poyo.drawText(font_face[4], Poyo.createColor(255, 128, 128), 60, canvas_w - 5, canvas_h - 80, Poyo.ALIGN_RIGHT, "Georgia");
 
-  Poyo.batchDrawing(false);
+  Poyo.useInstancing(false);
 }
