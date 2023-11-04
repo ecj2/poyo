@@ -491,16 +491,17 @@ Poyo.drawBitmap(bitmap, 0, 0);
 
 ---
 
-**Poyo.batchDrawing()**
+**Poyo.useInstancing()**
 
 ```js
-Poyo.batchDrawing(batch)
+Poyo.useInstancing(use_instancing)
 ```
 
-Enables instance drawing when `batch` is `true`, and disables it when `false`. This is useful for drawing many copies of the same bitmap, as the draw commands get sent in a batch rather than one at a time. This can improve CPU performance.
+Enables instance drawing when `use_instancing` is `true`, and disables it when `false`. This is useful for drawing many copies of the same bitmap, as the draw commands get sent in a batch rather than one at a time. This can improve CPU performance.
 
 ```js
-Poyo.batchDrawing(true);
+// Enable instancing. Future draw calls will accumulate to a buffer.
+Poyo.useInstancing(true);
 
 for (let i = 0; i < 1000; ++i) {
 
@@ -508,46 +509,11 @@ for (let i = 0; i < 1000; ++i) {
   Poyo.drawBitmap(bitmap, x, y);
 }
 
-Poyo.batchDrawing(false);
+// Disable instancing and draw from the accumulated buffer.
+Poyo.useInstancing(false);
 ```
 
-This method can only be used to batch a single texture from a single bitmap at a time. In other words, you can not interweave multiple bitmaps in a batch, as only the final source texture is sent to the GPU. This method can be used when drawing text as well.
-
----
-
-**Poyo.drawBatch()**
-
-```js
-Poyo.drawBatch(procedure)
-```
-
-Executes `procedure` with batching enabled.
-
-```js
-Poyo.drawBatch(
-
-  () => {
-
-    for (let i = 0; i < 1000; ++i) {
-
-      // Draw a bitmap 1000 times.
-      Poyo.drawBitmap(bitmap, x, y);
-    }
-  }
-);
-```
-
-This is equivalent to:
-
-```js
-Poyo.batchDrawing(true);
-
-procedure();
-
-Poyo.batchDrawing(false);
-```
-
-The same restrictions applied to `Poyo.batchDrawing()` apply here, in that you can not interweave multiple bitmaps in a single batch.
+This method can only be used to instance a single texture from a single bitmap at a time. In other words, you can not interweave multiple bitmaps in an instance, as only the final source texture is sent to the GPU. This method can be used when drawing text as well.
 
 ---
 
@@ -635,11 +601,11 @@ Draws text of a given color, size, and alignment, at the given coordinates, usin
 Poyo.drawText(font, Poyo.createColor(255, 0, 0), 50, 0, 0, Poyo.ALIGN_LEFT, "Hello!")
 ```
 
-Values for `alignment` include `Poyo.ALIGN_LEFT`, `Poyo.ALIGN_RIGHT`, and `Poyo.ALIGN_CENTER`. Also, drawing text is expensive, so it is suggested that you leverage batching when making several `Poyo.drawText()` calls.
+Values for `alignment` include `Poyo.ALIGN_LEFT`, `Poyo.ALIGN_RIGHT`, and `Poyo.ALIGN_CENTER`. Also, drawing text is expensive, so it is suggested that you leverage instancing when making several `Poyo.drawText()` calls.
 
 ```js
 // Start batching draw calls.
-Poyo.batchDrawing(true);
+Poyo.useInstancing(true);
 
 // Draw several lines of text.
 Poyo.drawText(...);
@@ -650,7 +616,7 @@ Poyo.drawText(...);
 
 // Release the batch, thus drawing all the text in one fell swoop.
 // This improves performance, especially on the CPU.
-Poyo.batchDrawing(false);
+Poyo.useInstancing(false);
 ```
 
 ---

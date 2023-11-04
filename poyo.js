@@ -143,7 +143,7 @@ let Poyo = new class {
       magnification: undefined
     };
 
-    this.batch_drawing = false;
+    this.use_instancing = false;
 
     this.instanced_drawing_buffer = undefined;
     this.instanced_drawing_buffer_data = [];
@@ -1051,7 +1051,7 @@ let Poyo = new class {
 
   drawText(font, color, size, x, y, alignment, text) {
 
-    if (this.batch_drawing) {
+    if (this.use_instancing) {
 
       this.batch_text = true;
     }
@@ -1094,7 +1094,7 @@ let Poyo = new class {
 
     this.font.context.restore();
 
-    if (!this.batch_drawing) {
+    if (!this.use_instancing) {
 
       this.actuallyDrawText();
     }
@@ -1342,16 +1342,16 @@ let Poyo = new class {
     }
   }
 
-  batchDrawing(batch) {
+  useInstancing(use_instancing) {
 
-    if (!batch) {
+    if (!use_instancing) {
 
-      if (this.batch_drawing) {
+      if (this.use_instancing) {
 
         if (this.batch_text) {
 
           this.batch_text = false;
-          this.batch_drawing = false;
+          this.use_instancing = false;
 
           this.actuallyDrawText();
 
@@ -1366,7 +1366,7 @@ let Poyo = new class {
       }
     }
 
-    this.batch_drawing = batch;
+    this.use_instancing = use_instancing;
   }
 
   loadBitmap(path) {
@@ -1533,11 +1533,11 @@ let Poyo = new class {
     this.WebGL2.vertexAttribDivisor(5, 1);
     this.WebGL2.enableVertexAttribArray(5);
 
-    if (this.cache.instance != this.batch_drawing) {
+    if (this.cache.instance != this.use_instancing) {
 
-      this.WebGL2.uniform1i(this.uniforms.u_instance, this.batch_drawing);
+      this.WebGL2.uniform1i(this.uniforms.u_instance, this.use_instancing);
 
-      this.cache.instance = this.batch_drawing;
+      this.cache.instance = this.use_instancing;
     }
 
     let flip_it = this.instanced_bitmap.must_be_flipped && !this.cache.flip_texture_offset;
@@ -1626,11 +1626,11 @@ let Poyo = new class {
       this.cache.flip_texture_offset = flip_texture_offset;
     }
 
-    if (this.cache.instance != this.batch_drawing) {
+    if (this.cache.instance != this.use_instancing) {
 
-      this.WebGL2.uniform1i(this.uniforms.u_instance, this.batch_drawing);
+      this.WebGL2.uniform1i(this.uniforms.u_instance, this.use_instancing);
 
-      this.cache.instance = this.batch_drawing;
+      this.cache.instance = this.use_instancing;
     }
 
     this.pushTransform(this.matrix);
@@ -1660,7 +1660,7 @@ let Poyo = new class {
 
     this.translateTransform(this.matrix, x, y);
 
-    if (this.batch_drawing) {
+    if (this.use_instancing) {
 
       this.addBitmapInstance(bitmap, undefined, tint);
     }
@@ -1680,7 +1680,7 @@ let Poyo = new class {
     this.scaleTransform(this.matrix, scale_x, scale_y);
     this.translateTransform(this.matrix, -origin_x, -origin_y);
 
-    if (this.batch_drawing) {
+    if (this.use_instancing) {
 
       this.addBitmapInstance(bitmap, undefined, tint);
     }
@@ -1709,7 +1709,7 @@ let Poyo = new class {
 
     this.translateTransform(this.matrix, x, y);
 
-    if (this.batch_drawing) {
+    if (this.use_instancing) {
 
       this.addBitmapInstance(bitmap, texture_offset, tint);
     }
@@ -1740,7 +1740,7 @@ let Poyo = new class {
     this.rotateTransform(this.matrix, theta);
     this.translateTransform(this.matrix, -center_x, -center_y);
 
-    if (this.batch_drawing) {
+    if (this.use_instancing) {
 
       this.addBitmapInstance(bitmap, undefined, tint);
     }
@@ -1750,15 +1750,6 @@ let Poyo = new class {
     }
 
     this.popTransform(this.matrix);
-  }
-
-  drawBatch(procedure) {
-
-    this.batchDrawing(true);
-
-    procedure();
-
-    this.batchDrawing(false);
   }
 
   getIdentityTransform() {
