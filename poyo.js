@@ -311,21 +311,24 @@ let Poyo = new class {
 
       uniform vec2 u_resolution;
 
-      uniform bool u_instance;
+      uniform vec4 u_tint;
+      uniform vec4 u_texture_offset;
 
+      uniform bool u_instance;
       uniform bool u_flip_texture_offset;
 
-      out vec4 v_instance_tint;
       out vec2 v_texture_position;
 
-      flat out int v_flip_texture_offset;
-
-      out vec4 v_instance_texture_offset;
+      out vec4 v_tint;
+      out vec4 v_texture_offset;
 
       void main(void) {
 
         mat3 matrix = u_matrix;
         vec2 position = a_vertex_position;
+
+        v_tint = u_tint;
+        v_texture_offset = u_texture_offset;
 
         if (u_instance) {
 
@@ -342,8 +345,8 @@ let Poyo = new class {
             position.y += u_resolution.y;
           }
 
-          v_instance_tint = a_instance_tint;
-          v_instance_texture_offset = a_instance_texture_offset;
+          v_tint = a_instance_tint;
+          v_texture_offset = a_instance_texture_offset;
         }
 
         // Convert pixel coordinates to normalized device coordinates.
@@ -355,8 +358,6 @@ let Poyo = new class {
         gl_Position = vec4(clip_space_position, 0.0, 1.0);
 
         v_texture_position = a_texture_position;
-
-        v_flip_texture_offset = (u_flip_texture_offset ? 1 : 0);
       }
     `;
 
@@ -368,18 +369,13 @@ let Poyo = new class {
 
       in vec2 v_texture_position;
 
-      uniform vec4 u_tint;
-
       uniform bool u_instance;
+      uniform bool u_flip_texture_offset;
 
       uniform sampler2D u_texture;
 
-      uniform vec4 u_texture_offset;
-
-      flat in int v_flip_texture_offset;
-
-      in vec4 v_instance_tint;
-      in vec4 v_instance_texture_offset;
+      in vec4 v_tint;
+      in vec4 v_texture_offset;
 
       out vec4 final_color;
 
@@ -389,16 +385,9 @@ let Poyo = new class {
 
         vec2 position = v_texture_position;
 
-        vec4 tint = u_tint;
-        vec4 texture_offset = u_texture_offset;
+        vec4 texture_offset = v_texture_offset;
 
-        if (u_instance) {
-
-          tint = v_instance_tint;
-          texture_offset = v_instance_texture_offset;
-        }
-
-        if (v_flip_texture_offset == 1) {
+        if (u_flip_texture_offset) {
 
           if (!u_instance) position.t = position.t * -1.0 + 1.0;
 
@@ -419,7 +408,7 @@ let Poyo = new class {
         // Don't draw texels outside of the clipped offsets.
         if (reject) discard;
 
-        final_color = texture(u_texture, position) * tint;
+        final_color = texture(u_texture, position) * v_tint;
       }
     `;
 
