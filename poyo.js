@@ -12,9 +12,7 @@ let Poyo = new class {
 
       instance: false,
 
-      texture_offset: [],
-
-      flip_texture_offset: false
+      texture_offset: []
     };
 
     this.mouse = {
@@ -174,6 +172,8 @@ let Poyo = new class {
     this.WRAP_MIRROR = 6;
 
     this.bitmap_reference_counter = 0;
+
+    this.final_frame = undefined;
   }
 
   getErrors() {
@@ -228,7 +228,7 @@ let Poyo = new class {
 
         powerPreference: "high-performance",
 
-        preserveDrawingBuffer: true,
+        preserveDrawingBuffer: false,
 
         failIfMajorPerformanceCaveat: true
       }
@@ -269,13 +269,14 @@ let Poyo = new class {
     this.instanced_drawing_buffer = this.WebGL2.createBuffer();
 
     this.font.bitmap = this.createBitmap(this.target.width, this.target.height);
-    this.font.bitmap.must_be_flipped = false;
 
     this.font.canvas = document.createElement("canvas");
     this.font.context = this.font.canvas.getContext("2d");
 
     this.font.canvas.width = this.target.width;
     this.font.canvas.height = this.target.height;
+
+    this.final_frame = this.createBitmap(canvas_width, canvas_height);
 
     // Listen for mouse events.
     this.canvas.canvas.addEventListener("wheel", this.manageMouseEvents.bind(this));
@@ -315,7 +316,6 @@ let Poyo = new class {
       uniform vec4 u_texture_offset;
 
       uniform bool u_instance;
-      uniform bool u_flip_texture_offset;
 
       out vec2 v_texture_position;
 
@@ -325,7 +325,6 @@ let Poyo = new class {
       void main(void) {
 
         mat3 matrix = u_matrix;
-        vec2 position = a_vertex_position;
 
         v_tint = u_tint;
         v_texture_offset = u_texture_offset;
@@ -339,21 +338,12 @@ let Poyo = new class {
           matrix[1][1] = a_instance_matrix_part_2[0];
           matrix[2][1] = a_instance_matrix_part_1[2];
 
-          if (u_flip_texture_offset) {
-
-            position.y *= -1.0;
-            position.y += u_resolution.y;
-          }
-
           v_tint = a_instance_tint;
           v_texture_offset = a_instance_texture_offset;
         }
 
         // Convert pixel coordinates to normalized device coordinates.
-        vec2 clip_space_position = vec2(matrix * vec3(position, 1.0)).xy / u_resolution * 2.0 - 1.0;
-
-        // Flip the Y axis.
-        clip_space_position.y *= -1.0;
+        vec2 clip_space_position = vec2(matrix * vec3(a_vertex_position, 1.0)).xy / u_resolution * 2.0 - 1.0;
 
         gl_Position = vec4(clip_space_position, 0.0, 1.0);
 
@@ -370,7 +360,6 @@ let Poyo = new class {
       in vec2 v_texture_position;
 
       uniform bool u_instance;
-      uniform bool u_flip_texture_offset;
 
       uniform sampler2D u_texture;
 
@@ -381,34 +370,16 @@ let Poyo = new class {
 
       void main(void) {
 
-        bool reject;
+        vec2 p = v_texture_position;
 
-        vec2 position = v_texture_position;
+        p += v_texture_offset.st;
 
-        vec4 texture_offset = v_texture_offset;
-
-        if (u_flip_texture_offset) {
-
-          if (!u_instance) position.t = position.t * -1.0 + 1.0;
-
-          position += vec2(texture_offset[0], -texture_offset[1]);
-
-          reject = position.t < texture_offset[3] * -1.0 + 1.0;
-        }
-        else {
-
-          position += vec2(texture_offset[0], texture_offset[1]);
-
-          reject = position.t > texture_offset[3];
-        }
-
-        reject = reject || position.t < 0.0 || position.t > 1.0 || position.s < 0.0;
-        reject = reject || position.s > texture_offset[2] || position.s > 1.0;
+        bool reject = p.s < 0.0 || p.s > v_texture_offset.p || p.s > 1.0;
 
         // Don't draw texels outside of the clipped offsets.
-        if (reject) discard;
+        if (reject || p.t < 0.0 || p.t > v_texture_offset.q || p.t > 1.0) discard;
 
-        final_color = texture(u_texture, position) * v_tint;
+        final_color = texture(u_texture, p) * v_tint;
       }
     `;
 
@@ -478,7 +449,6 @@ let Poyo = new class {
     this.uniforms.u_instance = this.WebGL2.getUniformLocation(this.shader_program, "u_instance");
     this.uniforms.u_resolution = this.WebGL2.getUniformLocation(this.shader_program, "u_resolution");
     this.uniforms.u_texture_offset = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_offset");
-    this.uniforms.u_flip_texture_offset = this.WebGL2.getUniformLocation(this.shader_program, "u_flip_texture_offset");
 
     let key = undefined;
 
@@ -532,6 +502,9 @@ let Poyo = new class {
 
     // Restrict the viewport to the target's resolution.
     this.WebGL2.viewport(0, 0, this.target.width, this.target.height);
+
+    // Scissor beyond the target's resolution.
+    this.setClippingRectangle(0, 0, this.target.width, this.target.height);
   }
 
   getTime() {
@@ -865,6 +838,9 @@ let Poyo = new class {
 
     // Update the vertex buffer.
     this.setUniformsAndAttributes();
+
+    // Create a new final frame to match the new dimensions.
+    this.final_frame = this.createBitmap(this.canvas.width, this.canvas.height);
   }
 
   setCanvasHeight(height) {
@@ -875,6 +851,9 @@ let Poyo = new class {
 
     // Update the vertex buffer.
     this.setUniformsAndAttributes();
+
+    // Create a new final frame to match the new dimensions.
+    this.final_frame = this.createBitmap(this.canvas.width, this.canvas.height);
   }
 
   getCanvasWidth() {
@@ -950,7 +929,15 @@ let Poyo = new class {
 
         this.pushTransform(this.matrix);
 
+        this.setDrawTarget(this.final_frame);
+
+        // Draw the procedure to the final frame.
         loop_procedure();
+
+        this.setDrawTarget(null);
+
+        // Vertically flip the final frame and draw it.
+        this.drawScaledBitmap(this.final_frame, 0, 0, 1, -1, 0, this.canvas.height);
 
         // Reset matrix each frame.
         this.popTransform(this.matrix);
@@ -1379,9 +1366,6 @@ let Poyo = new class {
           this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, bitmap.texture);
           this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, element);
 
-          // No need to flip bitmaps loaded from disk.
-          bitmap.must_be_flipped = false;
-
           resolve(bitmap);
         };
 
@@ -1529,21 +1513,7 @@ let Poyo = new class {
       this.cache.instance = this.use_instancing;
     }
 
-    let flip_it = this.instanced_bitmap.must_be_flipped && !this.cache.flip_texture_offset;
-
-    if (flip_it) {
-
-      // Flip the texture offsets.
-      this.WebGL2.uniform1i(this.uniforms.u_flip_texture_offset, true);
-    }
-
     this.WebGL2.drawArraysInstanced(this.WebGL2.TRIANGLE_FAN, 0, 4, this.instanced_drawing_buffer_data.length / 14);
-
-    if (flip_it) {
-
-      // Flip texture offsets back without affecting cache.
-      this.WebGL2.uniform1i(this.uniforms.u_flip_texture_offset, false);
-    }
   }
 
   addBitmapInstance(bitmap, offsets = [0, 0, 1, 1], tint = this.createColor(255, 255, 255)) {
@@ -1565,7 +1535,7 @@ let Poyo = new class {
     );
   }
 
-  drawConsolidatedBitmap(bitmap, texture_offset = [0, 0, 1, 1], tint = this.createColor(255, 255, 255), flip_texture_offset = false) {
+  drawConsolidatedBitmap(bitmap, texture_offset = [0, 0, 1, 1], tint = this.createColor(255, 255, 255)) {
 
     let t = tint;
     let c = this.cache.tint;
@@ -1606,30 +1576,16 @@ let Poyo = new class {
       }
     }
 
-    if (this.cache.flip_texture_offset != flip_texture_offset) {
-
-      // Flip the texture offset.
-      this.WebGL2.uniform1i(this.uniforms.u_flip_texture_offset, flip_texture_offset);
-
-      // Cache this for next time.
-      this.cache.flip_texture_offset = flip_texture_offset;
-    }
-
     if (this.cache.instance != this.use_instancing) {
 
+      // Upload the instancing value.
       this.WebGL2.uniform1i(this.uniforms.u_instance, this.use_instancing);
 
+      // Cache it for next time.
       this.cache.instance = this.use_instancing;
     }
 
     this.pushTransform(this.matrix);
-
-    if (bitmap.must_be_flipped) {
-
-      // Flip framebuffer textures right-side up.
-      this.scaleTransform(this.matrix, 1, -1);
-      this.translateTransform(this.matrix, 0, -bitmap.height);
-    }
 
     // Scale the bitmap to its proper resolution.
     this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
@@ -1704,18 +1660,7 @@ let Poyo = new class {
     }
     else {
 
-      if (bitmap.must_be_flipped) {
-
-        bitmap.must_be_flipped = false;
-
-        this.drawConsolidatedBitmap(bitmap, texture_offset, tint, true);
-
-        bitmap.must_be_flipped = true;
-      }
-      else {
-
-        this.drawConsolidatedBitmap(bitmap, texture_offset, tint, false);
-      }
+      this.drawConsolidatedBitmap(bitmap, texture_offset, tint);
     }
 
     this.popTransform(this.matrix);
@@ -1876,8 +1821,6 @@ let Poyo = new class {
 
       framebuffer: framebuffer,
 
-      must_be_flipped: true,
-
       reference: ++this.bitmap_reference_counter
     };
   }
@@ -1909,7 +1852,7 @@ let Poyo = new class {
 
   getDefaultDrawTarget() {
 
-    return null;
+    return this.final_frame;
   }
 
   clearCache() {
@@ -1923,9 +1866,7 @@ let Poyo = new class {
 
       instance: false,
 
-      texture_offset: [],
-
-      flip_texture_offset: false
+      texture_offset: []
     };
 
     // Revert to default shader program and draw target.

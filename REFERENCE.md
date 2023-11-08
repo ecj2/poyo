@@ -474,7 +474,7 @@ Forces all future drawing routines to take place on the given bitmap, rather tha
 Poyo.getDefaultDrawTarget()
 ```
 
-Returns a value representing the default framebuffer. This is equivalent to `null`.
+Returns the bitmap which everything is drawn to.
 
 ```js
 // Set future drawing to take place on bitmap rather than the canvas.
