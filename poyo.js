@@ -34,6 +34,10 @@ let Poyo = new class {
 
     this.keyboard = {
 
+      key: "",
+
+      code: 0,
+
       down: [],
 
       pressed: [],
@@ -717,6 +721,9 @@ let Poyo = new class {
         }
 
         this.keyboard.down[event.which] = true;
+
+        this.keyboard.key = event.key;
+        this.keyboard.code = event.which;
       break;
     }
 
@@ -805,6 +812,16 @@ let Poyo = new class {
     }
 
     return this.keyboard.released[key];
+  }
+
+  getKey() {
+
+    return this.keyboard.key;
+  }
+
+  getKeyCode() {
+
+    return this.keyboard.code;
   }
 
   getCanvas() {

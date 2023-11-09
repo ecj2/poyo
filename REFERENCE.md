@@ -244,6 +244,48 @@ Returns `true` if the given `key` was released since the last frame, or `false` 
 
 ---
 
+**Poyo.getKey()**
+
+```js
+Poyo.getKey(key)
+```
+
+Returns a string representing the most recent key press.
+
+```js
+let name = "";
+
+// ...
+
+if (Poyo.isKeyPressed(Poyo.KEY_ANY)) {
+
+  // Add the last key's string to name (example: "s").
+  name += Poyo.getKey();
+}
+```
+
+---
+
+**Poyo.getKeyCode()**
+
+```js
+Poyo.getKeyCode(key)
+```
+
+Returns a number representing the key code of the last key press.
+
+```js
+if (Poyo.isKeyPressed(Poyo.KEY_ANY)) {
+
+  if (show_dialog && Poyo.getKeyCode() == 13) {
+
+    // The enter key was pressed, close the dialog box.
+  }
+}
+```
+
+---
+
 **Poyo.KEY_\***
 
 Key codes include `Poyo.KEY_0` to `Poyo.KEY_9`; `Poyo.KEY_A` to `Poyo.KEY_Z`; `Poyo.KEY_UP`, `Poyo.KEY_DOWN`, `Poyo.KEY_LEFT`, and `Poyo.KEY_RIGHT` for the arrow keys; and `Poyo.KEY_SPACE` and `Poyo.KEY_ANY`.
