@@ -740,7 +740,7 @@ let Poyo = new class {
 
       let i = 0;
 
-      for (i; i < 99; ++i) {
+      for (i; i < 255; ++i) {
 
         if (!this.keyboard.down[i]) {
 
@@ -760,7 +760,7 @@ let Poyo = new class {
 
       let i = 0;
 
-      for (i; i < 99; ++i) {
+      for (i; i < 255; ++i) {
 
         if (this.keyboard.down[i]) {
 
@@ -780,7 +780,7 @@ let Poyo = new class {
 
       let i = 0;
 
-      for (i; i < 99; ++i) {
+      for (i; i < 255; ++i) {
 
         if (this.keyboard.pressed[i]) {
 
@@ -800,7 +800,7 @@ let Poyo = new class {
 
       let i = 0;
 
-      for (i; i < 99; ++i) {
+      for (i; i < 255; ++i) {
 
         if (this.keyboard.released[i]) {
 
@@ -982,7 +982,7 @@ let Poyo = new class {
 
     i = 0;
 
-    for (i; i < 99; ++i) {
+    for (i; i < 255; ++i) {
 
       // Clear key arrays so each keyboard event fires only once.
       this.keyboard.pressed[i] = false;
