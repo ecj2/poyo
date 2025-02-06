@@ -1769,7 +1769,7 @@ let Poyo = new class {
 
       0, 1, 0,
 
-      translate_x, translate_y, 1
+      translate_x | 0, translate_y | 0, 1
     ];
 
     transform.value = this.multiplyMatrices(transform.value, translated_matrix);
