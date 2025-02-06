@@ -405,7 +405,7 @@ let Poyo = new class {
 
     if (!this.WebGL2.getShaderParameter(shader, this.WebGL2.COMPILE_STATUS)) {
 
-      this.errors.push("shader failed to compile");
+      this.errors.push("shader failed to compile: " + this.WebGL2.getShaderInfoLog(shader));
 
       return false;
     }
