@@ -190,9 +190,12 @@ let Poyo = new class {
     return this.errors[this.errors.length - 1];
   }
 
-  displayError(message) {
+  displayError(message, show_alert = false) {
 
-    alert(`Error: ${message}!`);
+    if (show_alert) {
+
+      alert(`Error: ${message}!`);
+    }
 
     throw new Error(message + "!");
   }

@@ -1218,10 +1218,10 @@ if (!vertex_shader) {
 **Poyo.displayError()**
 
 ```js
-Poyo.displayError(message)
+Poyo.displayError(message, show_alert)
 ```
 
-Produces an alert with the message of `message`, and throws an error to kill the script. This should be used when catastrophic errors occur, like during initialization failure or when resources fail to load.
+Produces an alert with the message of `message`, and throws an error to kill the script. `show_alert` is set to `true` by default, but setting it to `false` skips the alert box while still throwing an error to the console. This should be used when catastrophic errors occur, like during initialization failure or when resources fail to load.
 
 ---
 
