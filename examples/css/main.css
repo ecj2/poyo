@@ -25,3 +25,13 @@ canvas {
 
   margin-top: 25px;
 }
+
+a {
+
+  color: blue;
+}
+
+a:active {
+
+  color: red;
+}
