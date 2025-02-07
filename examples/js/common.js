@@ -2,14 +2,14 @@
 
 function start() {
 
+  // Start the example.
+  main();
+
   // Show canvas.
   document.getElementById("poyo").style = "display: inherit";
 
   // Hide toggle link.
   document.getElementById("toggle").style = "display: none";
-
-  // Start the example.
-  main();
 }
 
 async function main() {
@@ -18,15 +18,7 @@ async function main() {
   if (!Poyo.initialize(768, 432)) {
 
     // Failed to initialize Poyo.
-
-    Poyo.getErrors().forEach(
-
-      (error) => {
-
-        // Cycle through initialization errors.
-        Poyo.displayError(error);
-      }
-    );
+    Poyo.displayError(Poyo.getLastError());
   }
 
   // Wait for resources to be loaded.

@@ -54,14 +54,8 @@ function main() {
   // Initialize Poyo and set the canvas' dimensions to 768x432 pixels.
   if (!Poyo.initialize(768, 432)) {
 
-    Poyo.getErrors().forEach(
-
-      (error) => {
-
-        // Display initialization errors and kill the script.
-        Poyo.displayError(error);
-      }
-    );
+    // Display initialization errors and kill the script.
+    Poyo.displayError(Poyo.getLastError());
   }
 
   // Load a bold sans-serif font known to the browser.

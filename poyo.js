@@ -185,6 +185,11 @@ let Poyo = new class {
     return this.errors;
   }
 
+  getLastError() {
+
+    return this.errors[this.errors.length - 1];
+  }
+
   displayError(message) {
 
     alert(`Error: ${message}!`);

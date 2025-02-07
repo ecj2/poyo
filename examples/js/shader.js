@@ -80,7 +80,7 @@ function createCustomShader() {
 
   if (!vertex_shader || !fragment_shader) {
 
-    Poyo.displayError("failed to compile custom shaders");
+    Poyo.displayError(Poyo.getLastError());
   }
 
   custom_program = Poyo.createProgram(vertex_shader, fragment_shader);

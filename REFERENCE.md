@@ -1195,6 +1195,26 @@ if (!Poyo.initialize(768, 432)) {
 
 ---
 
+**Poyo.getLastError()**
+
+```js
+Poyo.getLastError()
+```
+
+Returns a string of the most recent error message, if any.
+
+```js
+let vertex_shader = Poyo.createShader(vertex_shader_source, WebGL2.VERTEX_SHADER);
+
+if (!vertex_shader) {
+
+  // "Error: shader failed to compile: ERROR: 0:21: ..."
+  Poyo.displayError(Poyo.getLastError());
+}
+```
+
+---
+
 **Poyo.displayError()**
 
 ```js
