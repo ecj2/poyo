@@ -368,10 +368,10 @@ async function loadResources() {
 **Poyo.createBitmap()**
 
 ```js
-Poyo.createBitmap(width, height)
+Poyo.createBitmap(w, h)
 ```
 
-Returns an object literal containing a blank bitmap. The new bitmap can be drawn to via `Poyo.setDrawTarget()`, like so:
+Returns an object literal containing a blank of the given dimensions `w` and `h` in pixels. The new bitmap can be drawn to via `Poyo.setDrawTarget()`, like so:
 
 ```js
 let new_bitmap = Poyo.createBitmap(256, 256);
@@ -536,10 +536,10 @@ Poyo.drawBitmap(bitmap, 0, 0);
 **Poyo.useInstancing()**
 
 ```js
-Poyo.useInstancing(use_instancing)
+Poyo.useInstancing(toggle)
 ```
 
-Enables instance drawing when `use_instancing` is `true`, and disables it when `false`. This is useful for drawing many copies of the same bitmap, as the draw commands get sent in a batch rather than one at a time. This can improve CPU performance.
+Enables instance drawing when `toggle` is `true`, and disables it when `false`. This is useful for drawing many copies of the same bitmap, as the draw commands get sent in a batch rather than one at a time. This can improve CPU performance.
 
 ```js
 // Enable instancing. Future draw calls will accumulate to a buffer.
@@ -678,7 +678,7 @@ Poyo.createTransform()
 Returns an object literal containing an identity transform and an empty stack array.
 
 ```js
-let transform = Poyo.createTransform();
+let t = Poyo.createTransform();
 ```
 
 ---
@@ -686,10 +686,10 @@ let transform = Poyo.createTransform();
 **Poyo.useTransform()**
 
 ```js
-Poyo.useTransform(transform)
+Poyo.useTransform(t)
 ```
 
-Applies the given `transform` to future drawing routines.
+Applies the given transformation `t` to future drawing routines.
 
 ```js
 function render() {
@@ -697,12 +697,12 @@ function render() {
   // Clear to black.
   Poyo.clearToColor(Poyo.createColor(0, 0, 0));
 
-  let transform = Poyo.createTransform();
+  let t = Poyo.createTransform();
 
   // Translate, rotate, scale, shear, et cetera...
 
   // Use the transformation.
-  Poyo.useTransform(transform);
+  Poyo.useTransform(t);
 
   // Draw here...
 }
@@ -713,19 +713,19 @@ function render() {
 **Poyo.translateTransform()**
 
 ```js
-Poyo.translateTransform(transform, translate_x, translate_y)
+Poyo.translateTransform(t, x, y)
 ```
 
-Translates (moves) the origin of the given `transform` by `translate_x` and `translate_y` in pixel space.
+Translates (moves) the origin of the given transformation `t` by `x` and `y` in pixel space.
 
 ```js
-let transform = Poyo.createTransform();
+let t = Poyo.createTransform();
 
 // Move right 30 pixels and down 50 pixels.
-Poyo.translateTransform(transform, 30, 50);
+Poyo.translateTransform(t, 30, 50);
 
 // Apply the transformation to future drawing routines.
-Poyo.useTransform(transform);
+Poyo.useTransform(t);
 ```
 
 ---
@@ -733,18 +733,18 @@ Poyo.useTransform(transform);
 **Poyo.scaleTransform()**
 
 ```js
-Poyo.scaleTransform(transform, scale_x, scale_y)
+Poyo.scaleTransform(t, scale_x, scale_y)
 ```
 
-Scales the given `transform` by a factor of `scale_x` and `scale_y`.
+Scales the given transformation `t` by a factor of `scale_x` and `scale_y`.
 
 ```js
-let transform = Poyo.createTransform();
+let t = Poyo.createTransform();
 
 // Make future drawing calls be twice as wide and thrice as tall.
-Poyo.scaleTransform(transform, 2, 3);
+Poyo.scaleTransform(t, 2, 3);
 
-Poyo.useTransform(transform);
+Poyo.useTransform(t);
 ```
 
 ---
@@ -752,18 +752,18 @@ Poyo.useTransform(transform);
 **Poyo.rotateTransform()**
 
 ```js
-Poyo.rotateTransform(transform, theta)
+Poyo.rotateTransform(t, theta)
 ```
 
-Rotates the given `transform` on its origin by `theta` radians clock-wise.
+Rotates the given transformation `t` on its origin by `theta` radians clock-wise.
 
 ```js
-let transform = Poyo.createTransform();
+let t = Poyo.createTransform();
 
 // Rotate the origin by pi.
-Poyo.rotateTransform(transform, Math.PI);
+Poyo.rotateTransform(t, Math.PI);
 
-Poyo.useTransform(transform);
+Poyo.useTransform(t);
 ```
 
 ---
@@ -771,27 +771,27 @@ Poyo.useTransform(transform);
 **Poyo.shearTransform()**
 
 ```js
-Poyo.shearTransform(transform, theta_x, theta_y)
+Poyo.shearTransform(t, theta_x, theta_y)
 ```
 
-Shears the given `transform` by `theta_x` and `theta_y`.
+Shears the given transformation `t` by `theta_x` and `theta_y`.
 
 ---
 
 **Poyo.pushTransform()**
 
 ```js
-Poyo.pushTransform(transform)
+Poyo.pushTransform(t)
 ```
 
-Pushes the given `transform` onto Poyo's matrix stack.
+Pushes the given transformation `t` onto Poyo's matrix stack.
 
 ---
 
 **Poyo.saveTransform()**
 
 ```js
-Poyo.saveTransform(transform)
+Poyo.saveTransform(t)
 ```
 
 An alias for `Poyo.pushTransform()`.
@@ -801,26 +801,26 @@ An alias for `Poyo.pushTransform()`.
 **Poyo.popTransform()**
 
 ```js
-Poyo.popTransform(transform)
+Poyo.popTransform(t)
 ```
 
-Pops the given `transform` from Poyo's matrix stack.
+Pops the given transformation `t` from Poyo's matrix stack.
 
 ---
 
 **Poyo.restoreTransform()**
 
 ```js
-Poyo.restoreTransform(transform)
+Poyo.restoreTransform(t)
 ```
 
-Similar to `Poyo.popTransform()` in that it pops the given `transform` from Poyo's matrix stack, but this also uses `transform`'s value from when `Poyo.saveTransform()` was called.
+Similar to `Poyo.popTransform()` in that it pops the given transformation `t` from Poyo's matrix stack, but this also uses `t`'s value from when `Poyo.saveTransform()` was called.
 
 Equivalent to calling:
 
 ```js
-Poyo.popTransform(transform);
-Poyo.useTransform(transform);
+Poyo.popTransform(t);
+Poyo.useTransform(t);
 ```
 
 Example:
@@ -830,27 +830,27 @@ function render() {
 
   // ...
 
-  let transform = Poyo.createTransform();
+  let t = Poyo.createTransform();
 
   // Move right by 30 pixels and down by 50 pixels.
-  Poyo.translateTransform(transform, 30, 50);
+  Poyo.translateTransform(t, 30, 50);
 
   // Save the transformation in its current state.
-  Poyo.saveTransform(transform);
+  Poyo.saveTransform(t);
 
-  Poyo.useTransform(transform);
+  Poyo.useTransform(t);
 
   // Draw stuff here with the transformation applied...
 
   // Scale everything by a factor of 2 on both axes.
-  Poyo.scaleTransform(transform, 2, 2);
+  Poyo.scaleTransform(t, 2, 2);
 
-  Poyo.useTransform(transform);
+  Poyo.useTransform(t);
 
   // Draw more stuff here now using the scale applied to the translation...
 
   // Restore the transformation at its translation-only state.
-  Poyo.restoreTransform(transform);
+  Poyo.restoreTransform(t);
 
   // Draw more stuff here without the scaling applied...
 }
@@ -1164,10 +1164,10 @@ Here are some other methods that don't quite fit into their own categories.
 **Poyo.initialize()**
 
 ```js
-Poyo.initialize(canvas_width, canvas_height)
+Poyo.initialize(canvas_w, canvas_h)
 ```
 
-Initializes the library and sets the canvas' dimensions to `canvas_width` and `canvas_height` in pixels. It returns `true` upon success, or `false` upon failure. This method must be called before most of the library's other methods and properties can be used.
+Initializes the library and sets the canvas' dimensions to `canvas_w` and `canvas_h` in pixels. It returns `true` upon success, or `false` upon failure. This method must be called before most of the library's other methods and properties can be used.
 
 ---
 
@@ -1333,7 +1333,7 @@ Returns the current draw target's height in pixels.
 **Poyo.createGameLoop()**
 
 ```js
-Poyo.createGameLoop(loop_procedure)
+Poyo.createGameLoop(procedure)
 ```
 
 Sets the function to be called 60 times per second as the game-loop.

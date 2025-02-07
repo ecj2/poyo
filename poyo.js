@@ -200,7 +200,7 @@ let Poyo = new class {
     throw new Error(message + "!");
   }
 
-  initialize(canvas_width, canvas_height) {
+  initialize(canvas_w, canvas_h) {
 
     // Set the time in which the library was initialized.
     this.time_initialized = Date.now();
@@ -216,15 +216,15 @@ let Poyo = new class {
       return;
     }
 
-    this.canvas.width = canvas_width;
-    this.canvas.height = canvas_height;
+    this.canvas.width = canvas_w;
+    this.canvas.height = canvas_h;
 
-    this.target.width = canvas_width;
-    this.target.height = canvas_height;
+    this.target.width = canvas_w;
+    this.target.height = canvas_h;
 
     // Set canvas dimensions to match interal resolution.
-    this.canvas.canvas.width = this.canvas.width;
-    this.canvas.canvas.height = this.canvas.height;
+    this.canvas.canvas.width = canvas_w;
+    this.canvas.canvas.height = canvas_h;
 
     this.WebGL2 = this.canvas.canvas.getContext(
 
@@ -280,15 +280,15 @@ let Poyo = new class {
 
     this.instanced_drawing_buffer = this.WebGL2.createBuffer();
 
-    this.font.bitmap = this.createBitmap(this.target.width, this.target.height);
+    this.font.bitmap = this.createBitmap(canvas_w, canvas_h);
 
     this.font.canvas = document.createElement("canvas");
     this.font.context = this.font.canvas.getContext("2d");
 
-    this.font.canvas.width = this.target.width;
-    this.font.canvas.height = this.target.height;
+    this.font.canvas.width = canvas_w;
+    this.font.canvas.height = canvas_h;
 
-    this.final_frame = this.createBitmap(canvas_width, canvas_height);
+    this.final_frame = this.createBitmap(canvas_w, canvas_h);
 
     // Listen for mouse events.
     this.canvas.canvas.addEventListener("wheel", this.manageMouseEvents.bind(this));
@@ -901,34 +901,34 @@ let Poyo = new class {
     return this.target.height;
   }
 
-  saveTransform(transform) {
+  saveTransform(t) {
 
-    this.pushTransform(transform);
+    this.pushTransform(t);
   }
 
-  restoreTransform(transform) {
+  restoreTransform(t) {
 
-    this.popTransform(transform);
-    this.useTransform(transform);
+    this.popTransform(t);
+    this.useTransform(t);
   }
 
-  pushTransform(transform) {
+  pushTransform(t) {
 
-    transform.stack.push(transform.value);
+    t.stack.push(t.value);
   }
 
-  popTransform(transform) {
+  popTransform(t) {
 
-    transform.value = transform.stack.pop();
+    t.value = t.stack.pop();
 
-    if (transform.value == undefined) {
+    if (t.value == undefined) {
 
-      transform.value = this.getIdentityTransform();
+      t.value = this.getIdentityTransform();
     }
 
-    if (transform.stack.length == 0) {
+    if (t.stack.length == 0) {
 
-      transform.stack[0] = this.getIdentityTransform();
+      t.stack[0] = this.getIdentityTransform();
     }
   }
 
@@ -937,7 +937,7 @@ let Poyo = new class {
     return this.version;
   }
 
-  createGameLoop(loop_procedure) {
+  createGameLoop(procedure) {
 
     let then = performance.now();
 
@@ -957,7 +957,7 @@ let Poyo = new class {
         this.setDrawTarget(this.final_frame);
 
         // Draw the procedure to the final frame.
-        loop_procedure();
+        procedure();
 
         this.setDrawTarget(null);
 
@@ -1343,9 +1343,9 @@ let Poyo = new class {
     }
   }
 
-  useInstancing(use_instancing) {
+  useInstancing(toggle) {
 
-    if (!use_instancing) {
+    if (!toggle) {
 
       if (this.use_instancing) {
 
@@ -1367,7 +1367,7 @@ let Poyo = new class {
       }
     }
 
-    this.use_instancing = use_instancing;
+    this.use_instancing = toggle;
   }
 
   loadBitmap(path) {
@@ -1733,12 +1733,12 @@ let Poyo = new class {
     };
   }
 
-  useTransform(transform) {
+  useTransform(t) {
 
-    this.matrix.value = transform.value;
+    this.matrix.value = t.value;
   }
 
-  scaleTransform(transform, scale_x, scale_y) {
+  scaleTransform(t, scale_x, scale_y) {
 
     let scaled_matrix = [
 
@@ -1749,10 +1749,10 @@ let Poyo = new class {
       0, 0, 1
     ];
 
-    transform.value = this.multiplyMatrices(transform.value, scaled_matrix);
+    t.value = this.multiplyMatrices(t.value, scaled_matrix);
   }
 
-  rotateTransform(transform, theta) {
+  rotateTransform(t, theta) {
 
     let sine = Math.sin(theta);
     let cosine = Math.cos(theta);
@@ -1766,10 +1766,10 @@ let Poyo = new class {
       0, 0, 1
     ];
 
-    transform.value = this.multiplyMatrices(transform.value, rotated_matrix);
+    t.value = this.multiplyMatrices(t.value, rotated_matrix);
   }
 
-  translateTransform(transform, translate_x, translate_y) {
+  translateTransform(t, x, y) {
 
     let translated_matrix = [
 
@@ -1777,13 +1777,13 @@ let Poyo = new class {
 
       0, 1, 0,
 
-      translate_x | 0, translate_y | 0, 1
+      x | 0, y | 0, 1
     ];
 
-    transform.value = this.multiplyMatrices(transform.value, translated_matrix);
+    t.value = this.multiplyMatrices(t.value, translated_matrix);
   }
 
-  shearTransform(transform, theta_x, theta_y) {
+  shearTransform(t, theta_x, theta_y) {
 
     let sheared_matrix = [
 
@@ -1794,7 +1794,7 @@ let Poyo = new class {
       0, 0, 1
     ];
 
-    transform.value = this.multiplyMatrices(transform.value, sheared_matrix);
+    t.value = this.multiplyMatrices(t.value, sheared_matrix);
   }
 
   multiplyMatrices(a, b) {
@@ -1812,14 +1812,14 @@ let Poyo = new class {
     return multiplied_matrix;
   }
 
-  createBitmap(width, height) {
+  createBitmap(w, h) {
 
     let framebuffer = this.WebGL2.createFramebuffer();
 
     let texture = this.WebGL2.createTexture();
 
     this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, texture);
-    this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA, width, height, 0, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, null);
+    this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA, w, h, 0, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, null);
 
     this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_WRAP_S, this.texture_wrap_s);
     this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_WRAP_T, this.texture_wrap_t);
@@ -1838,9 +1838,9 @@ let Poyo = new class {
 
     return {
 
-      width: width,
+      width: w,
 
-      height: height,
+      height: h,
 
       texture: texture,
 
