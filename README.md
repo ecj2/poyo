@@ -51,8 +51,8 @@ function start() {
 
 function main() {
 
-  // Initialize Poyo and set the canvas' dimensions to 768x432 pixels.
-  if (!Poyo.initialize(768, 432)) {
+  // Initialize Poyo and set the canvas' dimensions to 640x360 pixels.
+  if (!Poyo.initialize(640, 360)) {
 
     // Display initialization errors and kill the script.
     Poyo.displayError(Poyo.getLastError());
@@ -73,7 +73,7 @@ function loop() {
   let yellow = Poyo.createColor(255, 255, 0);
 
   // Draw "Hello, world!" in the center of the canvas in yellow.
-  Poyo.drawText(font, yellow, 100, 768 / 2, 432 / 2 - 50, Poyo.ALIGN_CENTER, "Hello, world!");
+  Poyo.drawText(font, yellow, 100, 640 / 2, 360 / 2 - 50, Poyo.ALIGN_CENTER, "Hello, world!");
 }
 ```
 

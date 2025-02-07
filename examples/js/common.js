@@ -14,8 +14,8 @@ function start() {
 
 async function main() {
 
-  // Initialize Poyo with a canvas size of 768x432 pixels.
-  if (!Poyo.initialize(768, 432)) {
+  // Initialize Poyo with a canvas size of 640x360 pixels.
+  if (!Poyo.initialize(640, 360)) {
 
     // Failed to initialize Poyo.
     Poyo.displayError(Poyo.getLastError());

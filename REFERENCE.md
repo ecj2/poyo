@@ -1180,7 +1180,7 @@ Poyo.getErrors()
 Returns an array of errors collected during initialization. Poyo may throw an error if the canvas element with an ID of `poyo` is missing, if WebGL 2 is not supported, or if shaders fail to compile.
 
 ```js
-if (!Poyo.initialize(768, 432)) {
+if (!Poyo.initialize(640, 360)) {
 
   Poyo.getErrors().forEach(
 
