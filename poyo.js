@@ -190,7 +190,7 @@ let Poyo = new class {
     return this.errors[this.errors.length - 1];
   }
 
-  displayError(message, show_alert = false) {
+  displayError(message, show_alert = true) {
 
     if (show_alert) {
 
@@ -1048,6 +1048,139 @@ let Poyo = new class {
     this.drawText(font, this.createColor(0, 0, 0, 0), 0, 0, 0, this.ALIGN_LEFT, "");
 
     return font;
+  }
+
+  async loadBitmapFont(path, glyph_h, grid_w, grid_h, rows, sequence) {
+
+    if (sequence == undefined) {
+
+      sequence = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+    }
+
+    let bitmap = await this.loadBitmap(path);
+
+    if (!bitmap) {
+
+      return false;
+    }
+
+    let font_bitmap = {
+
+      bitmap: bitmap,
+
+      glyph_height: glyph_h,
+
+      grid_width: grid_w,
+
+      grid_height: grid_h,
+
+      rows: rows - 1,
+
+      data: {}
+    };
+
+    let row = 0;
+    let column = 0;
+
+    let i = 0;
+
+    const LENGTH = sequence.length;
+
+    for (i; i < LENGTH; ++i) {
+
+      font_bitmap.data[sequence[i]] = {
+
+        x: row,
+
+        y: column
+      };
+
+      ++row;
+
+      if (row > font_bitmap.rows) {
+
+        ++column;
+
+        row = 0;
+      }
+    }
+
+    return font_bitmap;
+  }
+
+  drawBitmapFont(bitmap_font, color, size, x, y, alignment, text) {
+
+    // Properly scale to desired size.
+    size /= bitmap_font.glyph_height;
+
+    let lines = text.split("\n");
+
+    let i = 0;
+
+    const NUMBER_OF_LINES = lines.length;
+
+    this.useInstancing(true);
+
+    for (i; i < NUMBER_OF_LINES; ++i) {
+
+      let draw_x = 0;
+      let draw_y = 0;
+
+      let start_x = 0;
+      let start_y = 0;
+
+      let j = 0;
+
+      const LENGTH = lines[i].length;
+
+      for (j; j < LENGTH; ++j) {
+
+        let character = lines[i][j];
+
+        let data = bitmap_font.data[character];
+
+        if (data == undefined) {
+
+          // This character isn't included in the sequence.
+          continue;
+        }
+
+        // Texture offsets.
+        start_x = data.x * bitmap_font.grid_width;
+        start_y = data.y * bitmap_font.grid_height;
+
+        draw_x = bitmap_font.grid_width * size * j + x;
+        draw_y = bitmap_font.grid_height * size * i + y;
+
+        this.pushTransform(this.matrix);
+
+        switch (alignment) {
+
+          case this.ALIGN_CENTER:
+
+            this.translateTransform(this.matrix, -LENGTH / 2 * bitmap_font.grid_width * size, 0);
+          break;
+
+          case this.ALIGN_RIGHT:
+
+            this.translateTransform(this.matrix, -LENGTH * bitmap_font.grid_width * size, 0);
+          break;
+        }
+
+        this.translateTransform(this.matrix, draw_x, draw_y);
+
+        this.scaleTransform(this.matrix, size, size);
+
+        this.useTransform(this.matrix);
+
+        // Draw each character.
+        this.drawClippedBitmap(bitmap_font.bitmap, start_x, start_y, bitmap_font.grid_width, bitmap_font.grid_height, 0, 0, color);
+
+        this.popTransform(this.matrix);
+      }
+    }
+
+    this.useInstancing(false);
   }
 
   drawText(font, color, size, x, y, alignment, text) {

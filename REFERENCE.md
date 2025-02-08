@@ -371,7 +371,7 @@ async function loadResources() {
 Poyo.createBitmap(w, h)
 ```
 
-Returns an object literal containing a blank of the given dimensions `w` and `h` in pixels. The new bitmap can be drawn to via `Poyo.setDrawTarget()`, like so:
+Returns an object literal containing a blank bitmap of the given dimensions `w` and `h` in pixels. The new bitmap can be drawn to via `Poyo.setDrawTarget()`, like so:
 
 ```js
 let new_bitmap = Poyo.createBitmap(256, 256);
@@ -626,6 +626,57 @@ function loadResources() {
   // Load the Arial font family, which is already known to the browser, with a bold style.
   font = Poyo.loadFontFace("Arial", Poyo.STYLE_BOLD);
 }
+```
+
+---
+
+**Poyo.loadBitmapFont()**
+
+```js
+Poyo.loadBitmapFont(path, glyph_h, grid_w, grid_h, rows, sequence)
+```
+
+Loads a bitmap font with the specified glyph height, grid width and height, the number of rows, and an optional string sequence for each character (a default sequence is used if an alternative is not supplied). Returns on object literal on success and `false` on failure. Flags specified with `Poyo.setNewBitmapFlags()` are honored.
+
+This method must be called within an `async` function using the `await` keyword, like so:
+
+```js
+let bitmap_font;
+
+async function loadResources() {
+
+  bitmap_font = await Poyo.loadBitmapFont("font.png", 24, 30, 30, 10);
+
+  if (!bitmap_font) {
+
+    // Error...
+  }
+}
+```
+
+---
+
+**Poyo.drawBitmapFont()**
+
+```js
+Poyo.drawBitmapFont(bitmap_font, color, size, x, y, alignment, text)
+```
+
+Draws monospaced text using a bitmap font of a given color, size, and alignment at the given coordinates. Multi-line drawing is supported and indicated by `\n`.
+
+```js
+// Two lines: "Drawing text is" and "so much fun!".
+let string = "Drawing text is\nso much fun!";
+
+let yellow = Poyo.createColor(255, 255, 0);
+
+let mouse_x = Poyo.getMouseX();
+let mouse_y = Poyo.getMouseY();
+
+let alignment = Poyo.ALIGN_LEFT;
+
+// Draws each line at the mouse's position in yellow.
+Poyo.drawBitmapFont(bitmap_font, yellow, 50, mouse_x, mouse_y, alignment, string);
 ```
 
 ---
