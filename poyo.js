@@ -1000,7 +1000,7 @@ let Poyo = new class {
 
   createColor(r, g, b, a = 255) {
 
-    return {r: r / 255, g: g / 255, b: b / 255, a: a / 255};
+    return {r: r, g: g, b: b, a: a};
   }
 
   loadFont(path, style = this.STYLE_NORMAL) {
@@ -1201,10 +1201,10 @@ let Poyo = new class {
       this.font.canvas.height = this.target.height;
     }
 
-    let r = color.r * 255;
-    let g = color.g * 255;
-    let b = color.b * 255;
-    let a = color.a;
+    let r = color.r;
+    let g = color.g;
+    let b = color.b;
+    let a = color.a / 255;
 
     // Set font properties.
     this.font.context.textAlign = alignment;
@@ -1689,7 +1689,7 @@ let Poyo = new class {
 
       offsets[0], offsets[1], offsets[2], offsets[3],
 
-      tint.r, tint.g, tint.b, tint.a
+      tint.r / 255, tint.g / 255, tint.b / 255, tint.a / 255
     );
   }
 
@@ -1701,7 +1701,7 @@ let Poyo = new class {
     if (c[0] != t.r || c[1] != t.g || c[2] != t.b || c[3] != t.a)  {
 
       // Upload the tint.
-      this.WebGL2.uniform4fv(this.uniforms.u_tint, [tint.r, tint.g, tint.b, tint.a]);
+      this.WebGL2.uniform4fv(this.uniforms.u_tint, [tint.r / 255, tint.g / 255, tint.b / 255, tint.a / 255]);
 
       // Cache the tint for next time.
       this.cache.tint = [t.r, t.g, t.b, t.a];
