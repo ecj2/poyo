@@ -179,6 +179,8 @@ let Poyo = new class {
     this.bitmap_reference_counter = 0;
 
     this.final_frame = undefined;
+
+    this.draw_targets = [];
   }
 
   getErrors() {
@@ -962,6 +964,9 @@ let Poyo = new class {
 
       // Limit loop to a maximum of 60 calls per second.
       if (now - then >= 1000 / 60) {
+
+        // Clear draw targets array each frame.
+        this.draw_targets = [];
 
         then = now - (now - then) % (1000 / 60);
 
@@ -1998,6 +2003,8 @@ let Poyo = new class {
 
   setDrawTarget(bitmap) {
 
+    this.draw_targets.push(bitmap);
+
     // Prevent feed-back loops when drawing into new textures.
     this.cache.texture = undefined;
     this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, null);
@@ -2019,6 +2026,20 @@ let Poyo = new class {
 
     // Update the vertex buffer.
     this.setUniformsAndAttributes();
+  }
+
+  revertDrawTarget() {
+
+    // Get the last target from the array.
+    let target = this.draw_targets.pop();
+
+    if (this.draw_targets.length > 0) {
+
+      // Get parent target.
+      target = this.draw_targets.pop();
+    }
+
+    this.setDrawTarget(target);
   }
 
   getDefaultDrawTarget() {

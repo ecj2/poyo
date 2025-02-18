@@ -530,6 +530,16 @@ Forces all future drawing routines to take place on the given bitmap, rather tha
 
 ---
 
+**Poyo.revertDrawTarget()**
+
+```js
+Poyo.revertDrawTarget()
+```
+
+Reverts drawing to take place on the most recent parent draw target. When dealing with deeply-nested draw targets, it can be difficult to keep track of which target to return to, but this method takes care of it for you.
+
+---
+
 **Poyo.getDefaultDrawTarget()**
 
 ```js
@@ -545,6 +555,7 @@ Poyo.setDrawTarget(bitmap);
 // Draw here...
 
 // Return drawing to the canvas.
+// Poyo.revertDrawTarget() could be used instead.
 Poyo.setDrawTarget(Poyo.getDefaultDrawTarget());
 
 // Draw bitmap like normal to the canvas.
