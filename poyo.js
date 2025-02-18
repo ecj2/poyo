@@ -857,7 +857,7 @@ let Poyo = new class {
 
   clearToColor(color) {
 
-    this.WebGL2.clearColor(color.r, color.g, color.b, color.a);
+    this.WebGL2.clearColor(color.r / 255, color.g / 255, color.b / 255, color.a / 255);
 
     this.WebGL2.clear(this.WebGL2.COLOR_BUFFER_BIT);
   }
