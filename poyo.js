@@ -2033,9 +2033,6 @@ let Poyo = new class {
 
   setClippingRectangle(x, y, w, h) {
 
-    // Move the scissor's origin to the top.
-    y = this.target.height - h - y;
-
     this.WebGL2.scissor(x, y, w, h);
   }
 };
