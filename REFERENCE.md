@@ -21,6 +21,26 @@ Poyo sports a multitude of easy-to-use methods to help you interface with the mo
 
 ---
 
+**Poyo.setMouseScale()**
+
+```js
+Poyo.setMouseScale(scale_x, scale_y)
+```
+
+Scales the mouse's position on the canvas by the specified values.
+
+---
+
+**Poyo.setMouseOffset()**
+
+```js
+Poyo.setMouseOffset(x, y)
+```
+
+Offsets the mouse's position on the canvas by the specified values.
+
+---
+
 **Poyo.getMouseX()**
 
 ```js

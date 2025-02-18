@@ -18,15 +18,16 @@ let Poyo = new class {
     this.mouse = {
 
       x: 0,
-
       y: 0,
-
       z: 0,
 
+      scale_x: 1,
+      scale_y: 1,
+      offset_x: 0,
+      offset_y: 0,
+
       down: [],
-
       pressed: [],
-
       released: [],
 
       focused: false
@@ -663,14 +664,26 @@ let Poyo = new class {
     return this.mouse.released[button];
   }
 
+  setMouseScale(scale_x, scale_y) {
+
+    this.mouse.scale_x = scale_x;
+    this.mouse.scale_y = scale_y;
+  }
+
+  setMouseOffset(x, y) {
+
+    this.mouse.offset_x = x;
+    this.mouse.offset_y = y;
+  }
+
   getMouseX() {
 
-    return this.mouse.x;
+    return (this.mouse.x + this.mouse.offset_x) * this.mouse.scale_x;
   }
 
   getMouseY() {
 
-    return this.mouse.y;
+    return (this.mouse.y + this.mouse.offset_y) * this.mouse.scale_y;
   }
 
   getMouseWheel() {
