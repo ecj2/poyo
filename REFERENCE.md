@@ -949,10 +949,10 @@ As far as Poyo is concerned, a _sample_ is a catch-all referring to the manageme
 **Poyo.loadSample()**
 
 ```js
-Poyo.loadSample(path)
+Poyo.loadSample(path, max_instances)
 ```
 
-Loads an audio file and returns a `promise`. The `promise` resolves to an object literal that can be used with Poyo's sample methods on success, or `false` on error. MP3 is the suggested format.
+Loads an audio file located at `path` and returns a `promise`. The `promise` resolves to an object literal that can be used with Poyo's sample methods on success, or `false` on error. MP3 is the suggested format. The optional `max_instances` defaults to `1` and determines how many simultaneous instances of the sample can be played at a time.
 
 This method must be called from within an `async` function using the `await` keyword, like so:
 
@@ -980,7 +980,7 @@ Poyo.playSample(sample, gain, speed, pan, repeat, reference)
 
 Plays a given sample at a given gain, speed, and pan, and dictates whether or not to repeat upon finishing play-back, and also specifies a reference to use with other sample methods.
 
-The value for `gain` can be anything between 0.0 and 1.0, with 0.0 being muted and 1.0 being full gain. The value for `speed` can be between 0.0 and 4.0, with 0.0 being stopped, 1.0 being normal speed, and 2.0 being twice the speed (values beyond 4.0 may be supported by some browsers, but it is a best practice to not exceed 4.0 for compatibility reasons). The value for `pan` ranges from -1 to 1, with -1 being left, 1 being right, and 0 being no pan. The value for `repeat` must be `true` to repeat upon the sample finishing playing, or `false` to play only once. The value for `reference` should be a unique number, which can later be used to modify a playing sample.
+The value for `gain` can be anything between 0.0 and 1.0, with 0.0 being muted and 1.0 being full gain. The value for `speed` can be between 0.0 and 4.0, with 0.0 being stopped, 1.0 being normal speed, and 2.0 being twice the speed (values beyond 4.0 may be supported by some browsers, but it is a best practice to not exceed 4.0 for compatibility reasons). The value for `pan` ranges from -1 to 1, with -1 being left, 1 being right, and 0 being no pan. The value for `repeat` must be `true` to repeat upon the sample finishing playing, or `false` to play only once. The value for `reference` should be a unique number, which can later be used to modify a playing sample, or can be omitted and Poyo will cycle through the sample's max instance counter instead.
 
 ```js
 // Play the background sample at half gain, full speed, no pan, and repeat.

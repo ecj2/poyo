@@ -124,6 +124,8 @@ let Poyo = new class {
 
     this.audio_context = undefined;
 
+    this.sample_instance_offset = 0;
+
     this.time_initialized = undefined;
 
     this.sample_instances = [];
@@ -1272,7 +1274,7 @@ let Poyo = new class {
     this.font.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
-  loadSample(path) {
+  loadSample(path, max_instances = 1) {
 
     let element = document.createElement("audio");
 
@@ -1290,6 +1292,10 @@ let Poyo = new class {
     let reject_function = undefined;
     let resolve_function = undefined;
 
+    let min = this.sample_instance_offset;
+
+    this.sample_instance_offset += max_instances;
+
     return new Promise(
 
       (resolve, reject) => {
@@ -1300,9 +1306,11 @@ let Poyo = new class {
 
             element: element,
 
-            track: undefined,
+            instance_min: min,
 
-            panner: undefined
+            instance_max: min + max_instances,
+
+            instance_counter: min
           };
 
           resolve(sample);
@@ -1338,6 +1346,11 @@ let Poyo = new class {
 
   playSample(sample, gain, speed, pan, repeat, reference) {
 
+    if (reference == undefined) {
+
+      reference = sample.instance_counter;
+    }
+
     if (this.sample_instances[reference] == undefined) {
 
       // Create a new instance of the sample.
@@ -1364,6 +1377,13 @@ let Poyo = new class {
     if (!this.isSamplePlaying(reference)) {
 
       this.adjustSample(reference, gain, speed, pan, repeat);
+    }
+
+    ++sample.instance_counter;
+
+    if (sample.instance_counter >= sample.instance_max) {
+
+      sample.instance_counter = sample.instance_min;
     }
 
     instance.element.play();
