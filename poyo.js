@@ -1376,65 +1376,41 @@ let Poyo = new class {
 
   adjustSample(reference, gain, speed, pan, repeat) {
 
-    if (this.audio.instances[reference] != undefined) {
-
-      this.audio.instances[reference].element.loop = repeat;
-      this.audio.instances[reference].element.volume = gain;
-      this.audio.instances[reference].panner.pan.value = pan;
-      this.audio.instances[reference].element.playbackRate = speed;
-    }
+    this.audio.instances[reference].element.loop = repeat;
+    this.audio.instances[reference].element.volume = gain;
+    this.audio.instances[reference].panner.pan.value = pan;
+    this.audio.instances[reference].element.playbackRate = speed;
   }
 
   stopSample(reference) {
 
-    if (this.audio.instances[reference] != undefined) {
+    if (this.isSamplePlaying(reference)) {
 
-      if (this.isSamplePlaying(reference)) {
+      this.pauseSample(reference);
 
-        this.pauseSample(reference);
-
-        this.audio.instances[reference].element.currentTime = 0;
-      }
+      this.audio.instances[reference].element.currentTime = 0;
     }
   }
 
   pauseSample(reference) {
 
-    if (this.audio.instances[reference] != undefined) {
+    if (this.isSamplePlaying(reference)) {
 
-      if (this.isSamplePlaying(reference)) {
-
-        this.audio.instances[reference].element.pause();
-      }
+      this.audio.instances[reference].element.pause();
     }
   }
 
   resumeSample(reference) {
 
-    if (this.audio.instances[reference] != undefined) {
-
-      this.audio.instances[reference].element.play();
-    }
+    this.audio.instances[reference].element.play();
   }
 
   isSamplePaused(reference) {
-
-    if (this.audio.instances[reference] == undefined) {
-
-      // There exists no sample instance matching the specified reference.
-      return false;
-    }
 
     return this.audio.instances[reference].element.paused;
   }
 
   isSamplePlaying(reference) {
-
-    if (this.audio.instances[reference] == undefined) {
-
-      // There exists no sample instance matching the specified reference.
-      return false;
-    }
 
     if (this.isSamplePaused(reference)) {
 
@@ -1471,32 +1447,17 @@ let Poyo = new class {
 
   getSampleDuration(sample) {
 
-    if (sample == undefined) {
-
-      // Invalid sample.
-      return 0;
-    }
-
     return sample.element.duration;
   }
 
   getSampleSeek(reference) {
-
-    if (this.audio.instances[reference] == undefined) {
-
-      // Invalid sample.
-      return 0;
-    }
 
     return this.audio.instances[reference].element.currentTime;
   }
 
   setSampleSeek(reference, seek) {
 
-    if (this.audio.instances[reference] != undefined) {
-
-      this.audio.instances[reference].element.currentTime = seek;
-    }
+    this.audio.instances[reference].element.currentTime = seek;
   }
 
   useInstancing(toggle) {
