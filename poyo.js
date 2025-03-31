@@ -7,11 +7,8 @@ let Poyo = new class {
     this.cache = {
 
       tint: [],
-
       texture: 0,
-
       instance: false,
-
       texture_offset: []
     };
 
@@ -40,11 +37,84 @@ let Poyo = new class {
       code: 0,
 
       down: [],
-
       pressed: [],
-
       released: []
     };
+
+    this.canvas = {
+
+      canvas: undefined,
+
+      width: 0,
+      height: 0
+    };
+
+    this.target = {
+
+      width: 0,
+      height: 0
+    };
+
+    this.audio = {
+
+      context: undefined,
+
+      instance_offset: 0,
+
+      instances: []
+    };
+
+    this.time_initialized = undefined;
+
+    this.version = 2;
+
+    this.shader_program = undefined;
+    this.uniforms = {};
+
+    this.matrix = this.createTransform();
+
+    this.WebGL2 = undefined;
+
+    this.errors = [];
+
+    this.texture_filtering = {
+
+      minification: undefined,
+
+      magnification: undefined
+    };
+
+    this.use_instancing = false;
+
+    this.instanced_drawing_buffer = undefined;
+    this.instanced_drawing_buffer_data = [];
+
+    this.instanced_bitmap = undefined;
+
+    this.batch_text = false;
+
+    this.font = {
+
+      bitmap: undefined,
+
+      canvas: undefined,
+
+      context: undefined
+    };
+
+    this.texture_wrap_s = undefined;
+    this.texture_wrap_t = undefined;
+
+    this.initializeConstants();
+
+    this.bitmap_reference_counter = 0;
+
+    this.final_frame = undefined;
+
+    this.draw_targets = [];
+  }
+
+  initializeConstants() {
 
     // Mouse codes.
     this.MOUSE_ANY = 3;
@@ -97,92 +167,27 @@ let Poyo = new class {
     this.KEY_RIGHT = 39;
     this.KEY_SPACE = 32;
 
+    // Font alignment.
     this.ALIGN_LEFT = "left";
     this.ALIGN_RIGHT = "right";
     this.ALIGN_CENTER = "center";
 
+    // Font styles.
     this.STYLE_BOLD = "bold";
     this.STYLE_ITALIC = "italic";
     this.STYLE_NORMAL = "normal";
     this.STYLE_BOLD_ITALIC = "bold italic";
 
-    this.canvas = {
-
-      canvas: undefined,
-
-      width: 0,
-
-      height: 0
-    };
-
-    this.target = {
-
-      width: 0,
-
-      height: 0
-    };
-
-    this.audio_context = undefined;
-
-    this.sample_instance_offset = 0;
-
-    this.time_initialized = undefined;
-
-    this.sample_instances = [];
-
-    this.version = 2;
-
-    this.shader_program = undefined;
-    this.uniforms = {};
-
-    this.matrix = this.createTransform();
-
-    this.WebGL2 = undefined;
-
-    this.errors = [];
-
-    this.texture_filtering = {
-
-      minification: undefined,
-
-      magnification: undefined
-    };
-
-    this.use_instancing = false;
-
-    this.instanced_drawing_buffer = undefined;
-    this.instanced_drawing_buffer_data = [];
-
-    this.instanced_bitmap = undefined;
-
-    this.batch_text = false;
-
-    this.font = {
-
-      bitmap: undefined,
-
-      canvas: undefined,
-
-      context: undefined
-    };
-
-    this.texture_wrap_s = undefined;
-    this.texture_wrap_t = undefined;
-
+    // Texture filtering.
     this.MIN_LINEAR = 0;
     this.MAG_LINEAR = 1;
     this.MIN_NEAREST = 2;
     this.MAG_NEAREST = 3;
 
+    // Texture wrapping.
     this.WRAP_CLAMP = 4;
     this.WRAP_REPEAT = 5;
     this.WRAP_MIRROR = 6;
-
-    this.bitmap_reference_counter = 0;
-
-    this.final_frame = undefined;
-
-    this.draw_targets = [];
   }
 
   getErrors() {
@@ -210,7 +215,7 @@ let Poyo = new class {
     // Set the time in which the library was initialized.
     this.time_initialized = Date.now();
 
-    this.audio_context = new AudioContext();
+    this.audio.context = new AudioContext();
 
     this.canvas.canvas = document.getElementById("poyo");
 
@@ -318,7 +323,6 @@ let Poyo = new class {
       #version 300 es
 
       layout(location = 0) in vec2 a_vertex_position;
-      layout(location = 1) in vec2 a_texture_position;
 
       layout(location = 2) in vec4 a_instance_tint;
       layout(location = 3) in vec3 a_instance_matrix_part_1;
@@ -364,7 +368,7 @@ let Poyo = new class {
 
         gl_Position = vec4(clip_space_position, 0.0, 1.0);
 
-        v_texture_position = a_texture_position;
+        v_texture_position = a_vertex_position / u_resolution;
       }
     `;
 
@@ -375,8 +379,6 @@ let Poyo = new class {
       precision mediump float;
 
       in vec2 v_texture_position;
-
-      uniform bool u_instance;
 
       uniform sampler2D u_texture;
 
@@ -487,23 +489,10 @@ let Poyo = new class {
 
     let buffer = this.WebGL2.createBuffer();
 
-    let buffer_data = new Float32Array(
+    let w = this.target.width;
+    let h = this.target.height;
 
-      [
-
-        // Vertex data.
-        0, 0,
-        this.target.width, 0,
-        this.target.width, this.target.height,
-        0, this.target.height,
-
-        // Texture data.
-        0, 0,
-        1, 0,
-        1, 1,
-        0, 1
-      ]
-    );
+    let buffer_data = new Float32Array([0, 0, w, 0, w, h, 0, h]);
 
     this.WebGL2.bindBuffer(this.WebGL2.ARRAY_BUFFER, buffer);
     this.WebGL2.bufferData(this.WebGL2.ARRAY_BUFFER, buffer_data, this.WebGL2.STATIC_DRAW);
@@ -511,17 +500,14 @@ let Poyo = new class {
     this.WebGL2.vertexAttribPointer(0, 2, this.WebGL2.FLOAT, false, 0, 0);
     this.WebGL2.enableVertexAttribArray(0);
 
-    this.WebGL2.vertexAttribPointer(1, 2, this.WebGL2.FLOAT, false, 0, 32);
-    this.WebGL2.enableVertexAttribArray(1);
-
     // Upload the target's resolution.
-    this.WebGL2.uniform2fv(this.uniforms.u_resolution, [this.target.width, this.target.height]);
+    this.WebGL2.uniform2fv(this.uniforms.u_resolution, [w, h]);
 
     // Restrict the viewport to the target's resolution.
-    this.WebGL2.viewport(0, 0, this.target.width, this.target.height);
+    this.WebGL2.viewport(0, 0, w, h);
 
     // Scissor beyond the target's resolution.
-    this.setClippingRectangle(0, 0, this.target.width, this.target.height);
+    this.setClippingRectangle(0, 0, w, h);
   }
 
   getTime() {
@@ -1292,9 +1278,9 @@ let Poyo = new class {
     let reject_function = undefined;
     let resolve_function = undefined;
 
-    let min = this.sample_instance_offset;
+    let min = this.audio.instance_offset;
 
-    this.sample_instance_offset += max_instances;
+    this.audio.instance_offset += max_instances;
 
     return new Promise(
 
@@ -1351,28 +1337,27 @@ let Poyo = new class {
       reference = sample.instance_counter;
     }
 
-    if (this.sample_instances[reference] == undefined) {
+    if (this.audio.instances[reference] == undefined) {
 
       // Create a new instance of the sample.
 
       let element_clone = sample.element.cloneNode();
 
-      let track = this.audio_context.createMediaElementSource(element_clone);
-      let panner = new StereoPannerNode(this.audio_context, {pan: pan});
+      let track = this.audio.context.createMediaElementSource(element_clone);
 
-      this.sample_instances[reference] = {
+      this.audio.instances[reference] = {
 
         element: element_clone,
 
         track: track,
 
-        panner: panner
+        panner: this.audio.context.createStereoPanner()
       };
     }
 
-    let instance = this.sample_instances[reference];
+    let instance = this.audio.instances[reference];
 
-    instance.track.connect(instance.panner).connect(this.audio_context.destination);
+    instance.track.connect(instance.panner).connect(this.audio.context.destination);
 
     if (!this.isSamplePlaying(reference)) {
 
@@ -1391,61 +1376,61 @@ let Poyo = new class {
 
   adjustSample(reference, gain, speed, pan, repeat) {
 
-    if (this.sample_instances[reference] != undefined) {
+    if (this.audio.instances[reference] != undefined) {
 
-      this.sample_instances[reference].element.loop = repeat;
-      this.sample_instances[reference].element.volume = gain;
-      this.sample_instances[reference].panner.pan.value = pan;
-      this.sample_instances[reference].element.playbackRate = speed;
+      this.audio.instances[reference].element.loop = repeat;
+      this.audio.instances[reference].element.volume = gain;
+      this.audio.instances[reference].panner.pan.value = pan;
+      this.audio.instances[reference].element.playbackRate = speed;
     }
   }
 
   stopSample(reference) {
 
-    if (this.sample_instances[reference] != undefined) {
+    if (this.audio.instances[reference] != undefined) {
 
       if (this.isSamplePlaying(reference)) {
 
         this.pauseSample(reference);
 
-        this.sample_instances[reference].element.currentTime = 0;
+        this.audio.instances[reference].element.currentTime = 0;
       }
     }
   }
 
   pauseSample(reference) {
 
-    if (this.sample_instances[reference] != undefined) {
+    if (this.audio.instances[reference] != undefined) {
 
       if (this.isSamplePlaying(reference)) {
 
-        this.sample_instances[reference].element.pause();
+        this.audio.instances[reference].element.pause();
       }
     }
   }
 
   resumeSample(reference) {
 
-    if (this.sample_instances[reference] != undefined) {
+    if (this.audio.instances[reference] != undefined) {
 
-      this.sample_instances[reference].element.play();
+      this.audio.instances[reference].element.play();
     }
   }
 
   isSamplePaused(reference) {
 
-    if (this.sample_instances[reference] == undefined) {
+    if (this.audio.instances[reference] == undefined) {
 
       // There exists no sample instance matching the specified reference.
       return false;
     }
 
-    return this.sample_instances[reference].element.paused;
+    return this.audio.instances[reference].element.paused;
   }
 
   isSamplePlaying(reference) {
 
-    if (this.sample_instances[reference] == undefined) {
+    if (this.audio.instances[reference] == undefined) {
 
       // There exists no sample instance matching the specified reference.
       return false;
@@ -1456,7 +1441,7 @@ let Poyo = new class {
       return false;
     }
 
-    if (this.sample_instances[reference].element.currentTime < this.sample_instances[reference].element.duration) {
+    if (this.audio.instances[reference].element.currentTime < this.audio.instances[reference].element.duration) {
 
       return true;
     }
@@ -1466,22 +1451,22 @@ let Poyo = new class {
 
   getSamplePan(reference) {
 
-    return this.sample_instances[reference].panner.pan.value;
+    return this.audio.instances[reference].panner.pan.value;
   }
 
   getSampleSpeed(reference) {
 
-    return this.sample_instances[reference].element.playbackRate;
+    return this.audio.instances[reference].element.playbackRate;
   }
 
   getSampleGain(reference) {
 
-    return this.sample_instances[reference].element.volume;
+    return this.audio.instances[reference].element.volume;
   }
 
   getSampleRepeat(reference) {
 
-    return this.sample_instances[reference].element.loop;
+    return this.audio.instances[reference].element.loop;
   }
 
   getSampleDuration(sample) {
@@ -1497,20 +1482,20 @@ let Poyo = new class {
 
   getSampleSeek(reference) {
 
-    if (this.sample_instances[reference] == undefined) {
+    if (this.audio.instances[reference] == undefined) {
 
       // Invalid sample.
       return 0;
     }
 
-    return this.sample_instances[reference].element.currentTime;
+    return this.audio.instances[reference].element.currentTime;
   }
 
   setSampleSeek(reference, seek) {
 
-    if (this.sample_instances[reference] != undefined) {
+    if (this.audio.instances[reference] != undefined) {
 
-      this.sample_instances[reference].element.currentTime = seek;
+      this.audio.instances[reference].element.currentTime = seek;
     }
   }
 
