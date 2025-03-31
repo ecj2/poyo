@@ -66,7 +66,7 @@ let Poyo = new class {
 
     this.time_initialized = undefined;
 
-    this.version = 2;
+    this.version = 3;
 
     this.shader_program = undefined;
     this.uniforms = {};
