@@ -1403,10 +1403,22 @@ let Poyo = new class {
 
   isSamplePaused(reference) {
 
+    if (this.audio.instances[reference] == undefined) {
+
+      // There exists no sample instance matching the specified reference.
+      return false;
+    }
+
     return this.audio.instances[reference].element.paused;
   }
 
   isSamplePlaying(reference) {
+
+    if (this.audio.instances[reference] == undefined) {
+
+      // There exists no sample instance matching the specified reference.
+      return false;
+    }
 
     if (this.isSamplePaused(reference)) {
 
