@@ -8,7 +8,6 @@ let Poyo = new class {
 
       tint: [],
       texture: 0,
-      instance: false,
       texture_offset: []
     };
 
@@ -80,7 +79,6 @@ let Poyo = new class {
     this.texture_filtering = {
 
       minification: undefined,
-
       magnification: undefined
     };
 
@@ -1077,7 +1075,6 @@ let Poyo = new class {
       glyph_height: glyph_h,
 
       grid_width: grid_w,
-
       grid_height: grid_h,
 
       rows: rows - 1,
@@ -1293,7 +1290,6 @@ let Poyo = new class {
             element: element,
 
             instance_min: min,
-
             instance_max: min + max_instances,
 
             instance_counter: min
@@ -1648,14 +1644,14 @@ let Poyo = new class {
     this.WebGL2.vertexAttribDivisor(5, 1);
     this.WebGL2.enableVertexAttribArray(5);
 
-    if (this.cache.instance != this.use_instancing) {
+    // Tell the shader we're using instancing.
+    this.WebGL2.uniform1i(this.uniforms.u_instance, true);
 
-      this.WebGL2.uniform1i(this.uniforms.u_instance, this.use_instancing);
-
-      this.cache.instance = this.use_instancing;
-    }
-
+    // Draw the instanced bitmaps.
     this.WebGL2.drawArraysInstanced(this.WebGL2.TRIANGLE_FAN, 0, 4, this.instanced_drawing_buffer_data.length / 14);
+
+    // Tell the shader we're done using instancing.
+    this.WebGL2.uniform1i(this.uniforms.u_instance, false);
   }
 
   addBitmapInstance(bitmap, offsets = [0, 0, 1, 1], tint = this.createColor(255, 255, 255)) {
@@ -1716,15 +1712,6 @@ let Poyo = new class {
 
         break;
       }
-    }
-
-    if (this.cache.instance != this.use_instancing) {
-
-      // Upload the instancing value.
-      this.WebGL2.uniform1i(this.uniforms.u_instance, this.use_instancing);
-
-      // Cache it for next time.
-      this.cache.instance = this.use_instancing;
     }
 
     this.pushTransform(this.matrix);
@@ -2019,11 +2006,7 @@ let Poyo = new class {
     this.cache = {
 
       tint: [],
-
       texture: 0,
-
-      instance: false,
-
       texture_offset: []
     };
 
