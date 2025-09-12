@@ -1477,7 +1477,7 @@ let Poyo = new class {
         }
 
         // Drawing was being held, but now it's time to draw.
-        this.drawInstancedBitmaps(this.bitmap, undefined, undefined);
+        this.drawInstancedBitmaps();
 
         // Clear the buffer for next time.
         this.instanced_drawing_buffer_data = [];
