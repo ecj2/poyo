@@ -1113,6 +1113,9 @@ let Poyo = new class {
 
   drawBitmapFont(bitmap_font, color, size, x, y, alignment, text) {
 
+    // Ensure the text is a string.
+    text = "" + text;
+
     // Properly scale to desired size.
     size /= bitmap_font.glyph_height;
 
