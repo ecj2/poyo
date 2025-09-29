@@ -1999,4 +1999,10 @@ let Poyo = new class {
 
     this.WebGL2.scissor(x, y, w, h);
   }
+
+  isColliding(a, b) {
+
+    // AABB collision.
+    return a.x + a.w > b.x && a.x < b.x + b.w && a.y + a.h > b.y && a.y < b.y + b.h;
+  }
 };

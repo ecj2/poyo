@@ -1443,3 +1443,39 @@ Poyo.setClippingRectangle(x, y, w, h)
 ```
 
 Sets the clipping rectangle for the canvas. Nothing is drawn beyond its boundaries. `x` and `y` define the starting boundaries and `w` and `h` define its width and height, all in pixels.
+
+---
+
+**Poyo.isColliding()**
+
+```js
+Poyo.isColliding(a, b)
+```
+
+Performs an axis-aligned bounding box (AABB) collision check against object literals `a` and `b`. Returns `true` if `a` and `b` are colliding, or `false` if not.
+
+```js
+let a = {
+
+  x: Player.getX(),
+  y: Player.getY(),
+
+  w: Player.getWidth(),
+  h: Player.getHeight()
+};
+
+let b = {
+
+  x: Enemy.getX(),
+  y: Enemy.getY(),
+
+  w: Enemy.getWidth(),
+  h: Enemy.getHeight()
+};
+
+if (Poyo.isColliding(a, b)) {
+
+  // Player is colliding with the enemy.
+  Player.inflictDamage();
+}
+```
