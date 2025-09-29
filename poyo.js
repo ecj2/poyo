@@ -576,9 +576,7 @@ let Poyo = new class {
 
     if (button == this.MOUSE_ANY) {
 
-      let i = 0;
-
-      for (i; i < 3; ++i) {
+      for (let i = 0; i < 3; ++i) {
 
         if (!this.mouse.down[i]) {
 
@@ -596,9 +594,7 @@ let Poyo = new class {
 
     if (button == this.MOUSE_ANY) {
 
-      let i = 0;
-
-      for (i; i < 3; ++i) {
+      for (let i = 0; i < 3; ++i) {
 
         if (this.mouse.down[i]) {
 
@@ -616,9 +612,7 @@ let Poyo = new class {
 
     if (button == this.MOUSE_ANY) {
 
-      let i = 0;
-
-      for (i; i < 3; ++i) {
+      for (let i = 0; i < 3; ++i) {
 
         if (this.mouse.pressed[i]) {
 
@@ -636,9 +630,7 @@ let Poyo = new class {
 
     if (button == this.MOUSE_ANY) {
 
-      let i = 0;
-
-      for (i; i < 3; ++i) {
+      for (let i = 0; i < 3; ++i) {
 
         if (this.mouse.released[i]) {
 
@@ -747,9 +739,7 @@ let Poyo = new class {
 
     if (key == this.KEY_ANY) {
 
-      let i = 0;
-
-      for (i; i < 255; ++i) {
+      for (let i = 0; i < 255; ++i) {
 
         if (!this.keyboard.down[i]) {
 
@@ -767,9 +757,7 @@ let Poyo = new class {
 
     if (key == this.KEY_ANY) {
 
-      let i = 0;
-
-      for (i; i < 255; ++i) {
+      for (let i = 0; i < 255; ++i) {
 
         if (this.keyboard.down[i]) {
 
@@ -787,9 +775,7 @@ let Poyo = new class {
 
     if (key == this.KEY_ANY) {
 
-      let i = 0;
-
-      for (i; i < 255; ++i) {
+      for (let i = 0; i < 255; ++i) {
 
         if (this.keyboard.pressed[i]) {
 
@@ -807,9 +793,7 @@ let Poyo = new class {
 
     if (key == this.KEY_ANY) {
 
-      let i = 0;
-
-      for (i; i < 255; ++i) {
+      for (let i = 0; i < 255; ++i) {
 
         if (this.keyboard.released[i]) {
 
@@ -980,9 +964,7 @@ let Poyo = new class {
 
   clearInputArrays() {
 
-    let i = 0;
-
-    for (i; i < 3; ++i) {
+    for (let i = 0; i < 3; ++i) {
 
       // Clear mouse button arrays so each mouse button event fires only once.
       this.mouse.pressed[i] = false;
@@ -992,9 +974,7 @@ let Poyo = new class {
       this.mouse.z = 0;
     }
 
-    i = 0;
-
-    for (i; i < 255; ++i) {
+    for (let i = 0; i < 255; ++i) {
 
       // Clear key arrays so each keyboard event fires only once.
       this.keyboard.pressed[i] = false;
@@ -1085,11 +1065,7 @@ let Poyo = new class {
     let row = 0;
     let column = 0;
 
-    let i = 0;
-
-    const LENGTH = sequence.length;
-
-    for (i; i < LENGTH; ++i) {
+    for (let i = 0; i < sequence.length; ++i) {
 
       font_bitmap.data[sequence[i]] = {
 
@@ -1121,13 +1097,9 @@ let Poyo = new class {
 
     let lines = text.split("\n");
 
-    let i = 0;
-
-    const NUMBER_OF_LINES = lines.length;
-
     this.useInstancing(true);
 
-    for (i; i < NUMBER_OF_LINES; ++i) {
+    for (let i = 0; i < lines.length; ++i) {
 
       let draw_x = 0;
       let draw_y = 0;
@@ -1135,11 +1107,7 @@ let Poyo = new class {
       let start_x = 0;
       let start_y = 0;
 
-      let j = 0;
-
-      const LENGTH = lines[i].length;
-
-      for (j; j < LENGTH; ++j) {
+      for (let j = 0; j < lines[i].length; ++j) {
 
         let character = lines[i][j];
 
@@ -1164,12 +1132,12 @@ let Poyo = new class {
 
           case this.ALIGN_CENTER:
 
-            this.translateTransform(this.matrix, -LENGTH / 2 * bitmap_font.grid_width * size, 0);
+            this.translateTransform(this.matrix, -lines[i].length / 2 * bitmap_font.grid_width * size, 0);
           break;
 
           case this.ALIGN_RIGHT:
 
-            this.translateTransform(this.matrix, -LENGTH * bitmap_font.grid_width * size, 0);
+            this.translateTransform(this.matrix, -lines[i].length * bitmap_font.grid_width * size, 0);
           break;
         }
 
@@ -1713,9 +1681,7 @@ let Poyo = new class {
       this.cache.texture = bitmap.reference;
     }
 
-    let i = 0;
-
-    for (i; i < 4; ++i) {
+    for (let i = 0; i < 4; ++i) {
 
       if (this.cache.texture_offset[i] != texture_offset[i]) {
 
