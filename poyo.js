@@ -1345,7 +1345,7 @@ let Poyo = new class {
 
     this.audio.instances[reference].element.loop = repeat;
     this.audio.instances[reference].element.volume = gain;
-    this.audio.instances[reference].panner.pan.value = pan;
+    this.audio.instances[reference].panner.pan.value = this.clamp(pan, -1, 1);;
     this.audio.instances[reference].element.playbackRate = speed;
   }
 
@@ -2004,5 +2004,10 @@ let Poyo = new class {
 
     // AABB collision.
     return a.x + a.w > b.x && a.x < b.x + b.w && a.y + a.h > b.y && a.y < b.y + b.h;
+  }
+
+  clamp(x, min, max) {
+
+    return Math.max(min, Math.min(max, x));
   }
 };

@@ -1479,3 +1479,13 @@ if (Poyo.isColliding(a, b)) {
   Player.inflictDamage();
 }
 ```
+
+---
+
+***Poyo.clamp()***
+
+```js
+Poyo.clamp(x, min, max)
+```
+
+Returns a clamp of `x` between `min` and `max`.
