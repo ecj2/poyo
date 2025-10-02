@@ -321,11 +321,10 @@ let Poyo = new class {
       #version 300 es
 
       layout(location = 0) in vec2 a_vertex_position;
-
-      layout(location = 2) in vec4 a_instance_tint;
-      layout(location = 3) in vec3 a_instance_matrix_part_1;
-      layout(location = 4) in vec3 a_instance_matrix_part_2;
-      layout(location = 5) in vec4 a_instance_texture_offset;
+      layout(location = 1) in vec4 a_instance_tint;
+      layout(location = 2) in vec3 a_instance_matrix_part_1;
+      layout(location = 3) in vec3 a_instance_matrix_part_2;
+      layout(location = 4) in vec4 a_instance_texture_offset;
 
       uniform mat3 u_matrix;
 
@@ -339,14 +338,13 @@ let Poyo = new class {
       out vec2 v_texture_position;
 
       out vec4 v_tint;
-      out vec4 v_texture_offset;
 
       void main(void) {
 
         mat3 matrix = u_matrix;
 
         v_tint = u_tint;
-        v_texture_offset = u_texture_offset;
+        v_texture_position = (a_vertex_position / u_resolution) * u_texture_offset.zw + u_texture_offset.st;
 
         if (u_instance) {
 
@@ -358,15 +356,13 @@ let Poyo = new class {
           matrix[2][1] = a_instance_matrix_part_1[2];
 
           v_tint = a_instance_tint;
-          v_texture_offset = a_instance_texture_offset;
+          v_texture_position = (a_vertex_position / u_resolution) * a_instance_texture_offset.zw + a_instance_texture_offset.st;
         }
 
         // Convert pixel coordinates to normalized device coordinates.
         vec2 clip_space_position = vec2(matrix * vec3(a_vertex_position, 1.0)).xy / u_resolution * 2.0 - 1.0;
 
         gl_Position = vec4(clip_space_position, 0.0, 1.0);
-
-        v_texture_position = a_vertex_position / u_resolution;
       }
     `;
 
@@ -376,27 +372,16 @@ let Poyo = new class {
 
       precision mediump float;
 
+      in vec4 v_tint;
       in vec2 v_texture_position;
 
       uniform sampler2D u_texture;
-
-      in vec4 v_tint;
-      in vec4 v_texture_offset;
 
       out vec4 final_color;
 
       void main(void) {
 
-        vec2 p = v_texture_position;
-
-        p += v_texture_offset.st;
-
-        bool reject = p.s < 0.0 || p.s > v_texture_offset.p || p.s > 1.0;
-
-        // Don't draw texels outside of the clipped offsets.
-        if (reject || p.t < 0.0 || p.t > v_texture_offset.q || p.t > 1.0) discard;
-
-        final_color = texture(u_texture, p) * v_tint;
+        final_color = texture(u_texture, v_texture_position) * v_tint;
       }
     `;
 
@@ -1608,24 +1593,24 @@ let Poyo = new class {
     this.WebGL2.bufferData(this.WebGL2.ARRAY_BUFFER, new Float32Array(this.instanced_drawing_buffer_data), this.WebGL2.STATIC_DRAW);
 
     // Tints.
-    this.WebGL2.vertexAttribPointer(2, 4, this.WebGL2.FLOAT, false, 4 * 14, 40);
+    this.WebGL2.vertexAttribPointer(1, 4, this.WebGL2.FLOAT, false, 4 * 14, 40);
+    this.WebGL2.vertexAttribDivisor(1, 1);
+    this.WebGL2.enableVertexAttribArray(1);
+
+    // Matrices part 1.
+    this.WebGL2.vertexAttribPointer(2, 3, this.WebGL2.FLOAT, false, 4 * 14, 0);
     this.WebGL2.vertexAttribDivisor(2, 1);
     this.WebGL2.enableVertexAttribArray(2);
 
-    // Matrices part 1.
-    this.WebGL2.vertexAttribPointer(3, 3, this.WebGL2.FLOAT, false, 4 * 14, 0);
+    // Matrices part 2.
+    this.WebGL2.vertexAttribPointer(3, 3, this.WebGL2.FLOAT, false, 4 * 14, 12);
     this.WebGL2.vertexAttribDivisor(3, 1);
     this.WebGL2.enableVertexAttribArray(3);
 
-    // Matrices part 2.
-    this.WebGL2.vertexAttribPointer(4, 3, this.WebGL2.FLOAT, false, 4 * 14, 12);
+    // Texture offsets.
+    this.WebGL2.vertexAttribPointer(4, 4, this.WebGL2.FLOAT, false, 4 * 14, 24);
     this.WebGL2.vertexAttribDivisor(4, 1);
     this.WebGL2.enableVertexAttribArray(4);
-
-    // Texture offsets.
-    this.WebGL2.vertexAttribPointer(5, 4, this.WebGL2.FLOAT, false, 4 * 14, 24);
-    this.WebGL2.vertexAttribDivisor(5, 1);
-    this.WebGL2.enableVertexAttribArray(5);
 
     // Tell the shader we're using instancing.
     this.WebGL2.uniform1i(this.uniforms.u_instance, true);
@@ -1642,7 +1627,7 @@ let Poyo = new class {
     this.instanced_bitmap = bitmap;
 
     // Scale instanced bitmap to its proper resolution.
-    this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
+    this.scaleTransform(this.matrix, offsets[2] * bitmap.width / this.target.width, offsets[3] * bitmap.height / this.target.height);
 
     this.instanced_drawing_buffer_data.push(
 
@@ -1698,7 +1683,7 @@ let Poyo = new class {
     this.pushTransform(this.matrix);
 
     // Scale the bitmap to its proper resolution.
-    this.scaleTransform(this.matrix, bitmap.width / this.target.width, bitmap.height / this.target.height);
+    this.scaleTransform(this.matrix, texture_offset[2] * bitmap.width / this.target.width, texture_offset[3] * bitmap.height / this.target.height);
 
     // Upload the transformation matrix.
     this.WebGL2.uniformMatrix3fv(this.uniforms.u_matrix, false, this.matrix.value);
@@ -1755,9 +1740,9 @@ let Poyo = new class {
 
       start_y / bitmap.height,
 
-      (start_x + width) / bitmap.width,
+      width / bitmap.width,
 
-      (start_y + height) / bitmap.height
+      height / bitmap.height
     ];
 
     this.pushTransform(this.matrix);
