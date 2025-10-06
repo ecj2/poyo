@@ -341,23 +341,23 @@ let Poyo = new class {
 
       void main(void) {
 
-        mat3 matrix = u_matrix;
+        float use_instancing = float(u_instance);
 
-        v_tint = u_tint;
-        v_texture_position = (a_vertex_position / u_resolution) * u_texture_offset.zw + u_texture_offset.st;
+        mat3 matrix;
 
-        if (u_instance) {
+        matrix[0][0] = mix(u_matrix[0][0], a_instance_matrix_part_1[0], use_instancing);
+        matrix[1][0] = mix(u_matrix[1][0], a_instance_matrix_part_2[2], use_instancing);
+        matrix[2][0] = mix(u_matrix[2][0], a_instance_matrix_part_1[1], use_instancing);
+        matrix[0][1] = mix(u_matrix[0][1], a_instance_matrix_part_2[1], use_instancing);
+        matrix[1][1] = mix(u_matrix[1][1], a_instance_matrix_part_2[0], use_instancing);
+        matrix[2][1] = mix(u_matrix[2][1], a_instance_matrix_part_1[2], use_instancing);
 
-          matrix[0][0] = a_instance_matrix_part_1[0];
-          matrix[1][0] = a_instance_matrix_part_2[2];
-          matrix[2][0] = a_instance_matrix_part_1[1];
-          matrix[0][1] = a_instance_matrix_part_2[1];
-          matrix[1][1] = a_instance_matrix_part_2[0];
-          matrix[2][1] = a_instance_matrix_part_1[2];
+        v_tint = mix(u_tint, a_instance_tint, use_instancing);
 
-          v_tint = a_instance_tint;
-          v_texture_position = (a_vertex_position / u_resolution) * a_instance_texture_offset.zw + a_instance_texture_offset.st;
-        }
+        vec4 texture_offset = mix(u_texture_offset, a_instance_texture_offset, use_instancing);
+
+        // Scale and translate texture position.
+        v_texture_position = (a_vertex_position / u_resolution) * texture_offset.zw + texture_offset.st;
 
         // Convert pixel coordinates to normalized device coordinates.
         vec2 clip_space_position = vec2(matrix * vec3(a_vertex_position, 1.0)).xy / u_resolution * 2.0 - 1.0;
