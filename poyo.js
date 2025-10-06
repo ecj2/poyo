@@ -84,10 +84,15 @@ let Poyo = new class {
 
     this.use_instancing = false;
 
+    this.instanced_tint_buffer = undefined;
     this.instanced_drawing_buffer = undefined;
+
+    this.instanced_tint_buffer_data = [];
     this.instanced_drawing_buffer_data = [];
 
     this.instanced_bitmap = undefined;
+
+    this.number_of_instances = 0;
 
     this.batch_text = false;
 
@@ -286,6 +291,7 @@ let Poyo = new class {
 
     this.setUniformsAndAttributes();
 
+    this.instanced_tint_buffer = this.WebGL2.createBuffer();
     this.instanced_drawing_buffer = this.WebGL2.createBuffer();
 
     this.font.bitmap = this.createBitmap(canvas_w, canvas_h);
@@ -372,8 +378,9 @@ let Poyo = new class {
 
       precision mediump float;
 
-      in vec4 v_tint;
       in vec2 v_texture_position;
+
+      in vec4 v_tint;
 
       uniform sampler2D u_texture;
 
@@ -1443,8 +1450,11 @@ let Poyo = new class {
         // Drawing was being held, but now it's time to draw.
         this.drawInstancedBitmaps();
 
-        // Clear the buffer for next time.
+        // Clear the buffers for next time.
+        this.instanced_tint_buffer_data = [];
         this.instanced_drawing_buffer_data = [];
+
+        this.number_of_instances = 0;
       }
     }
 
@@ -1589,26 +1599,29 @@ let Poyo = new class {
       this.cache.texture = this.instanced_bitmap.reference;
     }
 
-    this.WebGL2.bindBuffer(this.WebGL2.ARRAY_BUFFER, this.instanced_drawing_buffer);
-    this.WebGL2.bufferData(this.WebGL2.ARRAY_BUFFER, new Float32Array(this.instanced_drawing_buffer_data), this.WebGL2.STATIC_DRAW);
+    this.WebGL2.bindBuffer(this.WebGL2.ARRAY_BUFFER, this.instanced_tint_buffer);
+    this.WebGL2.bufferData(this.WebGL2.ARRAY_BUFFER, new Uint8Array(this.instanced_tint_buffer_data), this.WebGL2.STATIC_DRAW);
 
     // Tints.
-    this.WebGL2.vertexAttribPointer(1, 4, this.WebGL2.FLOAT, false, 4 * 14, 40);
+    this.WebGL2.vertexAttribPointer(1, 4, this.WebGL2.UNSIGNED_BYTE, true, 4, 0);
     this.WebGL2.vertexAttribDivisor(1, 1);
     this.WebGL2.enableVertexAttribArray(1);
 
+    this.WebGL2.bindBuffer(this.WebGL2.ARRAY_BUFFER, this.instanced_drawing_buffer);
+    this.WebGL2.bufferData(this.WebGL2.ARRAY_BUFFER, new Float32Array(this.instanced_drawing_buffer_data), this.WebGL2.STATIC_DRAW);
+
     // Matrices part 1.
-    this.WebGL2.vertexAttribPointer(2, 3, this.WebGL2.FLOAT, false, 4 * 14, 0);
+    this.WebGL2.vertexAttribPointer(2, 3, this.WebGL2.FLOAT, false, 4 * 10, 0);
     this.WebGL2.vertexAttribDivisor(2, 1);
     this.WebGL2.enableVertexAttribArray(2);
 
     // Matrices part 2.
-    this.WebGL2.vertexAttribPointer(3, 3, this.WebGL2.FLOAT, false, 4 * 14, 12);
+    this.WebGL2.vertexAttribPointer(3, 3, this.WebGL2.FLOAT, false, 4 * 10, 12);
     this.WebGL2.vertexAttribDivisor(3, 1);
     this.WebGL2.enableVertexAttribArray(3);
 
     // Texture offsets.
-    this.WebGL2.vertexAttribPointer(4, 4, this.WebGL2.FLOAT, false, 4 * 14, 24);
+    this.WebGL2.vertexAttribPointer(4, 4, this.WebGL2.FLOAT, false, 4 * 10, 24);
     this.WebGL2.vertexAttribDivisor(4, 1);
     this.WebGL2.enableVertexAttribArray(4);
 
@@ -1616,7 +1629,7 @@ let Poyo = new class {
     this.WebGL2.uniform1i(this.uniforms.u_instance, true);
 
     // Draw the instanced bitmaps.
-    this.WebGL2.drawArraysInstanced(this.WebGL2.TRIANGLE_FAN, 0, 4, this.instanced_drawing_buffer_data.length / 14);
+    this.WebGL2.drawArraysInstanced(this.WebGL2.TRIANGLE_FAN, 0, 4, this.number_of_instances);
 
     // Tell the shader we're done using instancing.
     this.WebGL2.uniform1i(this.uniforms.u_instance, false);
@@ -1629,16 +1642,17 @@ let Poyo = new class {
     // Scale instanced bitmap to its proper resolution.
     this.scaleTransform(this.matrix, offsets[2] * bitmap.width / this.target.width, offsets[3] * bitmap.height / this.target.height);
 
+    this.instanced_tint_buffer_data.push(tint.r, tint.g, tint.b, tint.a);
+
     this.instanced_drawing_buffer_data.push(
 
       this.matrix.value[0], this.matrix.value[6], this.matrix.value[7],
-
       this.matrix.value[4], this.matrix.value[1], this.matrix.value[3],
 
-      offsets[0], offsets[1], offsets[2], offsets[3],
-
-      tint.r / 255, tint.g / 255, tint.b / 255, tint.a / 255
+      offsets[0], offsets[1], offsets[2], offsets[3]
     );
+
+    ++this.number_of_instances;
   }
 
   drawConsolidatedBitmap(bitmap, texture_offset = [0, 0, 1, 1], tint = this.createColor(255, 255, 255)) {
