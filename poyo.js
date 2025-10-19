@@ -1204,7 +1204,7 @@ let Poyo = new class {
 
     // Use the font canvas' contents as a texture.
     this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, this.font.bitmap.texture);
-    this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, this.font.canvas);
+    this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA8, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, this.font.canvas);
 
     this.pushTransform(this.matrix);
 
@@ -1480,7 +1480,7 @@ let Poyo = new class {
 
           // Use the image's contents as a texture.
           this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, bitmap.texture);
-          this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, element);
+          this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA8, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, element);
 
           resolve(bitmap);
         };
@@ -1903,7 +1903,7 @@ let Poyo = new class {
     let texture = this.WebGL2.createTexture();
 
     this.WebGL2.bindTexture(this.WebGL2.TEXTURE_2D, texture);
-    this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA, w, h, 0, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, null);
+    this.WebGL2.texImage2D(this.WebGL2.TEXTURE_2D, 0, this.WebGL2.RGBA8, w, h, 0, this.WebGL2.RGBA, this.WebGL2.UNSIGNED_BYTE, null);
 
     this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_WRAP_S, this.texture_wrap_s);
     this.WebGL2.texParameteri(this.WebGL2.TEXTURE_2D, this.WebGL2.TEXTURE_WRAP_T, this.texture_wrap_t);
