@@ -1466,6 +1466,7 @@ let Poyo = new class {
     let element = new Image();
 
     element.src = path;
+    element.crossOrigin = "anonymous";
 
     let reject_function = undefined;
     let resolve_function = undefined;
@@ -1513,7 +1514,7 @@ let Poyo = new class {
     );
   }
 
-  setNewBitmapFlags(... flags) {
+  setNewBitmapFlags(...flags) {
 
     flags.forEach(
 
