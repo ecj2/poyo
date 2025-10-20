@@ -720,9 +720,9 @@ let Poyo = new class {
       break;
     }
 
-    if (event.which == 38 || event.which == 40 || event.which == 37 || event.which == 39) {
+    if (event.which == 32 || event.which == 38 || event.which == 40 || event.which == 37 || event.which == 39) {
 
-      // Prevent arrow keys from scrolling page.
+      // Prevent arrow keys and space bar from scrolling page.
       event.preventDefault();
     }
   }
