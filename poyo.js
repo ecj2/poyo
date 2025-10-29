@@ -19,6 +19,7 @@ let Poyo = new class {
 
       scale_x: 1,
       scale_y: 1,
+
       offset_x: 0,
       offset_y: 0,
 
@@ -1998,6 +1999,18 @@ let Poyo = new class {
   setClippingRectangle(x, y, w, h) {
 
     this.WebGL2.scissor(x, y, w, h);
+  }
+
+  createBoundingBox(x, y, w, h) {
+
+    return {
+
+      x: x,
+      y: y,
+
+      w: w,
+      h: h
+    };
   }
 
   isColliding(a, b) {

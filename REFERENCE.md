@@ -1446,6 +1446,16 @@ Sets the clipping rectangle for the canvas. Nothing is drawn beyond its boundari
 
 ---
 
+***Poyo.createBoundingBox()***
+
+```js
+Poyo.createBoundingBox(x, y, w, h)
+```
+
+Returns an object literal defining a simple bounding box. This can be used with `Poyo.isColliding()` to peform collision detection between two objects.
+
+---
+
 **Poyo.isColliding()**
 
 ```js
@@ -1455,25 +1465,25 @@ Poyo.isColliding(a, b)
 Performs an axis-aligned bounding box (AABB) collision check against object literals `a` and `b`. Returns `true` if `a` and `b` are colliding, or `false` if not.
 
 ```js
-let a = {
+let enemy_bounding_box = Poyo.createBoundingBox(
 
-  x: Player.getX(),
-  y: Player.getY(),
+  Enemy.getX(),
+  Enemy.getY(),
 
-  w: Player.getWidth(),
-  h: Player.getHeight()
-};
+  Enemy.getWidth(),
+  Enemy.getHeight()
+);
 
-let b = {
+let player_bounding_box = Poyo.createBoundingBox(
 
-  x: Enemy.getX(),
-  y: Enemy.getY(),
+  Player.getX(),
+  Player.getY(),
 
-  w: Enemy.getWidth(),
-  h: Enemy.getHeight()
-};
+  Player.getWidth(),
+  Player.getHeight()
+);
 
-if (Poyo.isColliding(a, b)) {
+if (Poyo.isColliding(player_bounding_box, enemy_bounding_box)) {
 
   // Player is colliding with the enemy.
   Player.inflictDamage();
