@@ -29,9 +29,15 @@ canvas {
 a {
 
   color: blue;
+  text-decoration: none;
 }
 
-a:active {
+a:hover {
 
-  color: red;
+  text-decoration: underline;
+}
+
+canvas {
+
+  display: none;
 }
