@@ -593,7 +593,7 @@ This method can only be used to instance a single texture from a single bitmap a
 **Poyo.setNewBitmapFlags()**
 
 ```js
-Poyo.setNewBitmapFlags(... flags)
+Poyo.setNewBitmapFlags(...flags)
 ```
 
 Sets flags to be applied when loading or creating new bitmaps. Values include `Poyo.MIN_NEAREST`, `Poyo.MIN_LINEAR`, `Poyo.MAG_NEAREST`, `Poyo.MAG_LINEAR`, `Poyo.WRAP_CLAMP`, `Poyo.WRAP_REPEAT`, and `Poyo.WRAP_MIRROR`.
@@ -1446,7 +1446,7 @@ Sets the clipping rectangle for the canvas. Nothing is drawn beyond its boundari
 
 ---
 
-***Poyo.createBoundingBox()***
+**Poyo.createBoundingBox()**
 
 ```js
 Poyo.createBoundingBox(x, y, w, h)
@@ -1492,7 +1492,7 @@ if (Poyo.isColliding(player_bounding_box, enemy_bounding_box)) {
 
 ---
 
-***Poyo.clamp()***
+**Poyo.clamp()**
 
 ```js
 Poyo.clamp(x, min, max)
