@@ -1,36 +1,35 @@
 # Poyo
 
-Poyo is a simple 2D game-making library written in JavaScript. It abstracts common tasks&mdash;such as managing mouse and keyboard events, drawing text and images, and playing sounds&mdash;behind an easy-to-use interface.
+Poyo is a tiny JavaScript library for building 2D games. It simplifies common tasks&mdash;like handling inputs, drawing text and images, and playing sounds&mdash;making it perfect for small indie projects.
 
-Poyo works on modern Web browsers which support WebGL 2, such as desktop versions of Chrome and Firefox. It also works on mobile browsers, but doesn't currently abstract touch inputs.
+## Quick Example
 
-## How to Use
+Let's write a quick example that draws some text in the center of the canvas. Begin by including `poyo.js` in the head of your HTML document:
 
-Due to security concerns and limitations imposed by [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS), loading resources via the `file://` scheme is not possible. As a result, installing a local a Web server is necessary for loading fonts, bitmaps, and samples.
-
-To begin, you'll need to include the library in the head of an HTML document and add a canvas element to the body for drawing to take place:
 
 ```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <!-- Include the library before other scripts. -->
-    <script src="poyo.js"></script>
-    <script src="example.js"></script>
-  </head>
-  <body>
-    <div id="toggle">
-      <!-- It's ideal to start Poyo with a user gesture, like a click. -->
-      <a href="#" onclick="start()">Load Example</a>
-    </div>
-    <!-- Poyo will draw to this canvas. The ID must always be "poyo". -->
-    <canvas id="poyo"></canvas>
-  </body>
-</html>
+<head>
+  <meta charset="utf-8">
+  <!-- Include the library before other scripts. -->
+  <script src="poyo.js"></script>
+  <script src="example.js"></script>
+</head>
 ```
 
-Then you can move on to actually initializing Poyo, creating the game-loop, and clearing the canvas in JavaScript:
+Next add a canvas element to the body for drawing to take place:
+
+```html
+<body>
+  <div id="toggle">
+    <!-- It's ideal to start Poyo with a user gesture, like a click. -->
+    <a href="#" onclick="start()">Load Example</a>
+  </div>
+  <!-- Poyo will draw to this canvas. The ID must always be "poyo". -->
+  <canvas id="poyo"></canvas>
+</body>
+```
+
+Now it's time to initialize Poyo, create the game-loop, and clear the canvas in JavaScript:
 
 ```js
 "use strict";
@@ -39,10 +38,10 @@ let font;
 
 function start() {
 
-  // Show canvas.
+  // Show the canvas.
   document.getElementById("poyo").style = "display: inherit";
 
-  // Hide toggle link.
+  // Hide the toggle link.
   document.getElementById("toggle").style = "display: none";
 
   // Start the example.
@@ -58,7 +57,7 @@ function main() {
     Poyo.displayError(Poyo.getLastError());
   }
 
-  // Load a bold sans-serif font known to the browser.
+  // Load a bold sans-serif font face.
   font = Poyo.loadFontFace("sans-serif", Poyo.STYLE_BOLD);
 
   // Call loop() 60 times per second.
@@ -81,7 +80,9 @@ Here's the result:
 
 ![The result.](https://i.ibb.co/3C4H6mT/helloworld.png)
 
-You can consult the [reference document](REFERENCE.md) and the [examples directory](./examples) to learn more.
+Note: due to security concerns and limitations imposed by [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS), loading resources via the `file://` scheme is not possible; as a result, installing a local HTTP server is necessary for loading fonts, bitmaps, and samples.
+
+You can consult the [reference document](REFERENCE.md) and the [examples directory](examples) to learn more.
 
 ## Special Thanks
 
