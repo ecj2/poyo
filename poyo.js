@@ -223,7 +223,7 @@ let Poyo = new class {
 
     this.canvas.canvas = document.getElementById("poyo");
 
-    if (this.canvas.canvas == null) {
+    if (this.canvas.canvas === null) {
 
       this.errors.push("missing canvas element");
 
@@ -260,7 +260,7 @@ let Poyo = new class {
       }
     );
 
-    if (this.WebGL2 == null) {
+    if (this.WebGL2 === null) {
 
       this.errors.push("browser lacks WebGL 2 support");
 
@@ -464,7 +464,7 @@ let Poyo = new class {
 
     for (key in this.uniforms) {
 
-      if (this.uniforms[key] == null) {
+      if (this.uniforms[key] === null) {
 
         // Failed to find location of a uniform.
         return false;
@@ -567,7 +567,7 @@ let Poyo = new class {
 
   isMouseUp(button) {
 
-    if (button == this.MOUSE_ANY) {
+    if (button === this.MOUSE_ANY) {
 
       for (let i = 0; i < 3; ++i) {
 
@@ -585,7 +585,7 @@ let Poyo = new class {
 
   isMouseDown(button) {
 
-    if (button == this.MOUSE_ANY) {
+    if (button === this.MOUSE_ANY) {
 
       for (let i = 0; i < 3; ++i) {
 
@@ -603,7 +603,7 @@ let Poyo = new class {
 
   isMousePressed(button) {
 
-    if (button == this.MOUSE_ANY) {
+    if (button === this.MOUSE_ANY) {
 
       for (let i = 0; i < 3; ++i) {
 
@@ -621,7 +621,7 @@ let Poyo = new class {
 
   isMouseReleased(button) {
 
-    if (button == this.MOUSE_ANY) {
+    if (button === this.MOUSE_ANY) {
 
       for (let i = 0; i < 3; ++i) {
 
@@ -676,7 +676,7 @@ let Poyo = new class {
 
   isMouseHidden() {
 
-    return this.canvas.canvas.style.cursor == "none";
+    return this.canvas.canvas.style.cursor === "none";
   }
 
   lockMouse() {
@@ -694,7 +694,7 @@ let Poyo = new class {
 
   isMouseLocked() {
 
-    return document.pointerLockElement == this.getCanvas();
+    return document.pointerLockElement === this.getCanvas();
   }
 
   manageKeyboardEvents(event) {
@@ -721,7 +721,7 @@ let Poyo = new class {
       break;
     }
 
-    if (event.which == 32 || event.which == 38 || event.which == 40 || event.which == 37 || event.which == 39) {
+    if (event.which === 32 || event.which === 38 || event.which === 40 || event.which === 37 || event.which === 39) {
 
       // Prevent arrow keys and space bar from scrolling page.
       event.preventDefault();
@@ -730,7 +730,7 @@ let Poyo = new class {
 
   isKeyUp(key) {
 
-    if (key == this.KEY_ANY) {
+    if (key === this.KEY_ANY) {
 
       for (let i = 0; i < 255; ++i) {
 
@@ -748,7 +748,7 @@ let Poyo = new class {
 
   isKeyDown(key) {
 
-    if (key == this.KEY_ANY) {
+    if (key === this.KEY_ANY) {
 
       for (let i = 0; i < 255; ++i) {
 
@@ -766,7 +766,7 @@ let Poyo = new class {
 
   isKeyPressed(key) {
 
-    if (key == this.KEY_ANY) {
+    if (key === this.KEY_ANY) {
 
       for (let i = 0; i < 255; ++i) {
 
@@ -784,7 +784,7 @@ let Poyo = new class {
 
   isKeyReleased(key) {
 
-    if (key == this.KEY_ANY) {
+    if (key === this.KEY_ANY) {
 
       for (let i = 0; i < 255; ++i) {
 
@@ -899,12 +899,12 @@ let Poyo = new class {
 
     t.value = t.stack.pop();
 
-    if (t.value == undefined) {
+    if (t.value === undefined) {
 
       t.value = this.getIdentityTransform();
     }
 
-    if (t.stack.length == 0) {
+    if (t.stack.length === 0) {
 
       t.stack[0] = this.getIdentityTransform();
     }
@@ -986,7 +986,7 @@ let Poyo = new class {
 
       (response) => {
 
-        if (response.status == 200) {
+        if (response.status === 200) {
 
           let element = document.createElement("style");
           let font_name = "font_" + Math.random().toString(16).slice(2);
@@ -1029,7 +1029,7 @@ let Poyo = new class {
 
   async loadBitmapFont(path, glyph_h, grid_w, grid_h, rows, sequence) {
 
-    if (sequence == undefined) {
+    if (sequence === undefined) {
 
       sequence = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
     }
@@ -1106,7 +1106,7 @@ let Poyo = new class {
 
         let data = bitmap_font.data[character];
 
-        if (data == undefined) {
+        if (data === undefined) {
 
           // This character isn't included in the sequence.
           continue;
@@ -1292,12 +1292,12 @@ let Poyo = new class {
 
   playSample(sample, gain, speed, pan, repeat, reference) {
 
-    if (reference == undefined) {
+    if (reference === undefined) {
 
       reference = sample.instance_counter;
     }
 
-    if (this.audio.instances[reference] == undefined) {
+    if (this.audio.instances[reference] === undefined) {
 
       // Create a new instance of the sample.
 
@@ -1367,7 +1367,7 @@ let Poyo = new class {
 
   isSamplePaused(reference) {
 
-    if (this.audio.instances[reference] == undefined) {
+    if (this.audio.instances[reference] === undefined) {
 
       // There exists no sample instance matching the specified reference.
       return false;
@@ -1378,7 +1378,7 @@ let Poyo = new class {
 
   isSamplePlaying(reference) {
 
-    if (this.audio.instances[reference] == undefined) {
+    if (this.audio.instances[reference] === undefined) {
 
       // There exists no sample instance matching the specified reference.
       return false;
@@ -1588,7 +1588,7 @@ let Poyo = new class {
   drawInstancedBitmaps() {
 
     // Don't attempt to draw anything if the buffer data is empty.
-    if (this.instanced_drawing_buffer_data.length == 0) return;
+    if (this.instanced_drawing_buffer_data.length === 0) return;
 
     if (this.cache.texture != this.instanced_bitmap.reference) {
 
@@ -1948,7 +1948,7 @@ let Poyo = new class {
 
     this.WebGL2.bindFramebuffer(this.WebGL2.FRAMEBUFFER, framebuffer);
 
-    if (framebuffer == null) {
+    if (framebuffer === null) {
 
       this.target.width = this.canvas.width;
       this.target.height = this.canvas.height;
