@@ -1006,6 +1006,8 @@ let Poyo = new class {
         }
         else {
 
+          this.errors.push(`failed to load ${path}`);
+
           return false;
         }
       }
@@ -1264,6 +1266,8 @@ let Poyo = new class {
 
         reject_function = () => {
 
+          this.errors.push(`failed to load ${path}`);
+
           reject(false);
         };
 
@@ -1488,6 +1492,8 @@ let Poyo = new class {
         };
 
         reject_function = () => {
+
+          this.errors.push(`failed to load ${path}`);
 
           reject(false);
         };
