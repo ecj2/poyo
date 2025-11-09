@@ -664,10 +664,10 @@ function loadResources() {
 **Poyo.loadBitmapFont()**
 
 ```js
-Poyo.loadBitmapFont(path, glyph_h, grid_w, grid_h, rows, sequence)
+Poyo.loadBitmapFont(path, grid_w, grid_h, rows, sequence)
 ```
 
-Loads a bitmap font with the specified glyph height, grid width and height, the number of rows, and an optional string sequence for each character (a default sequence is used if an alternative is not supplied). Returns on object literal on success and `false` on failure. Flags specified with `Poyo.setNewBitmapFlags()` are honored.
+Loads a bitmap font with the specified grid width and height, the number of rows, and an optional string sequence for each character (a default sequence is used if an alternative is not supplied). Returns on object literal on success and `false` on failure. Flags specified with `Poyo.setNewBitmapFlags()` are honored.
 
 This method must be called within an `async` function using the `await` keyword, like so:
 
@@ -676,7 +676,7 @@ let bitmap_font;
 
 async function loadResources() {
 
-  bitmap_font = await Poyo.loadBitmapFont("font.png", 24, 30, 30, 10);
+  bitmap_font = await Poyo.loadBitmapFont("font.png", 30, 30, 10);
 
   if (!bitmap_font) {
 

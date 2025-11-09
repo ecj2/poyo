@@ -1029,7 +1029,7 @@ let Poyo = new class {
     return font;
   }
 
-  async loadBitmapFont(path, glyph_h, grid_w, grid_h, rows, sequence) {
+  async loadBitmapFont(path, grid_w, grid_h, rows, sequence) {
 
     if (sequence === undefined) {
 
@@ -1046,8 +1046,6 @@ let Poyo = new class {
     let font_bitmap = {
 
       bitmap: bitmap,
-
-      glyph_height: glyph_h,
 
       grid_width: grid_w,
       grid_height: grid_h,
@@ -1088,7 +1086,7 @@ let Poyo = new class {
     text = "" + text;
 
     // Properly scale to desired size.
-    size /= bitmap_font.glyph_height;
+    size /= bitmap_font.grid_height;
 
     let lines = text.split("\n");
 
