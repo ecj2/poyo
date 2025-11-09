@@ -1095,7 +1095,7 @@ let Poyo = new class {
     // Properly scale to desired size.
     size /= bitmap_font.grid_height;
 
-    let padding_x = bitmap_font.padding_x;
+    let padding_x = bitmap_font.padding_x * size;
 
     let lines = text.split("\n");
 
