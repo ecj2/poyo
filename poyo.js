@@ -1029,7 +1029,12 @@ let Poyo = new class {
     return font;
   }
 
-  async loadBitmapFont(path, grid_w, grid_h, rows, sequence) {
+  async loadBitmapFont(path, grid_w, grid_h, rows, padding_x, sequence) {
+
+    if (padding_x === undefined) {
+
+      padding_x = 0;
+    }
 
     if (sequence === undefined) {
 
@@ -1049,6 +1054,8 @@ let Poyo = new class {
 
       grid_width: grid_w,
       grid_height: grid_h,
+
+      padding_x: padding_x,
 
       rows: rows - 1,
 
@@ -1088,6 +1095,8 @@ let Poyo = new class {
     // Properly scale to desired size.
     size /= bitmap_font.grid_height;
 
+    let padding_x = bitmap_font.padding_x;
+
     let lines = text.split("\n");
 
     this.useInstancing(true);
@@ -1116,7 +1125,7 @@ let Poyo = new class {
         start_x = data.x * bitmap_font.grid_width;
         start_y = data.y * bitmap_font.grid_height;
 
-        draw_x = bitmap_font.grid_width * size * j + x;
+        draw_x = bitmap_font.grid_width * size * j + padding_x * j + x;
         draw_y = bitmap_font.grid_height * size * i + y;
 
         this.pushTransform(this.matrix);
@@ -1126,11 +1135,13 @@ let Poyo = new class {
           case this.ALIGN_CENTER:
 
             this.translateTransform(this.matrix, -lines[i].length / 2 * bitmap_font.grid_width * size, 0);
+            this.translateTransform(this.matrix, -lines[i].length / 2 * padding_x + padding_x / 2, 0);
           break;
 
           case this.ALIGN_RIGHT:
 
             this.translateTransform(this.matrix, -lines[i].length * bitmap_font.grid_width * size, 0);
+            this.translateTransform(this.matrix, -lines[i].length * padding_x + padding_x, 0);
           break;
         }
 
