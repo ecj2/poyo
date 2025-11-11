@@ -664,12 +664,12 @@ function loadResources() {
 **Poyo.loadBitmapFont()**
 
 ```js
-Poyo.loadBitmapFont(path, grid_w, grid_h, rows, padding_x, sequence)
+Poyo.loadBitmapFont(path, grid_w, grid_h, rows, padding_x, padding_y, sequence)
 ```
 
 Loads a bitmap font with the specified grid width and height, the number of rows, an optional horizontal padding (essentially extra letter spacing), and an optional string sequence for each character (a default sequence is used if an alternative is not supplied). Returns on object literal on success and `false` on failure. Flags specified with `Poyo.setNewBitmapFlags()` are honored.
 
-`padding_x` is an offset applied to the bitmap font's `grid_width` property during rendering, so values greater than zero _increase_ the distance between glyphs, whereas values less than zero _decrease_ said distance. If no value is supplied, `0` is used.
+`padding_x` is an offset applied to the bitmap font's `grid_width` property during rendering, so values greater than zero _increase_ the distance between glyphs, whereas values less than zero _decrease_ said distance. If no value is supplied, `0` is used. Likewise, `padding_y` is an offset applied to the bitmap font's `grid_height` property and is `0` by default. Tweak `padding_x` to adjust letter spacing, and tweak `padding_y` to adjust line height.
 
 This method must be called within an `async` function using the `await` keyword, like so:
 

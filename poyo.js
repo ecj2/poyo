@@ -1029,11 +1029,16 @@ let Poyo = new class {
     return font;
   }
 
-  async loadBitmapFont(path, grid_w, grid_h, rows, padding_x, sequence) {
+  async loadBitmapFont(path, grid_w, grid_h, rows, padding_x, padding_y, sequence) {
 
     if (padding_x === undefined) {
 
       padding_x = 0;
+    }
+
+    if (padding_y === undefined) {
+
+      padding_y = 0;
     }
 
     if (sequence === undefined) {
@@ -1056,6 +1061,7 @@ let Poyo = new class {
       grid_height: grid_h,
 
       padding_x: padding_x,
+      padding_y: padding_y,
 
       rows: rows - 1,
 
@@ -1096,6 +1102,7 @@ let Poyo = new class {
     size /= bitmap_font.grid_height;
 
     let padding_x = bitmap_font.padding_x * size;
+    let padding_y = bitmap_font.padding_y * size;
 
     let lines = text.split("\n");
 
@@ -1126,7 +1133,7 @@ let Poyo = new class {
         start_y = data.y * bitmap_font.grid_height;
 
         draw_x = bitmap_font.grid_width * size * j + padding_x * j + x;
-        draw_y = bitmap_font.grid_height * size * i + y;
+        draw_y = bitmap_font.grid_height * size * i + padding_y * i + y;
 
         this.pushTransform(this.matrix);
 
