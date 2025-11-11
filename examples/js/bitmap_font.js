@@ -9,8 +9,8 @@ let bitmap_font_2;
 let font_size = 36;
 let alignment = 2;
 
-let color = Poyo.createColor(255, 128, 128);
-let target_color = Poyo.createColor(255, 128, 128);
+let color = Poyo.createColor(255, 255, 0);
+let target_color = Poyo.createColor(255, 255, 0);
 
 function start() {
 
