@@ -129,7 +129,16 @@ function updateKeyboard() {
     --bitmap_font_1.padding_x;
   }
 
-  if (Poyo.isKeyPressed(Poyo.KEY_Z)) {
+  if (Poyo.isKeyDown(Poyo.KEY_X)) {
+
+    ++bitmap_font_1.padding_y;
+  }
+  else if (Poyo.isKeyDown(Poyo.KEY_Z)) {
+
+    --bitmap_font_1.padding_y;
+  }
+
+  if (Poyo.isKeyPressed(Poyo.KEY_Q)) {
 
     ++alignment;
 
@@ -168,15 +177,17 @@ function render() {
     alignment_string = "center";
   }
 
-  let text = "This was drawn with a bitmap font.";
+  let text = `This was drawn with a bitmap font.\nThis line, too!\nExample started ${Poyo.getTime().toFixed(2)} seconds ago.`;
 
   Poyo.drawBitmapFont(bitmap_font_1, color, font_size, x, y, text_alignment, text);
 
   let padding_x = bitmap_font_1.padding_x;
+  let padding_y = bitmap_font_1.padding_y;
 
-  text = `Z  : change text alignment\t\t\t\t\t(${alignment_string})\n`;
+  text = `Q  : change text alignment\t\t\t\t\t(${alignment_string})\n`;
   text += `W/S: change font size\t\t\t\t\t\t\t\t\t\t(${font_size})\n`;
-  text += `D/A: change horizontal padding (${padding_x})`;
+  text += `D/A: change horizontal padding (${padding_x})\n`;
+  text += `Z/X: change vertical padding (${padding_y})`;
 
   Poyo.drawBitmapFont(bitmap_font_2, Poyo.createColor(255, 255, 255), 24, 0, 0, Poyo.ALIGN_LEFT, text);
 }
