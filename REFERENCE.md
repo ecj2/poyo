@@ -714,6 +714,26 @@ Poyo.drawBitmapFont(bitmap_font, yellow, 50, mouse_x, mouse_y, alignment, string
 
 ---
 
+**Poyo.getTextWidth()**
+
+```js
+Poyo.getTextWidth(bitmap_font, size, text)
+```
+
+Returns the width of the widest line of `text` in pixels, accounting for font size and horizontal padding. This is equivalent to the number of horizontal pixels drawn by `Poyo.drawBitmapFont()` at size `size` using bitmap font `bitmap_font`. This could be useful for creating GUIs. This only works with bitmap fonts.
+
+---
+
+**Poyo.getTextHeight()**
+
+```js
+Poyo.getTextHeight(bitmap_font, size, text)
+```
+
+Returns the height of `text` in pixels, accounting for font size and vertical padding. This is equivalent to the number of vertical pixels drawn by `Poyo.drawBitmapFont()` using the same `size` and `bitmap_font`. This only works with bitmap fonts.
+
+---
+
 **Poyo.drawText()**
 
 ```js

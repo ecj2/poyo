@@ -1043,6 +1043,7 @@ let Poyo = new class {
 
     if (sequence === undefined) {
 
+      // Use ASCII by default.
       sequence = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
     }
 
@@ -1166,6 +1167,57 @@ let Poyo = new class {
     }
 
     this.useInstancing(false);
+  }
+
+  getTextWidth(bitmap_font, size, text) {
+
+    if (text.length === 0) {
+
+      return 0;
+    }
+
+    let lines = text.split("\n");
+
+    let widest_line = 0;
+
+    for (let i = 0; i < lines.length; ++i) {
+
+      if (lines[i].length > widest_line) {
+
+        // Find the widest line.
+        widest_line = lines[i].length;
+      }
+    }
+
+    size /= bitmap_font.grid_height;
+
+    // Calculate width of widest line.
+    let width = bitmap_font.grid_width * size * widest_line;
+
+    // Account for horizontal padding.
+    width += (widest_line - 1) * bitmap_font.padding_x * size;
+
+    return width;
+  }
+
+  getTextHeight(bitmap_font, size, text) {
+
+    if (text.length === 0) {
+
+      return 0;
+    }
+
+    let number_of_lines = text.split("\n").length;
+
+    size /= bitmap_font.grid_height;
+
+    // Calculate height of lines.
+    let height = bitmap_font.grid_height * size * number_of_lines;
+
+    // Account for vertical padding.
+    height += (number_of_lines - 1) * bitmap_font.padding_y * size;
+
+    return height;
   }
 
   drawText(font, color, size, x, y, alignment, text) {
