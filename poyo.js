@@ -6,8 +6,9 @@ let Poyo = new class {
 
     this.cache = {
 
-      tint: [],
       texture: 0,
+
+      tint: [],
       texture_offset: []
     };
 
@@ -64,16 +65,16 @@ let Poyo = new class {
       instances: []
     };
 
-    this.time_initialized = undefined;
+    this.time_initialized;
 
     this.version = 3;
 
-    this.shader_program = undefined;
+    this.shader_program;
     this.uniforms = {};
 
     this.matrix = this.createTransform();
 
-    this.WebGL2 = undefined;
+    this.WebGL2;
 
     this.errors = [];
 
@@ -85,13 +86,13 @@ let Poyo = new class {
 
     this.use_instancing = false;
 
-    this.instanced_tint_buffer = undefined;
-    this.instanced_drawing_buffer = undefined;
+    this.instanced_tint_buffer;
+    this.instanced_drawing_buffer;
 
     this.instanced_tint_buffer_data = [];
     this.instanced_drawing_buffer_data = [];
 
-    this.instanced_bitmap = undefined;
+    this.instanced_bitmap;
 
     this.number_of_instances = 0;
 
@@ -106,14 +107,14 @@ let Poyo = new class {
       context: undefined
     };
 
-    this.texture_wrap_s = undefined;
-    this.texture_wrap_t = undefined;
+    this.texture_wrap_s;
+    this.texture_wrap_t;
 
     this.initializeConstants();
 
     this.bitmap_reference_counter = 0;
 
-    this.final_frame = undefined;
+    this.final_frame;
 
     this.draw_targets = [];
   }
@@ -227,7 +228,7 @@ let Poyo = new class {
 
       this.errors.push("missing canvas element");
 
-      return;
+      return false;
     }
 
     this.canvas.width = canvas_w;
@@ -246,16 +247,12 @@ let Poyo = new class {
 
       {
 
-        alpha: false,
-
-        depth: false,
-
-        antialias: false,
-
         powerPreference: "high-performance",
 
+        alpha: false,
+        depth: false,
+        antialias: false,
         preserveDrawingBuffer: false,
-
         failIfMajorPerformanceCaveat: true
       }
     );
@@ -264,7 +261,7 @@ let Poyo = new class {
 
       this.errors.push("browser lacks WebGL 2 support");
 
-      return;
+      return false;
     }
 
     this.WebGL2.enable(this.WebGL2.SCISSOR_TEST);
@@ -432,7 +429,7 @@ let Poyo = new class {
 
       this.errors.push("failed to attach shader");
 
-      return;
+      return false;
     }
 
     this.WebGL2.linkProgram(program);
@@ -460,9 +457,7 @@ let Poyo = new class {
     this.uniforms.u_resolution = this.WebGL2.getUniformLocation(this.shader_program, "u_resolution");
     this.uniforms.u_texture_offset = this.WebGL2.getUniformLocation(this.shader_program, "u_texture_offset");
 
-    let key = undefined;
-
-    for (key in this.uniforms) {
+    for (const key in this.uniforms) {
 
       if (this.uniforms[key] === null) {
 
@@ -1227,7 +1222,7 @@ let Poyo = new class {
       this.batch_text = true;
     }
 
-    if (this.font.canvas.width != this.target.width || this.font.canvas.height != this.target.height) {
+    if (this.font.canvas.width !== this.target.width || this.font.canvas.height !== this.target.height) {
 
       // The target's dimensions changed; resize font bitmap and canvas to match.
 
@@ -1306,8 +1301,8 @@ let Poyo = new class {
     // Pre-load audio files. This fixes a bug in Firefox which may arise when loading big samples.
     element.preload = "auto";
 
-    let reject_function = undefined;
-    let resolve_function = undefined;
+    let reject_function;
+    let resolve_function;
 
     let min = this.audio.instance_offset;
 
@@ -1541,8 +1536,8 @@ let Poyo = new class {
     element.src = path;
     element.crossOrigin = "anonymous";
 
-    let reject_function = undefined;
-    let resolve_function = undefined;
+    let reject_function;
+    let resolve_function;
 
     return new Promise(
 
@@ -1664,7 +1659,7 @@ let Poyo = new class {
     // Don't attempt to draw anything if the buffer data is empty.
     if (this.instanced_drawing_buffer_data.length === 0) return;
 
-    if (this.cache.texture != this.instanced_bitmap.reference) {
+    if (this.cache.texture !== this.instanced_bitmap.reference) {
 
       // Set the active texture.
       this.WebGL2.activeTexture(this.WebGL2.TEXTURE0);
@@ -1736,7 +1731,7 @@ let Poyo = new class {
     let t = tint;
     let c = this.cache.tint;
 
-    if (c[0] != t.r || c[1] != t.g || c[2] != t.b || c[3] != t.a)  {
+    if (c[0] !== t.r || c[1] !== t.g || c[2] !== t.b || c[3] !== t.a)  {
 
       // Upload the tint.
       this.WebGL2.uniform4fv(this.uniforms.u_tint, [tint.r / 255, tint.g / 255, tint.b / 255, tint.a / 255]);
@@ -1745,7 +1740,7 @@ let Poyo = new class {
       this.cache.tint = [t.r, t.g, t.b, t.a];
     }
 
-    if (this.cache.texture != bitmap.reference) {
+    if (this.cache.texture !== bitmap.reference) {
 
       // Set the active texture.
       this.WebGL2.activeTexture(this.WebGL2.TEXTURE0);
@@ -1758,7 +1753,7 @@ let Poyo = new class {
 
     for (let i = 0; i < 4; ++i) {
 
-      if (this.cache.texture_offset[i] != texture_offset[i]) {
+      if (this.cache.texture_offset[i] !== texture_offset[i]) {
 
         // Upload the texture offset.
         this.WebGL2.uniform4fv(this.uniforms.u_texture_offset, texture_offset);
@@ -1827,11 +1822,9 @@ let Poyo = new class {
     let texture_offset = [
 
       start_x / bitmap.width,
-
       start_y / bitmap.height,
 
       width / bitmap.width,
-
       height / bitmap.height
     ];
 
@@ -1876,9 +1869,7 @@ let Poyo = new class {
     return [
 
       1, 0, 0,
-
       0, 1, 0,
-
       0, 0, 1
     ];
   }
@@ -1903,9 +1894,7 @@ let Poyo = new class {
     let scaled_matrix = [
 
       scale_x, 0, 0,
-
       0, scale_y, 0,
-
       0, 0, 1
     ];
 
@@ -1920,9 +1909,7 @@ let Poyo = new class {
     let rotated_matrix = [
 
       cosine, sine, 0,
-
       -sine, cosine, 0,
-
       0, 0, 1
     ];
 
@@ -1934,9 +1921,7 @@ let Poyo = new class {
     let translated_matrix = [
 
       1, 0, 0,
-
       0, 1, 0,
-
       x | 0, y | 0, 1
     ];
 
@@ -1948,9 +1933,7 @@ let Poyo = new class {
     let sheared_matrix = [
 
       1, Math.atan(theta_y), 0,
-
       -Math.atan(theta_x), 1, 0,
-
       0, 0, 1
     ];
 
@@ -1999,7 +1982,6 @@ let Poyo = new class {
     return {
 
       width: w,
-
       height: h,
 
       texture: texture,
@@ -2061,8 +2043,9 @@ let Poyo = new class {
     // Reset cache to defaults.
     this.cache = {
 
-      tint: [],
       texture: 0,
+
+      tint: [],
       texture_offset: []
     };
 
