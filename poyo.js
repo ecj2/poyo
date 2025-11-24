@@ -1699,13 +1699,13 @@ let Poyo = new class {
     this.WebGL2.enableVertexAttribArray(4);
 
     // Tell the shader we're using instancing.
-    this.WebGL2.uniform1i(this.uniforms.u_instance, true);
+    this.WebGL2.uniform1i(this.uniforms.u_instance, 1);
 
     // Draw the instanced bitmaps.
     this.WebGL2.drawArraysInstanced(this.WebGL2.TRIANGLE_FAN, 0, 4, this.number_of_instances);
 
     // Tell the shader we're done using instancing.
-    this.WebGL2.uniform1i(this.uniforms.u_instance, false);
+    this.WebGL2.uniform1i(this.uniforms.u_instance, 0);
   }
 
   addBitmapInstance(bitmap, offsets = [0, 0, 1, 1], tint = this.createColor(255, 255, 255)) {
