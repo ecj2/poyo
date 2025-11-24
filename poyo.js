@@ -361,10 +361,10 @@ let Poyo = new class {
         vec4 texture_offset = mix(u_texture_offset, a_instance_texture_offset, use_instancing);
 
         // Scale and translate texture position.
-        v_texture_position = (a_vertex_position / u_resolution) * texture_offset.zw + texture_offset.st;
+        v_texture_position = a_vertex_position * texture_offset.zw + texture_offset.st;
 
         // Convert pixel coordinates to normalized device coordinates.
-        vec2 clip_space_position = vec2(matrix * vec3(a_vertex_position, 1.0)).xy / u_resolution * 2.0 - 1.0;
+        vec2 clip_space_position = vec2(matrix * vec3(a_vertex_position * u_resolution, 1.0)).xy / u_resolution * 2.0 - 1.0;
 
         gl_Position = vec4(clip_space_position, 0.0, 1.0);
       }
@@ -475,16 +475,16 @@ let Poyo = new class {
 
     let buffer = this.WebGL2.createBuffer();
 
-    let w = this.target.width;
-    let h = this.target.height;
-
-    let buffer_data = new Float32Array([0, 0, w, 0, w, h, 0, h]);
+    let buffer_data = new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]);
 
     this.WebGL2.bindBuffer(this.WebGL2.ARRAY_BUFFER, buffer);
     this.WebGL2.bufferData(this.WebGL2.ARRAY_BUFFER, buffer_data, this.WebGL2.STATIC_DRAW);
 
     this.WebGL2.vertexAttribPointer(0, 2, this.WebGL2.FLOAT, false, 0, 0);
     this.WebGL2.enableVertexAttribArray(0);
+
+    let w = this.target.width;
+    let h = this.target.height;
 
     // Upload the target's resolution.
     this.WebGL2.uniform2fv(this.uniforms.u_resolution, [w, h]);
