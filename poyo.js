@@ -476,7 +476,7 @@ let Poyo = new class {
     let h = this.target.height;
 
     // Upload the target's resolution.
-    this.WebGL2.uniform2fv(this.uniforms.u_resolution, [w, h]);
+    this.WebGL2.uniform2fv(this.uniforms.u_resolution, new Float32Array([w, h]));
 
     // Restrict the viewport to the target's resolution.
     this.WebGL2.viewport(0, 0, w, h);
@@ -1736,7 +1736,7 @@ let Poyo = new class {
     if (c[0] !== t.r || c[1] !== t.g || c[2] !== t.b || c[3] !== t.a)  {
 
       // Upload the tint.
-      this.WebGL2.uniform4fv(this.uniforms.u_tint, [tint.r / 255, tint.g / 255, tint.b / 255, tint.a / 255]);
+      this.WebGL2.uniform4fv(this.uniforms.u_tint, new Float32Array([tint.r / 255, tint.g / 255, tint.b / 255, tint.a / 255]));
 
       // Cache the tint for next time.
       this.cache.tint = [t.r, t.g, t.b, t.a];
@@ -1758,7 +1758,7 @@ let Poyo = new class {
       if (this.cache.texture_offset[i] !== texture_offset[i]) {
 
         // Upload the texture offset.
-        this.WebGL2.uniform4fv(this.uniforms.u_texture_offset, texture_offset);
+        this.WebGL2.uniform4fv(this.uniforms.u_texture_offset, new Float32Array(texture_offset));
 
         // Cache the texture offset for next time.
         this.cache.texture_offset = texture_offset;
@@ -1773,7 +1773,7 @@ let Poyo = new class {
     this.scaleTransform(this.matrix, texture_offset[2] * bitmap.width / this.target.width, texture_offset[3] * bitmap.height / this.target.height);
 
     // Upload the transformation matrix.
-    this.WebGL2.uniformMatrix3fv(this.uniforms.u_matrix, false, this.matrix.value);
+    this.WebGL2.uniformMatrix3fv(this.uniforms.u_matrix, false, new Float32Array(this.matrix.value));
 
     this.popTransform(this.matrix);
 
