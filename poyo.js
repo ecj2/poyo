@@ -287,7 +287,8 @@ let Poyo = new class {
       return false;
     }
 
-    this.setUniformsAndAttributes();
+    // Set shader program, create buffers, and upload resolution.
+    this.clearCache();
 
     this.instanced_tint_buffer = this.WebGL2.createBuffer();
     this.instanced_drawing_buffer = this.WebGL2.createBuffer();
@@ -469,19 +470,7 @@ let Poyo = new class {
     return true;
   }
 
-  setUniformsAndAttributes() {
-
-    this.WebGL2.useProgram(this.shader_program);
-
-    let buffer = this.WebGL2.createBuffer();
-
-    let buffer_data = new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]);
-
-    this.WebGL2.bindBuffer(this.WebGL2.ARRAY_BUFFER, buffer);
-    this.WebGL2.bufferData(this.WebGL2.ARRAY_BUFFER, buffer_data, this.WebGL2.STATIC_DRAW);
-
-    this.WebGL2.vertexAttribPointer(0, 2, this.WebGL2.FLOAT, false, 0, 0);
-    this.WebGL2.enableVertexAttribArray(0);
+  updateResolution() {
 
     let w = this.target.width;
     let h = this.target.height;
@@ -494,6 +483,21 @@ let Poyo = new class {
 
     // Scissor beyond the target's resolution.
     this.setClippingRectangle(0, 0, w, h);
+  }
+
+  createBuffer() {
+
+    this.WebGL2.useProgram(this.shader_program);
+
+    let buffer = this.WebGL2.createBuffer();
+
+    let buffer_data = new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]);
+
+    this.WebGL2.bindBuffer(this.WebGL2.ARRAY_BUFFER, buffer);
+    this.WebGL2.bufferData(this.WebGL2.ARRAY_BUFFER, buffer_data, this.WebGL2.STATIC_DRAW);
+
+    this.WebGL2.vertexAttribPointer(0, 2, this.WebGL2.FLOAT, false, 0, 0);
+    this.WebGL2.enableVertexAttribArray(0);
   }
 
   getTime() {
@@ -834,8 +838,7 @@ let Poyo = new class {
     this.target.width = width;
     this.canvas.canvas.width = width;
 
-    // Update the vertex buffer.
-    this.setUniformsAndAttributes();
+    this.updateResolution();
 
     // Create a new final frame to match the new dimensions.
     this.final_frame = this.createBitmap(this.canvas.width, this.canvas.height);
@@ -847,8 +850,7 @@ let Poyo = new class {
     this.target.height = height;
     this.canvas.canvas.height = height;
 
-    // Update the vertex buffer.
-    this.setUniformsAndAttributes();
+    this.updateResolution();
 
     // Create a new final frame to match the new dimensions.
     this.final_frame = this.createBitmap(this.canvas.width, this.canvas.height);
@@ -2015,8 +2017,7 @@ let Poyo = new class {
       this.target.height = bitmap.height;
     }
 
-    // Update the vertex buffer.
-    this.setUniformsAndAttributes();
+    this.updateResolution();
   }
 
   revertDrawTarget() {
@@ -2048,6 +2049,9 @@ let Poyo = new class {
       tint: [],
       texture_offset: []
     };
+
+    // Revert to default program and buffer.
+    this.createBuffer();
 
     // Revert to default shader program and draw target.
     this.setDrawTarget(this.getDefaultDrawTarget());
